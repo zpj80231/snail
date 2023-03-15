@@ -1,4 +1,6 @@
-Spring IOC 流程
+# Spring IOC 源码
+
+## 核心容器 DefaultListableBeanFactory
 
 对 Spring 中的核心类：DefaultListableBeanFactory 做一个简单初步的实现：
 
@@ -43,3 +45,22 @@ Spring IOC 流程
    }
    ```
 
+## 实例化策略 InstantiationStrategy
+
+要想容器支持对 Bean的有参构造器 实例化的方式，需要定义一个实例化策略接口 InstantiationStrategy。
+
+实例化方法：Object instantiatie(BeanDefinition beanDefinition, String beanName, Constructor constructor, Object[] args);
+
+一个 Bean 的实例化，需要的基本参数有：
+
+- BeanDefinition：主要保存了一个具体的类，主要就是实例化这个类
+- Constructor：通过哪个构造方法实例化
+- args：构造方法的参数
+
+当然，定义这个 InstantiationStrategy 策略接口也是为了支持不同实例化方式方便扩展。
+
+- SimpleInstantiationStrategy：JDK 实例化策略
+
+- CglibSubclassingInstantiationStrategy：cglib 实例化策略
+
+AbstractAutowireCapableBeanFactory：修改 createBean(String beanName, BeanDefinition beanDefinition) 实现，加入实例化策略。
