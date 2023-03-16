@@ -16,8 +16,8 @@ public class Dog {
     private static Map<String, Object> initMap = new HashMap<>();
 
     static {
-        initMap.put("dog1", "TomDog");
-        initMap.put("dog2", "JerryDog");
+        initMap.put("inner-dog1", "TomDog");
+        initMap.put("inner-dog2", "JerryDog");
     }
 
     public void printName() {
