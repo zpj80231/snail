@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<beans>
+    <bean id="cat" name="catBEAN" class="com.snail.springframework.beans.factory.support.Cat">
+        <property name="name" value="Cat-001"></property>
+    </bean>
+    <bean id="dog" class="com.snail.springframework.beans.factory.support.Dog">
+        <property name="name" value="Dog-001"></property>
+        <property name="cat" ref="cat"></property>
+    </bean>
+</beans>
