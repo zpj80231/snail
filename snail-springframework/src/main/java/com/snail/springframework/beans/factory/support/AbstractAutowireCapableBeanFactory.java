@@ -1,7 +1,11 @@
 package com.snail.springframework.beans.factory.support;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.snail.springframework.beans.BeansException;
+import com.snail.springframework.beans.PropertyValue;
+import com.snail.springframework.beans.PropertyValues;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
+import com.snail.springframework.beans.factory.config.BeanReference;
 
 import java.lang.reflect.Constructor;
 
@@ -36,7 +40,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
         Object bean = null;
-        bean = createBeanInstance(beanName, beanDefinition, args);
+        try {
+            // 实例化
+            bean = createBeanInstance(beanName, beanDefinition, args);
+            // 属性填充
+            applyPropertyValues(beanName, bean, beanDefinition);
+        } catch (Exception e) {
+            throw new BeansException("Failed to bean instance", e);
+        }
         addSingleton(beanName, bean);
         return bean;
     }
@@ -53,5 +64,26 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
         return getInstantiationStrategy().instantiatie(beanDefinition, beanName, constructorToUse, args);
     }
+
+    protected void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
+        try {
+            PropertyValues propertyValues = beanDefinition.getPropertyValues();
+            for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
+                String name = propertyValue.getName();
+                Object value = propertyValue.getValue();
+                // A 依赖 B, B 依赖 C, 循环调用实例化
+                if (value instanceof BeanReference) {
+                    BeanReference beanReference = (BeanReference) value;
+                    value = getBean(beanReference.getBeanName());
+                }
+                // 属性填充
+                BeanUtil.setFieldValue(bean, name, value);
+            }
+        } catch (Exception e) {
+            throw new BeansException("Failed to bean applyPropertyValues", e);
+        }
+    }
+
+    ;
 
 }

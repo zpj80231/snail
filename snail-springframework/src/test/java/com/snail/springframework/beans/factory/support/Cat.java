@@ -19,4 +19,11 @@ public class Cat {
             System.out.println("My name is TomCat");
         }
     }
+
+    @Override
+    public String toString() {
+        return "Cat{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

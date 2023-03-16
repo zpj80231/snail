@@ -17,7 +17,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
     @Override
     public Object instantiatie(BeanDefinition beanDefinition, String beanName, Constructor constructor,
                                Object[] args) throws BeansException {
-        Class clazz = beanDefinition.getBeanClass();
+        Class<?> clazz = beanDefinition.getBeanClass();
         try {
             if (constructor != null) {
                 return clazz.getDeclaredConstructor(constructor.getParameterTypes()).newInstance(args);
