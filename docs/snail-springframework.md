@@ -32,18 +32,18 @@
 
 ```java
 public void testDefaultListableBeanFactory(){
-        // DefaultListableBeanFactory 的用法
-        DefaultListableBeanFactory beanFactory=new DefaultListableBeanFactory();
-        // 1. 注册Bean的能力：将一个普通对象转换为 BeanDefinition，并注册进容器中
-        BeanDefinition beanDefinition=new BeanDefinition(Cat.class);
-        beanFactory.registerBeanDefinition("cat",beanDefinition);
-        // 2. 获取Bean的能力：从容器中获取指定 Bean，第一次获取会示例化并缓存
-        Cat cat=(Cat)beanFactory.getBean("cat");
-        cat.name();
-        // 3. 第二次会直接从缓存中获取
-        Cat cat_cache=(Cat)beanFactory.getBean("cat");
-        cat_cache.name();
-        }
+   // DefaultListableBeanFactory 的用法
+   DefaultListableBeanFactory beanFactory=new DefaultListableBeanFactory();
+   // 1. 注册Bean的能力：将一个普通对象转换为 BeanDefinition，并注册进容器中
+   BeanDefinition beanDefinition=new BeanDefinition(Cat.class);
+   beanFactory.registerBeanDefinition("cat",beanDefinition);
+   // 2. 获取Bean的能力：从容器中获取指定 Bean，第一次获取会示例化并缓存
+   Cat cat=(Cat)beanFactory.getBean("cat");
+   cat.name();
+   // 3. 第二次会直接从缓存中获取
+   Cat cat_cache=(Cat)beanFactory.getBean("cat");
+   cat_cache.name();
+}
 ```
 
 ## 实例化策略 InstantiationStrategy
@@ -71,18 +71,18 @@ AbstractAutowireCapableBeanFactory：修改 createBean(String beanName, BeanDefi
 ```java
 @Test
 public void testDefaultListableBeanFactoryGetBeanWithConstructor(){
-        // DefaultListableBeanFactory 的用法
-        DefaultListableBeanFactory beanFactory=new DefaultListableBeanFactory();
-        // 1. 注册Bean的能力：将一个普通对象转换为 BeanDefinition，并注册进容器中
-        BeanDefinition beanDefinition=new BeanDefinition(Cat.class);
-        beanFactory.registerBeanDefinition("cat",beanDefinition);
-        // 2. 获取Bean的能力：从容器中获取指定 Bean，第一次获取会示例化并缓存
-        Cat cat=(Cat)beanFactory.getBean("cat","Cat -> Constructor");
-        cat.printName();
-        // 3. 第二次会直接从缓存中获取
-        Cat cat_cache=(Cat)beanFactory.getBean("cat");
-        cat_cache.printName();
-        }
+   // DefaultListableBeanFactory 的用法
+   DefaultListableBeanFactory beanFactory=new DefaultListableBeanFactory();
+   // 1. 注册Bean的能力：将一个普通对象转换为 BeanDefinition，并注册进容器中
+   BeanDefinition beanDefinition=new BeanDefinition(Cat.class);
+   beanFactory.registerBeanDefinition("cat",beanDefinition);
+   // 2. 获取Bean的能力：从容器中获取指定 Bean，第一次获取会示例化并缓存
+   Cat cat=(Cat)beanFactory.getBean("cat","Cat -> Constructor");
+   cat.printName();
+   // 3. 第二次会直接从缓存中获取
+   Cat cat_cache=(Cat)beanFactory.getBean("cat");
+   cat_cache.printName();
+}
 ```
 
 ## 属性填充
@@ -103,28 +103,96 @@ AbstractAutowireCapableBeanFactory：修改 createBeanInstance(String beanName, 
 ```java
  @Test
 public void testDefaultListableBeanFactoryGetBeanWithApplyPropertyValues(){
-        // DefaultListableBeanFactory 的用法
-        DefaultListableBeanFactory beanFactory=new DefaultListableBeanFactory();
-
-        // 1. 注册Bean的能力：将一个普通对象（和属性）转换为 BeanDefinition，并注册进容器中
-        // 注册一个 cat
-        PropertyValues catPropertyValues=new PropertyValues();
-        catPropertyValues.addPropertyValue(new PropertyValue("name","TomCat"));
-        BeanDefinition catBeanDefinition=new BeanDefinition(Cat.class,catPropertyValues);
-        beanFactory.registerBeanDefinition("cat",catBeanDefinition);
-        // 注册一个 dog，dog 依赖 cat
-        PropertyValues dogPropertyValues=new PropertyValues();
-        dogPropertyValues.addPropertyValue(new PropertyValue("name","JjDog"));
-        dogPropertyValues.addPropertyValue(new PropertyValue("cat",new BeanReference("cat")));
-        BeanDefinition dogBeanDefinition=new BeanDefinition(Dog.class,dogPropertyValues);
-        beanFactory.registerBeanDefinition("dog",dogBeanDefinition);
-
-        // 2. 获取Bean的能力：从容器中获取指定 Bean，第一次获取会示例化并缓存
-        Dog dog=(Dog)beanFactory.getBean("dog");
-        dog.printName();
-        }
+   // DefaultListableBeanFactory 的用法
+   DefaultListableBeanFactory beanFactory=new DefaultListableBeanFactory();
+   
+   // 1. 注册Bean的能力：将一个普通对象（和属性）转换为 BeanDefinition，并注册进容器中
+   // 注册一个 cat
+   PropertyValues catPropertyValues=new PropertyValues();
+   catPropertyValues.addPropertyValue(new PropertyValue("name","TomCat"));
+   BeanDefinition catBeanDefinition=new BeanDefinition(Cat.class,catPropertyValues);
+   beanFactory.registerBeanDefinition("cat",catBeanDefinition);
+   // 注册一个 dog，dog 依赖 cat
+   PropertyValues dogPropertyValues=new PropertyValues();
+   dogPropertyValues.addPropertyValue(new PropertyValue("name","JjDog"));
+   dogPropertyValues.addPropertyValue(new PropertyValue("cat",new BeanReference("cat")));
+   BeanDefinition dogBeanDefinition=new BeanDefinition(Dog.class,dogPropertyValues);
+   beanFactory.registerBeanDefinition("dog",dogBeanDefinition);
+   
+   // 2. 获取Bean的能力：从容器中获取指定 Bean，第一次获取会示例化并缓存
+   Dog dog=(Dog)beanFactory.getBean("dog");
+   dog.printName();
+}
 ```
 
+## 资源加载，xml解析
 
+定义资源接口：Resource：InputStream getInputStream() throws IOException;
 
+三个实现： ClassPathResource：可以从类路径下读取资源 FileSystemResource：可以从指定路径或指定文件读取资源 UrlResource：可以从指定url读取资源；
+
+定义资源包装接口，ResourceLoader：Resource getResource(String location); 根据入参自动匹配相应的资源；
+
+一个默认实现：DefaultResourceLoader：根据location自动匹配相应的资源；
+
+测试：
+
+```java
+public class DefaultResourceLoaderTest {
+
+   private ResourceLoader resourceLoader;
+
+   @Before
+   public void init() {
+      resourceLoader = new DefaultResourceLoader();
+   }
+
+   @Test
+   public void test_classpath() throws IOException {
+      Resource resource = resourceLoader.getResource("classpath:spring.xml");
+      InputStream inputStream = resource.getInputStream();
+      String content = IoUtil.readUtf8(inputStream);
+      System.out.println("===== classpath =====");
+      System.out.println(content);
+      System.out.println("===== classpath =====");
+   }
+
+   @Test
+   public void test_file() throws IOException {
+      Resource resource = resourceLoader.getResource("src/main/resources/spring.xml");
+      InputStream inputStream = resource.getInputStream();
+      String content = IoUtil.readUtf8(inputStream);
+      System.out.println("===== file =====");
+      System.out.println(content);
+      System.out.println("===== file =====");
+   }
+
+}
+```
+
+定义加载Bean定义接口：BeanDefinitionReader：从各个资源加载为 BeanDefinition；
+
+一个抽线类默认实现：AbstractBeanDefinitionReader：主要提供对 getRegistry()、getResourceLoader() 的默认实现，子类只需关心加载Bean定义即可；
+
+一个实现类：XmlBeanDefinitionReader：从 xml 文件读取 bean，转换为 BeanDefinition，并注册到 BeanDefinitionRegistry；
+
+测试：
+
+```java
+public class XmlBeanDefinitionReaderTest {
+
+   @Test
+   public void test_xml() {
+      // 核心容器
+      DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+      // 读取 xml 解析为 Bean
+      XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+      reader.loadBeanDefinitions("classpath:spring.xml");
+      // 获取指定 Bean
+      Dog dog = (Dog) beanFactory.getBean("dog");
+      dog.printName();
+   }
+
+}
+```
 
