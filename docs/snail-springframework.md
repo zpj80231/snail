@@ -1,4 +1,32 @@
-# Spring IOC 源码
+# Spring 源码实现
+
+Spring 的核心容器由两个部分组成：BeanFactory 和 ApplicationContext。BeanFactory 是 Spring 的基础，负责实例化、配置和管理应用程序中的对象。ApplicationContext 是 BeanFactory 的一个更高级别的实现，提供了额外的功能，如国际化、事件传播和Bean预处理。
+
+设计一个Spring容器需要考虑以下几个方面：
+
+1. 容器初始化
+
+Spring 容器初始化过程中需要完成的任务包括：读取 XML 配置文件，解析 XML 配置信息，创建 Bean 对象，进行 Bean 之间的依赖注入等。因此，设计一个高效的初始化过程是非常重要的。可以考虑采用单例模式，使用懒加载机制来避免无用的资源浪费。
+
+2. Bean 的实例化和管理
+
+在设计 Spring 容器时，需要考虑如何管理 Bean 的生命周期，包括 Bean 的实例化、初始化、销毁等。可以使用反射机制来实例化 Bean，使用依赖注入技术来完成 Bean 之间的依赖关系。对于 Bean 的生命周期管理，可以使用 BeanPostProcessor 和 BeanFactoryPostProcessor 等机制。
+
+3. 依赖注入
+
+依赖注入是 Spring 的核心功能之一，它使得 Bean 之间的关系更加松散。设计一个高效的依赖注入机制是非常重要的。可以考虑使用自动装配机制，根据 Bean 之间的依赖关系自动完成依赖注入。同时，为了避免循环依赖问题，可以使用构造函数注入或者延迟依赖注入等机制。
+
+4. AOP
+
+面向切面编程（AOP）是Spring的另一个核心功能。在设计 Spring 容器时，需要考虑如何支持 AOP。可以使用代理模式或者字节码增强技术来实现 AOP 功能。同时，为了方便用户使用，可以提供注解或者 XML 配置文件等方式来配置 AOP。
+
+5. Web 支持
+
+Spring 也提供了 Web 支持，包括 MVC 架构和 RESTful 服务等。在设计 Spring 容器时，需要考虑如何支持 Web 功能。可以使用 Servlet 容器来支持 Web 功能，并提供注解或者 XML 配置文件等方式来配置 Web 功能。
+
+总的来说，设计一个高效、易用、灵活的 Spring 容器需要考虑多个方面，包括容器初始化、Bean 的实例化和管理、依赖注入、AOP 和 Web 支持等。需要根据具体需求来确定设计方案，并不断优化和改进。
+
+
 
 ## 核心容器 DefaultListableBeanFactory
 
@@ -40,31 +68,37 @@ public void testDefaultListableBeanFactory(){
    // 2. 获取Bean的能力：从容器中获取指定 Bean，第一次获取会示例化并缓存
    Cat cat=(Cat)beanFactory.getBean("cat");
    cat.name();
-   // 3. 第二次会直接从缓存中获取
+   // 3. 第二次会直接从单例缓存中获取
    Cat cat_cache=(Cat)beanFactory.getBean("cat");
    cat_cache.name();
 }
 ```
 
-## 实例化策略 InstantiationStrategy
+## 实例化
 
-要想容器支持对 Bean的有参构造器 实例化的方式，需要定义一个实例化策略接口 InstantiationStrategy。
+上述方式只支持默认的无参构造实例化 Bean。
 
-实例化方法：Object instantiatie(BeanDefinition beanDefinition, String beanName, Constructor constructor, Object[] args);
+定义一些职责和能力：
+
+1. InstantiationStrategy：要想容器支持对 Bean的有参构造器 实例化的方式，需要定义一个实例化策略接口 InstantiationStrategy，当然，定义这个 InstantiationStrategy 策略接口也是为了支持不同实例化方式方便扩展。
+
+添加一个实例化方法：Object instantiatie(BeanDefinition beanDefinition, String beanName, Constructor constructor, Object[] args);
 
 一个 Bean 的实例化，需要的基本参数有：
 
-- BeanDefinition：主要保存了一个具体的类，主要就是实例化这个类
+- BeanDefinition：主要保存了一个具体类的定义，主要就是实例化这个类
 - Constructor：通过哪个构造方法实例化
 - args：构造方法的参数
 
-当然，定义这个 InstantiationStrategy 策略接口也是为了支持不同实例化方式方便扩展。
+具体的实现：
 
 - SimpleInstantiationStrategy：JDK 实例化策略
 
 - CglibSubclassingInstantiationStrategy：cglib 实例化策略
 
-AbstractAutowireCapableBeanFactory：修改 createBean(String beanName, BeanDefinition beanDefinition) 实现，加入实例化策略。
+将实现加入原有的逻辑中：
+
+1. AbstractAutowireCapableBeanFactory：修改 createBean(String beanName, BeanDefinition beanDefinition) 实现，加入支持有参构造的实例化策略  createBeanInstance(beanDefinition, beanName, args);。
 
 测试：
 
@@ -76,10 +110,10 @@ public void testDefaultListableBeanFactoryGetBeanWithConstructor(){
    // 1. 注册Bean的能力：将一个普通对象转换为 BeanDefinition，并注册进容器中
    BeanDefinition beanDefinition=new BeanDefinition(Cat.class);
    beanFactory.registerBeanDefinition("cat",beanDefinition);
-   // 2. 获取Bean的能力：从容器中获取指定 Bean，第一次获取会示例化并缓存
+   // 2. 获取Bean的能力：从容器中获取指定 Bean（通过有参构造），第一次获取会示例化并缓存
    Cat cat=(Cat)beanFactory.getBean("cat","Cat -> Constructor");
    cat.printName();
-   // 3. 第二次会直接从缓存中获取
+   // 3. 第二次会直接从单例缓存中获取
    Cat cat_cache=(Cat)beanFactory.getBean("cat");
    cat_cache.printName();
 }
@@ -87,16 +121,23 @@ public void testDefaultListableBeanFactoryGetBeanWithConstructor(){
 
 ## 属性填充
 
-PropertyValue：将一个 Bean 本身的 字段名、字段值映射为一个 PropertyValue；
+完成 Bean 的实例化之后，进行 Bean 的属性填充。
 
-PropertyValues：当一个 Bean 有多个字段时，将 PropertyValue 保存为一个集合；
+定义一些职责和能力：
 
-BeanDefinition：之前只保存了实例化的类型Class（实例化用），现在将PropertyValues也填充进去（属性填充用）；
+- 无
 
-BeanReference：属性填充时可能遇到 Bean 的依赖，A 依赖 B, B 依赖 C, 循环调用实例化，主要解决 Bean依赖 问题的属性填充；
+具体的实现：
 
-AbstractAutowireCapableBeanFactory：修改 createBeanInstance(String beanName, BeanDefinition beanDefinition, Object[] args)
-加入属性填充步骤；
+1. PropertyValue：将一个 Bean 本身的 字段名、字段值映射为一个 PropertyValue；
+2. PropertyValues：当一个 Bean 有多个字段时，将 PropertyValue 保存为一个集合；
+3. BeanReference：属性填充时可能遇到 Bean 的依赖，A 依赖 B, B 依赖 C, 循环调用实例化，主要解决 Bean依赖 问题的属性填充；
+
+将实现加入原有的逻辑中：
+
+1. BeanDefinition：之前只保存了实例化的类型Class（实例化用），现在将 PropertyValues 也填充进去（属性填充用）；
+2. AbstractAutowireCapableBeanFactory：修改 createBeanInstance(String beanName, BeanDefinition beanDefinition, Object[] args)
+   加入属性填充步骤 applyPropertyValues(beanName, bean, beanDefinition)；
 
 测试：
 
@@ -125,15 +166,27 @@ public void testDefaultListableBeanFactoryGetBeanWithApplyPropertyValues(){
 }
 ```
 
-## 资源加载，xml解析
+## 从外部资源加载 Bean
 
-定义资源接口：Resource：InputStream getInputStream() throws IOException;
+在 Bean 的实例化和属性填充完成后，我们已经可以通过在代码里手动 new 对象的方式实现一个简单的 Bean 容器。
 
-三个实现： ClassPathResource：可以从类路径下读取资源 FileSystemResource：可以从指定路径或指定文件读取资源 UrlResource：可以从指定url读取资源；
+为了方便的从外部配置、加载 Bean，抽取一个工具类可以从不同位置获取 定义 Bean 的配置文件信息。
 
-定义资源包装接口，ResourceLoader：Resource getResource(String location); 根据入参自动匹配相应的资源；
+定义一些职责和能力：
 
-一个默认实现：DefaultResourceLoader：根据location自动匹配相应的资源；
+1. Resource：InputStream getInputStream() throws IOException; 定义资源接口；
+2. ResourceLoader：Resource getResource(String location); 定义资源包装接口，根据入参自动匹配相应的资源（Resource）；
+
+具体的实现：
+
+1. ClassPathResource：可以从类路径下读取资源；
+2. FileSystemResource：可以从指定路径或指定文件读取资源；
+3. UrlResource：可以从指定url读取资源；
+4. DefaultResourceLoader：根据location自动匹配相应的资源；
+
+将实现加入原有的逻辑中：
+
+- 无
 
 测试：
 
@@ -170,11 +223,22 @@ public class DefaultResourceLoaderTest {
 }
 ```
 
-定义加载Bean定义接口：BeanDefinitionReader：从各个资源加载为 BeanDefinition；
+## 外部资源和现有容器结合
 
-一个抽线类默认实现：AbstractBeanDefinitionReader：主要提供对 getRegistry()、getResourceLoader() 的默认实现，子类只需关心加载Bean定义即可；
+从外部资源获取到 Bean 的配置信息后，需要解析配置信息与现有的 Bean 容器结合，增强容器的能力（省去了在代码中手动添加 Bean 的过程）。
 
-一个实现类：XmlBeanDefinitionReader：从 xml 文件读取 bean，转换为 BeanDefinition，并注册到 BeanDefinitionRegistry；
+定义一些职责和能力：
+
+1. BeanDefinitionReader：定义加载Bean定义接口，从各个资源加载为 BeanDefinition；
+
+具体的实现：
+
+1. AbstractBeanDefinitionReader：一个抽线类默认实现，主要提供对 getRegistry()、getResourceLoader() 的默认实现，子类只需关心加载Bean定义即可；
+2. XmlBeanDefinitionReader：从 xml 文件读取 bean，转换为 BeanDefinition，并注册到指定的 BeanDefinitionRegistry （DefaultListableBeanFactory 已经具备了这个能力）；
+
+将实现加入原有的逻辑中：
+
+- 无
 
 测试：
 
