@@ -2,10 +2,14 @@
 
 <beans>
     <bean id="cat" name="catBEAN" class="com.snail.springframework.beans.factory.support.Cat">
-        <property name="name" value="Cat-001"></property>
+        <property name="name" value="cat-name-xml-init"></property>
     </bean>
     <bean id="dog" class="com.snail.springframework.beans.factory.support.Dog">
-        <property name="name" value="Dog-001"></property>
+        <property name="name" value="dog-name-xml-init"></property>
         <property name="cat" ref="cat"></property>
     </bean>
+
+    <!--  添加扩展点相关类  -->
+    <bean class="com.snail.springframework.beans.factory.support.CatBeanPostProcessor"/>
+    <bean class="com.snail.springframework.beans.factory.support.DogBeanFactoryPostProcessor"/>
 </beans>

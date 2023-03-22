@@ -1,15 +1,22 @@
 package com.snail.springframework.beans.factory.support;
 
-import com.snail.springframework.beans.factory.BeanFactory;
+import com.snail.springframework.beans.factory.ConfigurableBeanFactory;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
+import com.snail.springframework.beans.factory.config.BeanPostProcessor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 具备注册、获取 Bean 的能力
+ * implements ConfigurableBeanFactory（这里实现了 添加 BeanPostProcessor 后置处理器）
  *
  * @author zhangpengjun
  * @date 2023/3/15
  */
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory {
+public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+
+    private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
     /**
      * 模板方法
@@ -56,4 +63,13 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
      */
     protected abstract Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args);
 
+    @Override
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        beanPostProcessors.remove(beanPostProcessor);
+        beanPostProcessors.add(beanPostProcessor);
+    }
+
+    public List<BeanPostProcessor> getBeanPostProcessors() {
+        return beanPostProcessors;
+    }
 }
