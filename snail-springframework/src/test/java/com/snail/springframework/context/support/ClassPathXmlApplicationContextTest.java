@@ -1,5 +1,6 @@
 package com.snail.springframework.context.support;
 
+import cn.hutool.json.JSONUtil;
 import com.snail.springframework.beans.factory.support.CatBeanPostProcessor;
 import com.snail.springframework.beans.factory.support.DefaultListableBeanFactory;
 import com.snail.springframework.beans.factory.support.Dog;
@@ -29,6 +30,21 @@ public class ClassPathXmlApplicationContextTest {
         beanFactory.addBeanPostProcessor(catBeanPostProcessor);
         // 5. 获取bean
         Dog dog = (Dog) beanFactory.getBean("dog");
+        System.out.println();
+        dog.printName();
+    }
+
+    @Test
+    public void test_xml_context() {
+        // 1. 利用 xml上下文 加载Bean
+        // 上下文的高级实现极大的简化了或融合了上述的 1-4 步操作
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        // 2. 获取bean
+        Dog dog = (Dog) applicationContext.getBean("dog");
+
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+        System.out.println();
+        System.out.println(JSONUtil.toJsonStr(beanDefinitionNames));
         System.out.println();
         dog.printName();
     }

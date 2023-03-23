@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 实现了添加和获取单例 Bean 的能力
+ *
  * @author zhangpengjun
  * @date 2023/3/15
  */
