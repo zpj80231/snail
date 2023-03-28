@@ -2,15 +2,15 @@
 
 <beans>
     <bean id="cat" name="catBEAN" init-method="init" destroy-method="destroy"
-          class="com.snail.springframework.beans.factory.support.Cat">
+          class="com.snail.springframework.beans.factory.bean.Cat">
         <property name="name" value="cat-name-xml-init"></property>
     </bean>
-    <bean id="dog" class="com.snail.springframework.beans.factory.support.Dog">
+    <bean id="dog" class="com.snail.springframework.beans.factory.bean.Dog">
         <property name="name" value="dog-name-xml-init"></property>
         <property name="cat" ref="cat"></property>
     </bean>
 
     <!--  添加扩展点相关类  -->
-    <bean class="com.snail.springframework.beans.factory.support.CatBeanPostProcessor"/>
-    <bean class="com.snail.springframework.beans.factory.support.DogBeanFactoryPostProcessor"/>
+    <bean class="com.snail.springframework.beans.factory.bean.CatBeanPostProcessor"/>
+    <bean class="com.snail.springframework.beans.factory.bean.DogBeanFactoryPostProcessor"/>
 </beans>

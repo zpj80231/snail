@@ -1,11 +1,11 @@
 package com.snail.springframework.context.support;
 
 import cn.hutool.json.JSONUtil;
-import com.snail.springframework.beans.factory.support.CatBeanPostProcessor;
+import com.snail.springframework.beans.factory.bean.CatBeanPostProcessor;
+import com.snail.springframework.beans.factory.bean.Dog;
+import com.snail.springframework.beans.factory.bean.DogBeanFactoryPostProcessor;
+import com.snail.springframework.beans.factory.bean.Mouse;
 import com.snail.springframework.beans.factory.support.DefaultListableBeanFactory;
-import com.snail.springframework.beans.factory.support.Dog;
-import com.snail.springframework.beans.factory.support.DogBeanFactoryPostProcessor;
-import com.snail.springframework.beans.factory.support.Mouse;
 import com.snail.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.junit.Test;
 

@@ -2,6 +2,8 @@ package com.snail.springframework.beans.factory.support;
 
 import com.snail.springframework.beans.PropertyValue;
 import com.snail.springframework.beans.PropertyValues;
+import com.snail.springframework.beans.factory.bean.Cat;
+import com.snail.springframework.beans.factory.bean.Dog;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
 import com.snail.springframework.beans.factory.config.BeanReference;
 import org.junit.Test;

@@ -1,7 +1,7 @@
 package com.snail.springframework.beans.factory.xml;
 
+import com.snail.springframework.beans.factory.bean.Dog;
 import com.snail.springframework.beans.factory.support.DefaultListableBeanFactory;
-import com.snail.springframework.beans.factory.support.Dog;
 import org.junit.Test;
 
 /**

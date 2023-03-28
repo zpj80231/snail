@@ -1,4 +1,4 @@
-package com.snail.springframework.beans.factory.support;
+package com.snail.springframework.beans.factory.bean;
 
 import com.snail.springframework.beans.factory.BeanClassLoaderAware;
 import com.snail.springframework.beans.factory.BeanFactory;

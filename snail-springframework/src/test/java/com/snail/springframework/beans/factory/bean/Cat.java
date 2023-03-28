@@ -1,4 +1,4 @@
-package com.snail.springframework.beans.factory.support;
+package com.snail.springframework.beans.factory.bean;
 
 public class Cat {
 
