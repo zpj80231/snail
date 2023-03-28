@@ -1,5 +1,9 @@
 package com.snail.springframework.beans.factory.support;
 
+import com.snail.springframework.beans.factory.DisposableBean;
+import com.snail.springframework.beans.factory.InitializingBean;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +11,7 @@ import java.util.Map;
  * @author zhangpengjun
  * @date 2023/3/16
  */
-public class Dog {
+public class Dog implements InitializingBean, DisposableBean {
 
     private String name;
 
@@ -18,6 +22,16 @@ public class Dog {
     static {
         initMap.put("inner-dog1", "TomDog");
         initMap.put("inner-dog2", "JerryDog");
+    }
+
+    @Override
+    public void afterPropertiedSet() {
+        System.out.println("-- Dog afterPropertiedSet method by interface --");
+    }
+
+    @Override
+    public void destroy() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        System.out.println("-- Dog destroy method by interface --");
     }
 
     public void printName() {

@@ -49,4 +49,23 @@ public class ClassPathXmlApplicationContextTest {
         dog.printName();
     }
 
+    @Test
+    public void test_xml_context_close() {
+        // 1. 利用 xml上下文 加载Bean
+        // 上下文的高级实现极大的简化了或融合了上述的 1-4 步操作
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        // * 可以在任何时段，提前注册 JVM 关闭钩子，用来确保 Spring 容器在 JVM 关闭之前正确地关闭并释放所有资源。
+        applicationContext.registerShutdownHook();
+        // 2. 获取bean
+        Dog dog = (Dog) applicationContext.getBean("dog");
+
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+        System.out.println();
+        System.out.println(JSONUtil.toJsonStr(beanDefinitionNames));
+        System.out.println();
+        dog.printName();
+        // * close 和 registerShutdownHook 比，比较暴力，直接手动调用关闭
+        // applicationContext.close();
+    }
+
 }

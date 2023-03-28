@@ -12,6 +12,14 @@ public class Cat {
         this.name = name;
     }
 
+    public void init() {
+        System.out.println("-- Cat init method by xml --");
+    }
+
+    public void destroy() {
+        System.out.println("-- Cat destroy method by xml --");
+    }
+
     public void printName() {
         if (name != null) {
             System.out.println(name);

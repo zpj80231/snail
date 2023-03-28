@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <beans>
-    <bean id="cat" name="catBEAN" class="com.snail.springframework.beans.factory.support.Cat">
+    <bean id="cat" name="catBEAN" init-method="init" destroy-method="destroy"
+          class="com.snail.springframework.beans.factory.support.Cat">
         <property name="name" value="cat-name-xml-init"></property>
     </bean>
     <bean id="dog" class="com.snail.springframework.beans.factory.support.Dog">
