@@ -1,5 +1,6 @@
 package com.snail.springframework.beans.factory.support;
 
+import cn.hutool.core.util.ClassUtil;
 import com.snail.springframework.beans.factory.ConfigurableBeanFactory;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
 import com.snail.springframework.beans.factory.config.BeanPostProcessor;
@@ -16,6 +17,14 @@ import java.util.List;
  */
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 
+    /**
+     * Bean 的类加载器
+     */
+    private final ClassLoader beanClassLoader = ClassUtil.getClassLoader();
+
+    /**
+     * 保存所有注册的 BeanPostProcessor，在 Bean 实例化及属性填充后，初始化时，干预 Bean 的创建过程
+     */
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
     /**
@@ -71,5 +80,9 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     public List<BeanPostProcessor> getBeanPostProcessors() {
         return beanPostProcessors;
+    }
+
+    public ClassLoader getBeanClassLoader() {
+        return beanClassLoader;
     }
 }

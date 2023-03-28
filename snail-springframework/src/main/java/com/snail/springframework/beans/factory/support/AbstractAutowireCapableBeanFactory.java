@@ -6,6 +6,10 @@ import com.snail.springframework.beans.BeansException;
 import com.snail.springframework.beans.PropertyValue;
 import com.snail.springframework.beans.PropertyValues;
 import com.snail.springframework.beans.factory.AutowireCapableBeanFactory;
+import com.snail.springframework.beans.factory.Aware;
+import com.snail.springframework.beans.factory.BeanClassLoaderAware;
+import com.snail.springframework.beans.factory.BeanFactoryAware;
+import com.snail.springframework.beans.factory.BeanNameAware;
 import com.snail.springframework.beans.factory.DisposableBean;
 import com.snail.springframework.beans.factory.InitializingBean;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
@@ -71,7 +75,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     private Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
-        // 前置处理
+        // 感知类型扩展 处理
+        if (bean instanceof Aware) {
+            if (bean instanceof BeanNameAware) {
+                ((BeanNameAware) bean).setBeanName(beanName);
+            }
+            if (bean instanceof BeanClassLoaderAware) {
+                ((BeanClassLoaderAware) bean).setBeanClassLoader(getBeanClassLoader());
+            }
+            if (bean instanceof BeanFactoryAware) {
+                ((BeanFactoryAware) bean).setBeanFactory(this);
+            }
+        }
+        // BeanPostProcessor 前置处理，ApplicationContextAwareProcessor 也会在这里处理
         Object wrappedBean = applyBeanPostProcessorsBeforeInitialization(bean, beanName);
         // 调用初始化方法
         try {
@@ -79,7 +95,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             throw new BeansException("Failed to bean init", e);
         }
-        // 后置处理
+        // BeanPostProcessor 后置处理
         wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
         return wrappedBean;
     }

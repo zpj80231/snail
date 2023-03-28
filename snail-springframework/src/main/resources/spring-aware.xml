@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<beans>
+    <bean id="mouse" class="com.snail.springframework.beans.factory.support.Mouse">
+        <property name="name" value="name-xml-init-jerry"></property>
+    </bean>
+</beans>

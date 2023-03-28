@@ -21,6 +21,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
         // 2. 获得 Bean 工厂
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+        // 2.1 添加 ApplicationContextAware 的后置处理器
+        // 使 Bean 创建时（BeanPostProcessor前置处理器）的时候可以感知到容器上下文
+        beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 
         // 3. BeanDefinition 扩展点：
         // Spring 容器中 BeanDefinition 的扩展点。
