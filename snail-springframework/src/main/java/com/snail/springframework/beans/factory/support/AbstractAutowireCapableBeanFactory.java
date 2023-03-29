@@ -59,12 +59,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             // 添加 Bean 的初始化扩展
             bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
-            throw new BeansException("Failed to bean instance", e);
+            throw new BeansException("Failed to bean:[" + beanName + "] instance", e);
         }
-        // 注册所有实现了 DisposableBean 接口的 Bean 对象，留待容器停止的时候调用。
-        registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
         // 添加单例 Bean 缓存
-        addSingleton(beanName, bean);
+        if (beanDefinition.isSingleton()) {
+            // 注册实现了 DisposableBean 接口的 单例Bean 对象，留待容器停止的时候调用。
+            registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
+            addSingleton(beanName, bean);
+        }
         return bean;
     }
 

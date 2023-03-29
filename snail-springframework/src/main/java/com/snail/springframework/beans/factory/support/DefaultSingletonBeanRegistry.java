@@ -10,12 +10,17 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 实现了添加和获取单例 Bean 的能力
+ * 保存了所有单例 bean 和待销毁的 bean
  *
  * @author zhangpengjun
  * @date 2023/3/15
  */
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
+
+    /**
+     * 空单例对象的内部标记，用作 ConcurrentHashMap（不支持null值）的标记值。
+     */
+    protected static final Object NULL_OBJECT = new Object();
 
     private final Map<String, Object> singletonObjects = new HashMap<>();
 
