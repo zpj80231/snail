@@ -2,6 +2,7 @@ package com.snail.springframework.beans.factory.support;
 
 import cn.hutool.core.util.ClassUtil;
 import com.snail.springframework.beans.factory.ConfigurableBeanFactory;
+import com.snail.springframework.beans.factory.FactoryBean;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
 import com.snail.springframework.beans.factory.config.BeanPostProcessor;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * @author zhangpengjun
  * @date 2023/3/15
  */
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
     /**
      * Bean 的类加载器
@@ -40,13 +41,51 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return doGetBean(beanName, null);
     }
 
-    protected <T> T doGetBean(final String beanName, final Object[] args) {
-        Object bean = getSingleton(beanName);
-        if (bean != null) {
-            return (T) bean;
+    protected <T> T doGetBean(final String name, final Object[] args) {
+        String beanName = transformedBeanName(name);
+        Object sharedInstance = getSingleton(beanName);
+        if (sharedInstance != null) {
+            // 如果是 FactoryBean，那么就转换为 目标bean 返回
+            return (T) getObjectForBeanInstance(sharedInstance, name, beanName);
         }
         BeanDefinition beanDefinition = getBeanDefinition(beanName);
-        return (T) createBean(beanName, beanDefinition, args);
+        Object bean = createBean(beanName, beanDefinition, args);
+        // 如果是 FactoryBean，那么就转换为 目标bean 返回
+        return (T) getObjectForBeanInstance(bean, name, beanName);
+    }
+
+    /**
+     * 获取：去除 & 后的 beanName
+     *
+     * @param name 名字
+     * @return {@link String}
+     */
+    private String transformedBeanName(String name) {
+        if (name.startsWith("&")) {
+            return name.substring(name.indexOf("&") + 1);
+        }
+        return name;
+    }
+
+    /**
+     * 获得bean实例对象
+     * 获取指定实例对应的目标 bean，如果该实例是一个 FactoryBean，则调用其 getObject() 方法来获取目标 bean。
+     *
+     * @param beanInstance bean实例
+     * @param name         bean原始名字
+     * @param beanName     bean名字
+     * @return {@link Object}
+     */
+    private Object getObjectForBeanInstance(Object beanInstance, String name, String beanName) {
+        if (!(beanInstance instanceof FactoryBean) || name.startsWith("&")) {
+            return beanInstance;
+        }
+        Object object = getCachedObjectForFactoryBean(beanName);
+        if (object == null) {
+            FactoryBean<?> factoryBean = (FactoryBean<?>) beanInstance;
+            object = getObjectFromFactoryBean(factoryBean, beanName);
+        }
+        return object;
     }
 
     @Override

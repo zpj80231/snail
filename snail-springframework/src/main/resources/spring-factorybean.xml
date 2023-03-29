@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<beans>
+    <!--  ↓↓ FactoryBean 测试 ↓↓ -->
+    <!--  TigerFactoryBean  -->
+    <bean id="animalFactoryBean" class="com.snail.springframework.beans.factory.bean.AnimalFactoryBean"/>
+</beans>
