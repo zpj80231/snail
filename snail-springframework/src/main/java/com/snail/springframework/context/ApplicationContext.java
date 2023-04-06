@@ -1,6 +1,8 @@
 package com.snail.springframework.context;
 
+import com.snail.springframework.beans.factory.HierarchicalBeanFactory;
 import com.snail.springframework.beans.factory.ListableBeanFactory;
+import com.snail.springframework.core.io.ResourceLoader;
 
 /**
  * 容器顶层接口
@@ -11,6 +13,6 @@ import com.snail.springframework.beans.factory.ListableBeanFactory;
  * @author zhangpengjun
  * @date 2023/3/21
  */
-public interface ApplicationContext extends ListableBeanFactory {
+public interface ApplicationContext extends ListableBeanFactory, HierarchicalBeanFactory, ResourceLoader, ApplicationEventPublisher {
 
 }

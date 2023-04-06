@@ -11,6 +11,14 @@ import com.snail.springframework.beans.factory.DisposableBean;
 public interface SingletonBeanRegistry {
 
     /**
+     * 注册单例 Bean
+     *
+     * @param beanName        bean名字
+     * @param singletonObject 单例对象
+     */
+    void registerSingleton(String beanName, Object singletonObject);
+
+    /**
      * 获取单例 Bean
      *
      * @param beanName bean名字
