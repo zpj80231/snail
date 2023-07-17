@@ -5,16 +5,11 @@ import cn.hutool.core.util.StrUtil;
 import com.snail.springframework.beans.BeansException;
 import com.snail.springframework.beans.PropertyValue;
 import com.snail.springframework.beans.PropertyValues;
-import com.snail.springframework.beans.factory.AutowireCapableBeanFactory;
-import com.snail.springframework.beans.factory.Aware;
-import com.snail.springframework.beans.factory.BeanClassLoaderAware;
-import com.snail.springframework.beans.factory.BeanFactoryAware;
-import com.snail.springframework.beans.factory.BeanNameAware;
-import com.snail.springframework.beans.factory.DisposableBean;
-import com.snail.springframework.beans.factory.InitializingBean;
+import com.snail.springframework.beans.factory.*;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
 import com.snail.springframework.beans.factory.config.BeanPostProcessor;
 import com.snail.springframework.beans.factory.config.BeanReference;
+import com.snail.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -52,6 +47,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
         Object bean = null;
         try {
+            // 判断是否返回 代理 Bean 对象
+            bean = resolveBeforeInstantiation(beanName, beanDefinition);
+            if (bean != null) {
+                return bean;
+            }
+
             // 实例化
             bean = createBeanInstance(beanName, beanDefinition, args);
             // 属性填充
@@ -68,6 +69,28 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             addSingleton(beanName, bean);
         }
         return bean;
+    }
+
+    protected Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {
+        // 前置方法，尝试获取一个代理对象
+        Object bean = applyBeanPostProcessorsBeforeInstantiation(beanDefinition.getBeanClass(), beanName);
+        if (bean != null) {
+            // 如果生成了目标代理对象，后续只有 postProcessAfterInitialization 方法会调用，其它方法不再调用
+            bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+        }
+        return bean;
+    }
+
+    protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                Object result = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessBeforeInstantiation(beanClass, beanName);
+                if (null != result) {
+                    return result;
+                }
+            }
+        }
+        return null;
     }
 
     protected void registerDisposableBeanIfNecessary(String beanName, Object bean, BeanDefinition beanDefinition) {

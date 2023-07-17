@@ -25,6 +25,20 @@ public class AdvisedSupport {
      */
     private MethodMatcher methodMatcher;
 
+    /**
+     * 是否通过 类 代理对象（cglib代理？true：false）
+     */
+    private boolean proxyTargetClass = false;
+
+    public boolean isProxyTargetClass() {
+        return proxyTargetClass;
+    }
+
+    public void setProxyTargetClass(boolean proxyTargetClass) {
+        this.proxyTargetClass = proxyTargetClass;
+    }
+
+
     public TargetSource getTargetSource() {
         return targetSource;
     }
