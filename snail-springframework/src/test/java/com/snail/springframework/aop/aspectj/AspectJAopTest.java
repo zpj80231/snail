@@ -65,9 +65,9 @@ public class AspectJAopTest {
     @Test
     public void aopSpringAdviceTest() {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring-advice.xml");
-        Tiger proxy = (Tiger) context.getBean("tiger");
-        System.out.println("------------------" + DateUtil.now());
-        proxy.setName("wow^^ hu~ Proxy");
+        Animal proxy = (Animal) context.getBean("tiger");
+        // System.out.println("------------------" + DateUtil.now());
+        // proxy.setName("wow^^ hu~ Proxy");
         System.out.println("------------------" + DateUtil.now());
         // debug 查看是是否代理类：Tiger$$EnhancerByCGLIB$$ced6ff89@1860
         System.out.println("proxy tiger name:" + proxy.getAnimalName());

@@ -18,6 +18,6 @@
     <bean class="com.snail.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
         <property name="advice" ref="methodInterceptor"></property>
         <!--   cglib 代理     -->
-        <property name="expression" value="execution(* com.snail.springframework.beans.factory.bean.Tiger.*(..))"></property>
+        <property name="expression" value="execution(* com.snail.springframework.beans.factory.bean.Animal.*(..))"></property>
     </bean>
 </beans>

@@ -6,7 +6,7 @@ package com.snail.springframework.beans.factory.bean;
  */
 public class Tiger implements Animal {
 
-    private String name;
+    private String name = "defaultName";
 
     @Override
     public String getAnimalName() {

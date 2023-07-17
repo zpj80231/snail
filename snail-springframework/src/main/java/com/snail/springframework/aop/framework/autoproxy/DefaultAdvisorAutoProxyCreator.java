@@ -67,7 +67,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
             advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
             advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
             // 是否使用 cglib 代理，这里先写死为 true，后续根据目标类动态改造
-            advisedSupport.setProxyTargetClass(true);
+            advisedSupport.setProxyTargetClass(false);
             return new ProxyFactory(advisedSupport).getProxy();
         }
         return null;
