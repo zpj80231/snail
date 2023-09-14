@@ -1,21 +1,23 @@
 package com.snail.springframework.beans.factory.xml;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.core.util.XmlUtil;
 import com.snail.springframework.beans.BeansException;
 import com.snail.springframework.beans.PropertyValue;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
 import com.snail.springframework.beans.factory.config.BeanDefinitionRegistry;
 import com.snail.springframework.beans.factory.config.BeanReference;
 import com.snail.springframework.beans.factory.support.AbstractBeanDefinitionReader;
+import com.snail.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import com.snail.springframework.core.io.Resource;
 import com.snail.springframework.core.io.ResourceLoader;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * 从 xml 文件读取 bean，转换为 BeanDefinition，并注册到 BeanDefinitionRegistry
@@ -37,7 +39,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
     public void loadBeanDefinitions(Resource resource) throws BeansException {
         try (InputStream inputStream = resource.getInputStream()) {
             doLoadBeanDefinitions(inputStream);
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | DocumentException e) {
             throw new BeansException("Failed parsing XML document from " + resource, e);
         }
     }
@@ -63,27 +65,31 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         }
     }
 
-    private void doLoadBeanDefinitions(InputStream inputStream) throws ClassNotFoundException {
-        Document document = XmlUtil.readXML(inputStream);
-        Element root = document.getDocumentElement();
-        NodeList childNodes = root.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            // 过滤不符合规则的标签
-            if (!(childNodes.item(i) instanceof Element)) {
-                continue;
-            }
-            if (!"bean".equals(childNodes.item(i).getNodeName())) {
-                continue;
-            }
+    private void doLoadBeanDefinitions(InputStream inputStream) throws ClassNotFoundException, DocumentException {
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(inputStream);
+        Element root = document.getRootElement();
 
+        // 解析 component-scan 标签，从指定包下扫描类文件并加载为 BeanDefinition 对象。这里包含了属性表达式值的替换操作。
+        Element componentScan = root.element("component-scan");
+        if (componentScan != null) {
+            String scanPath = componentScan.attributeValue("base-package");
+            if (StrUtil.isBlank(scanPath)) {
+                throw new BeansException("The value of base-package attribute can not be empty or null");
+            }
+            scanPackage(scanPath);
+        }
+
+        // 解析 <bean> 标签，从 xml 配置文件中加载为 BeanDefinition
+        List<Element> beanList = root.elements("bean");
+        for (Element bean : beanList) {
             // 1. 解析 bean 标签
-            Element bean = (Element) childNodes.item(i);
-            String id = bean.getAttribute("id");
-            String name = bean.getAttribute("name");
-            String className = bean.getAttribute("class");
-            String initMethod = bean.getAttribute("init-method");
-            String destroyMethod = bean.getAttribute("destroy-method");
-            String beanScope = bean.getAttribute("scope");
+            String id = bean.attributeValue("id");
+            String name = bean.attributeValue("name");
+            String className = bean.attributeValue("class");
+            String initMethod = bean.attributeValue("init-method");
+            String destroyMethod = bean.attributeValue("destroy-method");
+            String beanScope = bean.attributeValue("scope");
 
             // id 和 name 同时存在的情况下，id 优先级高于 name
             String beanName = StrUtil.isNotBlank(id) ? id : name;
@@ -102,19 +108,12 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             }
 
             // 3. 解析属性，赋值给 BeanDefinition
-            for (int j = 0; j < bean.getChildNodes().getLength(); j++) {
-                // 过滤不符合规则的标签
-                if (!(bean.getChildNodes().item(j) instanceof Element)) {
-                    continue;
-                }
-                if (!"property".equals(bean.getChildNodes().item(j).getNodeName())) {
-                    continue;
-                }
+            List<Element> propertyList = bean.elements("property");
+            for (Element property : propertyList) {
                 // 解析 property 标签
-                Element property = (Element) bean.getChildNodes().item(j);
-                String attrName = property.getAttribute("name");
-                String attrValue = property.getAttribute("value");
-                String attrRef = property.getAttribute("ref");
+                String attrName = property.attributeValue("name");
+                String attrValue = property.attributeValue("value");
+                String attrRef = property.attributeValue("ref");
                 // 解析 对象 引用
                 Object value = StrUtil.isNotBlank(attrRef) ? new BeanReference(attrRef) : attrValue;
                 // 4. bean 属性解析后 -> 赋值给 BeanDefinition
@@ -130,6 +129,17 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             // 5. 注册 BeanDefinition
             getRegistry().registerBeanDefinition(beanName, beanDefinition);
         }
+    }
+
+    /**
+     * 从指定包下，扫描注解类，组装 BeanDefinition 加入到容器中
+     *
+     * @param scanPath 扫描路径
+     */
+    private void scanPackage(String scanPath) {
+        String[] basePackages = StrUtil.splitToArray(scanPath, ",");
+        ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(getRegistry());
+        scanner.doScan(basePackages);
     }
 
 }
