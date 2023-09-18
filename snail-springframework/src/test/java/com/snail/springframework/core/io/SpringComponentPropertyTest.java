@@ -1,5 +1,6 @@
 package com.snail.springframework.core.io;
 
+import com.snail.springframework.beans.factory.bean.CatService;
 import com.snail.springframework.beans.factory.bean.RabbitComponent;
 import com.snail.springframework.context.support.ClassPathXmlApplicationContext;
 import org.junit.Test;
@@ -32,6 +33,22 @@ public class SpringComponentPropertyTest {
         RabbitComponent rabbitComponent = (RabbitComponent) applicationContext.getBean("rabbitComponent");
         System.out.println("测试结果：" + rabbitComponent.getAnimalName());
         // 测试结果：rabbit001
+    }
+
+    /**
+     * 测试从指定包下扫描 @Component 注解
+     * 注入 @Autowired 和 @Value
+     */
+    @Test
+    public void test_scan_component_autowired_value() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-component-scan-autowired-value.xml");
+        CatService catService = applicationContext.getBean("catServiceTest", CatService.class);
+        for (int i = 0; i < 3; i++) {
+            System.out.println("测试结果：" + catService.getAnimalName());
+        }
+        // 测试结果：cat001 --> 喵！
+        // 测试结果：cat001 --> 喵！喵！喵！
+        // 测试结果：cat001 --> 喵！喵！喵！
     }
 
 }

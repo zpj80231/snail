@@ -52,9 +52,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             if (bean != null) {
                 return bean;
             }
-
             // 实例化
             bean = createBeanInstance(beanName, beanDefinition, args);
+            // 在设置 Bean 属性之前，允许 BeanPostProcessor 修改属性值（解析@Value @Autowired等）
+            applyBeanPostProcessorsBeforeApplyingPropertyValues(beanName, bean, beanDefinition);
             // 属性填充
             applyPropertyValues(beanName, bean, beanDefinition);
             // 添加 Bean 的初始化扩展
@@ -152,6 +153,20 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             }
         }
         return getInstantiationStrategy().instantiatie(beanDefinition, beanName, constructorToUse, args);
+    }
+
+    protected void applyBeanPostProcessorsBeforeApplyingPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                PropertyValues pvs = ((InstantiationAwareBeanPostProcessor) beanPostProcessor)
+                        .postProcessPropertyValues(beanDefinition.getPropertyValues(), bean, beanName);
+                if (pvs != null) {
+                    for (PropertyValue propertyValue : pvs.getPropertyValues()) {
+                        beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
+                    }
+                }
+            }
+        }
     }
 
     protected void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {

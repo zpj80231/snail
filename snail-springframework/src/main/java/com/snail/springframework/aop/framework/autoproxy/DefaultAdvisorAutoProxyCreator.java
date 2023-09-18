@@ -7,6 +7,7 @@ import com.snail.springframework.aop.TargetSource;
 import com.snail.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor;
 import com.snail.springframework.aop.framework.ProxyFactory;
 import com.snail.springframework.beans.BeansException;
+import com.snail.springframework.beans.PropertyValues;
 import com.snail.springframework.beans.factory.BeanFactory;
 import com.snail.springframework.beans.factory.BeanFactoryAware;
 import com.snail.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
@@ -40,6 +41,11 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
     @Override
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = (DefaultListableBeanFactory) beanFactory;
+    }
+
+    @Override
+    public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) {
+        return pvs;
     }
 
     @Override

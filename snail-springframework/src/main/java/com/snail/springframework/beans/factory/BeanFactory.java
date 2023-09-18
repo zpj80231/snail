@@ -25,4 +25,21 @@ public interface BeanFactory {
      */
     Object getBean(String beanName, Object... args);
 
+    /**
+     * 获取一个指定类型的 Bean
+     *
+     * @param beanName     bean名字
+     * @param requiredType bean类型
+     * @return {@link T}
+     */
+    <T> T getBean(String beanName, Class<T> requiredType);
+
+    /**
+     * 获取一个指定类型的 Bean，按照指定类型类型
+     *
+     * @param requiredType 字段类型
+     * @return {@link Object}
+     */
+    <T> T getBean(Class<T> requiredType);
+
 }

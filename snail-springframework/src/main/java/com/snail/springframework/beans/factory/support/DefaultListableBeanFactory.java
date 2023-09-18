@@ -5,7 +5,9 @@ import com.snail.springframework.beans.factory.ConfigurableListableBeanFactory;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
 import com.snail.springframework.beans.factory.config.BeanDefinitionRegistry;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,6 +65,21 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     @Override
     public String[] getBeanDefinitionNames() {
         return beanDefinitionMap.keySet().toArray(new String[0]);
+    }
+
+    @Override
+    public <T> T getBean(Class<T> requiredType) {
+        List<String> beanNames = new ArrayList<>();
+        beanDefinitionMap.forEach((beanName, beanDefinition) -> {
+            Class<?> beanClass = beanDefinition.getBeanClass();
+            if (requiredType.isAssignableFrom(beanClass)) {
+                beanNames.add(beanName);
+            }
+        });
+        if (1 == beanNames.size()) {
+            return getBean(beanNames.get(0), requiredType);
+        }
+        throw new BeansException(requiredType + "expected single bean but found " + beanNames.size() + ": " + beanNames);
     }
 
 }

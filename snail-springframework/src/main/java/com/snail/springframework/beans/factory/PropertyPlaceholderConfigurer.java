@@ -6,13 +6,16 @@ import com.snail.springframework.beans.PropertyValues;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
 import com.snail.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import com.snail.springframework.core.io.DefaultResourceLoader;
+import com.snail.springframework.util.StringValueResolver;
 
 import java.io.IOException;
 import java.util.Properties;
 
 /**
  * bean对象 占位符处理 <br/>
- * 从配置文件加载占位符的 key value，在 bean 实例化之前，更改属性信息。
+ * 从给定的配置文件加载占位符的 key value。
+ * 在 bean 实例化之前，替换 xml 配置的属性表达式。
+ * 在 bean 实例化之后，属性赋值之前，替换 @Value 配置的属性表达式。
  *
  * @author zhangpengjun
  * @date 2023/9/13
@@ -53,21 +56,44 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
                     continue;
                 }
                 String strValue = (String) value;
-                StringBuilder builder = new StringBuilder(strValue);
-                int startIdx = strValue.indexOf(DEFAULT_PLACEHOLDER_PREFIX);
-                int stopIdx = strValue.indexOf(DEFAULT_PLACEHOLDER_SUFFIX);
-                if (startIdx != -1 && stopIdx != -1 && startIdx < stopIdx) {
-                    String key = strValue.substring(startIdx + 2, stopIdx);
-                    String val = properties.getProperty(key);
-                    builder.replace(startIdx, stopIdx + 1, val);
-                    propertyValues.addPropertyValue(new PropertyValue(propertyValue.getName(), builder.toString()));
-                }
-                propertyValue.setValue(builder.toString());
+                strValue = resolvePlaceholder(strValue, properties);
+                propertyValues.addPropertyValue(new PropertyValue(propertyValue.getName(), strValue));
             }
         }
+
+        // 向容器中添加字符串解析器，供解析@Value使用
+        StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(properties);
+        beanFactory.addEmbeddedValueResolver(valueResolver);
+    }
+
+    private static String resolvePlaceholder(String strValue, Properties properties) {
+        StringBuilder builder = new StringBuilder(strValue);
+        int startIdx = strValue.indexOf(DEFAULT_PLACEHOLDER_PREFIX);
+        int stopIdx = strValue.indexOf(DEFAULT_PLACEHOLDER_SUFFIX);
+        if (startIdx != -1 && stopIdx != -1 && startIdx < stopIdx) {
+            String key = strValue.substring(startIdx + 2, stopIdx);
+            String val = properties.getProperty(key);
+            builder.replace(startIdx, stopIdx + 1, val);
+        }
+        return builder.toString();
     }
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    private static class PlaceholderResolvingStringValueResolver implements StringValueResolver {
+
+        private final Properties properties;
+
+        public PlaceholderResolvingStringValueResolver(Properties properties) {
+            this.properties = properties;
+        }
+
+        @Override
+        public String resolveStringValue(String value) {
+            return resolvePlaceholder(value, properties);
+        }
+
     }
 }
