@@ -1,5 +1,7 @@
 package com.snail.springframework.aop;
 
+import com.snail.springframework.util.ClassUtils;
+
 /**
  * @author zhangpengjun
  * @date 2023/4/6
@@ -13,7 +15,9 @@ public class TargetSource {
     }
 
     public Class<?>[] getTargetClass() {
-        return this.target.getClass().getInterfaces();
+        Class<?> clazz = this.target.getClass();
+        clazz = ClassUtils.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
+        return clazz.getInterfaces();
     }
 
     public Object getTarget() {

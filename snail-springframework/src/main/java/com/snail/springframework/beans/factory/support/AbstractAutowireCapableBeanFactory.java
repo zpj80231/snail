@@ -47,11 +47,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
         Object bean = null;
         try {
-            // 判断是否返回 代理 Bean 对象
-            bean = resolveBeforeInstantiation(beanName, beanDefinition);
-            if (bean != null) {
-                return bean;
-            }
+            // 判断是否返回 代理 Bean 对象（注释原因，改用 BeanPostProcessor#postProcessAfterInitialization() 实现）
+            // bean = resolveBeforeInstantiation(beanName, beanDefinition);
+            // if (bean != null) {
+            //     return bean;
+            // }
             // 实例化
             bean = createBeanInstance(beanName, beanDefinition, args);
             // 在设置 Bean 属性之前，允许 BeanPostProcessor 修改属性值（解析@Value @Autowired等）

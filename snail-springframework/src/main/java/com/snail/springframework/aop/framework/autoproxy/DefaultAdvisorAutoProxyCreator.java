@@ -50,32 +50,6 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     @Override
     public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
-        if (isInfrastructureClass(beanClass)) {
-            return null;
-        }
-
-        Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
-        for (AspectJExpressionPointcutAdvisor advisor : advisors) {
-            // 不匹配当前类，过滤
-            ClassFilter classFilter = advisor.getPointcut().getClassFilter();
-            if (classFilter != null && !classFilter.matches(beanClass)) {
-                continue;
-            }
-            // 转换为代理对象返回
-            TargetSource targetSource = null;
-            try {
-                targetSource = new TargetSource(beanClass.getDeclaredConstructor().newInstance());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            AdvisedSupport advisedSupport = new AdvisedSupport();
-            advisedSupport.setTargetSource(targetSource);
-            advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
-            advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
-            // 是否使用 cglib 代理，这里先写死为 true，后续根据目标类动态改造
-            advisedSupport.setProxyTargetClass(false);
-            return new ProxyFactory(advisedSupport).getProxy();
-        }
         return null;
     }
 
@@ -90,7 +64,26 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {
-        return bean;
+        if (isInfrastructureClass(bean.getClass())) {
+            return null;
+        }
+
+        Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
+        for (AspectJExpressionPointcutAdvisor advisor : advisors) {
+            // 不匹配当前类，过滤
+            ClassFilter classFilter = advisor.getPointcut().getClassFilter();
+            if (classFilter != null && !classFilter.matches(bean.getClass())) {
+                continue;
+            }
+            // 转换为代理对象返回
+            AdvisedSupport advisedSupport = new AdvisedSupport();
+            advisedSupport.setTargetSource(new TargetSource(bean));
+            advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
+            advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
+            advisedSupport.setProxyTargetClass(false); // 默认使用 cglib 代理
+            return new ProxyFactory(advisedSupport).getProxy();
+        }
+        return null;
     }
 
 }
