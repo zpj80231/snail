@@ -54,22 +54,64 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             // }
             // 实例化
             bean = createBeanInstance(beanName, beanDefinition, args);
+
+            // 处理循环依赖，将实例化后的 bean 提前放入缓存中暴露出来
+            if (beanDefinition.isSingleton()) {
+                Object finalBean = bean;
+                // ”提前暴露“原始对象的引用，用于解决循环依赖
+                addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, beanDefinition, finalBean));
+            }
+            // 实例化后判断，对于不需要填充属性的 bean 直接返回
+            boolean continueWithPropertyPopulation = applyBeanPostProcessorsAfterInstantiation(beanName, bean);
+            if (!continueWithPropertyPopulation) {
+                return bean;
+            }
+
             // 在设置 Bean 属性之前，允许 BeanPostProcessor 修改属性值（解析@Value @Autowired等）
             applyBeanPostProcessorsBeforeApplyingPropertyValues(beanName, bean, beanDefinition);
             // 属性填充
             applyPropertyValues(beanName, bean, beanDefinition);
+
             // 添加 Bean 的初始化扩展
             bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Failed to bean:[" + beanName + "] instance", e);
         }
+
         // 添加单例 Bean 缓存
         if (beanDefinition.isSingleton()) {
             // 注册实现了 DisposableBean 接口的 单例Bean 对象，留待容器停止的时候调用。
             registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
-            addSingleton(beanName, bean);
+            registerSingleton(beanName, bean);
         }
         return bean;
+    }
+
+    private Object getEarlyBeanReference(String beanName, BeanDefinition beanDefinition, Object bean) {
+        Object exposedObject = bean;
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                exposedObject = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).getEarlyBeanReference(exposedObject, beanName);
+                if (exposedObject == null) {
+                    return exposedObject;
+                }
+            }
+        }
+        return exposedObject;
+    }
+
+    private boolean applyBeanPostProcessorsAfterInstantiation(String beanName, Object bean) {
+        boolean continueWithPropertyPopulation = true;
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                InstantiationAwareBeanPostProcessor instantiationAwareBeanPostProcessor = (InstantiationAwareBeanPostProcessor) beanPostProcessor;
+                if (!instantiationAwareBeanPostProcessor.postProcessAfterInstantiation(bean, beanName)) {
+                    continueWithPropertyPopulation = false;
+                    break;
+                }
+            }
+        }
+        return continueWithPropertyPopulation;
     }
 
     protected Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {

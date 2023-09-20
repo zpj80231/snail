@@ -17,6 +17,9 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aspectj.lang.annotation.Pointcut;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * DefaultAdvisorAutoProxyCreator 是 Spring Framework 中的一个类，负责根据配置的 Advisors 自动为 Bean 创建代理。
@@ -38,6 +41,8 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     private DefaultListableBeanFactory beanFactory;
 
+    private final Set<String> earlyProxyReferences = Collections.synchronizedSet(new HashSet<>());
+
     @Override
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = (DefaultListableBeanFactory) beanFactory;
@@ -53,6 +58,11 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
         return null;
     }
 
+    @Override
+    public boolean postProcessAfterInstantiation(Object bean, String beanName) {
+        return true;
+    }
+
     private boolean isInfrastructureClass(Class<?> beanClass) {
         return Advice.class.isAssignableFrom(beanClass) || Pointcut.class.isAssignableFrom(beanClass) || Advisor.class.isAssignableFrom(beanClass);
     }
@@ -64,8 +74,15 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {
+        if (!earlyProxyReferences.contains(beanName)) {
+            return wrapIfNecessary(bean, beanName);
+        }
+        return wrapIfNecessary(bean, beanName);
+    }
+
+    private Object wrapIfNecessary(Object bean, String beanName) {
         if (isInfrastructureClass(bean.getClass())) {
-            return null;
+            return bean;
         }
 
         Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
@@ -80,10 +97,16 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
             advisedSupport.setTargetSource(new TargetSource(bean));
             advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
             advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
-            advisedSupport.setProxyTargetClass(false); // 默认使用 cglib 代理
+            advisedSupport.setProxyTargetClass(false); // 默认使用 jdk 代理
             return new ProxyFactory(advisedSupport).getProxy();
         }
-        return null;
+
+        return bean;
     }
 
+    @Override
+    public Object getEarlyBeanReference(Object bean, String beanName) {
+        earlyProxyReferences.add(beanName);
+        return wrapIfNecessary(bean, beanName);
+    }
 }
