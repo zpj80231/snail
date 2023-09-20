@@ -58,7 +58,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             // 处理循环依赖，将实例化后的 bean 提前放入缓存中暴露出来
             if (beanDefinition.isSingleton()) {
                 Object finalBean = bean;
-                // ”提前暴露“原始对象的引用，用于解决循环依赖
+                // ”提前暴露“原始对象的引用（添加三级缓存），用于解决循环依赖
                 addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, beanDefinition, finalBean));
             }
             // 实例化后判断，对于不需要填充属性的 bean 直接返回
@@ -78,15 +78,25 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             throw new BeansException("Failed to bean:[" + beanName + "] instance", e);
         }
 
+        // 注册实现了 DisposableBean 接口的 单例Bean 对象，留待容器停止的时候调用。
+        registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
+
         // 添加单例 Bean 缓存
         if (beanDefinition.isSingleton()) {
-            // 注册实现了 DisposableBean 接口的 单例Bean 对象，留待容器停止的时候调用。
-            registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
             registerSingleton(beanName, bean);
         }
         return bean;
     }
 
+    /**
+     * ”提前暴露“原始对象的引用（添加到三级缓存），用于解决循环依赖。
+     * 若不需要执行 AOP 的逻辑，直接返回 Bean。是 AOP 的，返回的是切面代理对象。
+     *
+     * @param beanName       bean名称
+     * @param beanDefinition bean定义
+     * @param bean           bean
+     * @return {@link Object}
+     */
     private Object getEarlyBeanReference(String beanName, BeanDefinition beanDefinition, Object bean) {
         Object exposedObject = bean;
         for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
@@ -100,6 +110,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return exposedObject;
     }
 
+    /**
+     * bean 实例化后，是否继续执行属性填充操作
+     *
+     * @param beanName bean名称
+     * @param bean     bean
+     * @return boolean
+     */
     private boolean applyBeanPostProcessorsAfterInstantiation(String beanName, Object bean) {
         boolean continueWithPropertyPopulation = true;
         for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
@@ -124,6 +141,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return bean;
     }
 
+    /**
+     * bean 实例化之前 需要的操作
+     *
+     * @param beanClass bean类
+     * @param beanName  bean名称
+     * @return {@link Object}
+     */
     protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
         for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
             if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
@@ -197,6 +221,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return getInstantiationStrategy().instantiatie(beanDefinition, beanName, constructorToUse, args);
     }
 
+    /**
+     * 在 bean 属性填充之前，允许 BeanPostProcessor 修改属性值
+     *
+     * @param beanName       bean名称
+     * @param bean           豆
+     * @param beanDefinition bean定义
+     */
     protected void applyBeanPostProcessorsBeforeApplyingPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
         for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
             if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
