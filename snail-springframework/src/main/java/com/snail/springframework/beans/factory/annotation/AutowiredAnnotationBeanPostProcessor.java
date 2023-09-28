@@ -1,12 +1,14 @@
 package com.snail.springframework.beans.factory.annotation;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.TypeUtil;
 import com.snail.springframework.beans.BeansException;
 import com.snail.springframework.beans.PropertyValues;
 import com.snail.springframework.beans.factory.BeanFactory;
 import com.snail.springframework.beans.factory.BeanFactoryAware;
 import com.snail.springframework.beans.factory.ConfigurableListableBeanFactory;
 import com.snail.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
+import com.snail.springframework.core.convert.ConversionService;
 import com.snail.springframework.util.ClassUtils;
 
 import java.lang.reflect.Field;
@@ -36,8 +38,19 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         for (Field field : declaredFields) {
             Value valueAnnotation = field.getDeclaredAnnotation(Value.class);
             if (valueAnnotation != null) {
-                String value = valueAnnotation.value();
-                value = beanFactory.resolveEmbeddedValue(value);
+                Object value = valueAnnotation.value();
+                value = beanFactory.resolveEmbeddedValue((String) value);
+
+                // 类型转换
+                Class<?> sourceType = value.getClass();
+                Class<?> targetType = (Class<?>) TypeUtil.getType(field);
+                ConversionService conversionService = beanFactory.getConversionService();
+                if (conversionService != null) {
+                    if (conversionService.canConvert(sourceType, targetType)) {
+                        value = conversionService.convert(value, targetType);
+                    }
+                }
+
                 BeanUtil.setFieldValue(bean, field.getName(), value);
             }
         }

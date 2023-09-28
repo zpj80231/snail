@@ -42,4 +42,12 @@ public interface BeanFactory {
      */
     <T> T getBean(Class<T> requiredType);
 
+    /**
+     * 是否包含 bean
+     *
+     * @param name 名称
+     * @return boolean
+     */
+    boolean containsBean(String name);
+
 }

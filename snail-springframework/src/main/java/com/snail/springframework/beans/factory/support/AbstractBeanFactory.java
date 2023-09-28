@@ -5,6 +5,7 @@ import com.snail.springframework.beans.factory.ConfigurableBeanFactory;
 import com.snail.springframework.beans.factory.FactoryBean;
 import com.snail.springframework.beans.factory.config.BeanDefinition;
 import com.snail.springframework.beans.factory.config.BeanPostProcessor;
+import com.snail.springframework.core.convert.ConversionService;
 import com.snail.springframework.util.StringValueResolver;
 
 import java.util.ArrayList;
@@ -35,6 +36,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     private final List<StringValueResolver> embeddedValueResolvers = new ArrayList<>();
 
     /**
+     * 字段类型转换服务
+     */
+    private ConversionService conversionService;
+
+    /**
      * 模板方法
      * 1. 对单例 Bean 的获取
      * 2. 没有获取到的单例 Bean（可能是多例也可能是多例的），则根据 Bean 定义留给子类去创建
@@ -56,6 +62,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     public <T> T getBean(String beanName, Class<T> requiredType) {
         return (T) getBean(beanName);
     }
+
+    @Override
+    public boolean containsBean(String name) {
+        return containsBeanDefinition(name);
+    }
+
+    protected abstract boolean containsBeanDefinition(String beanName);
 
     protected <T> T doGetBean(final String name, final Object[] args) {
         String beanName = transformedBeanName(name);
@@ -140,6 +153,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
         beanPostProcessors.remove(beanPostProcessor);
         beanPostProcessors.add(beanPostProcessor);
+    }
+
+    @Override
+    public void setConversionService(ConversionService conversionService) {
+        this.conversionService = conversionService;
+    }
+
+    @Override
+    public ConversionService getConversionService() {
+        return conversionService;
     }
 
     public List<BeanPostProcessor> getBeanPostProcessors() {
