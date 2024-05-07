@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<beans>
+    <!--  目标类  -->
+    <bean class="com.springframework.cyclicDependence.A">
+        <property name="b" ref="b"></property>
+    </bean>
+    <bean class="com.springframework.cyclicDependence.B">
+        <property name="a" ref="a"></property>
+        <property name="c" ref="cFace"></property>
+    </bean>
+    <bean id="cFace" class="com.springframework.cyclicDependence.CFace"></bean>
+
+    <!--  aop  -->
+    <bean class="com.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+    <!--  切面逻辑  -->
+    <bean id="bAdvice" class="com.springframework.cyclicDependence.BAdvice"></bean>
+    <bean id="methodInterceptor" class="com.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor">
+        <property name="methodBeforeAdvice" ref="bAdvice"/>
+    </bean>
+
+    <!--  切入点  -->
+    <bean class="com.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
+        <property name="advice" ref="methodInterceptor"></property>
+        <!--   cglib 代理     -->
+        <property name="expression" value="execution(* com.springframework.cyclicDependence.IFace.*(..))"></property>
+    </bean>
+</beans>

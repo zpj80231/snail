@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<beans>
+    <!--  ↓↓ bean scope 测试 ↓↓ -->
+    <!--  多例的 mouse  -->
+    <bean id="mouse" scope="prototype"
+        class="com.springframework.beans.factory.bean.Mouse">
+        <property name="name" value="name-xml-init-jerry"></property>
+    </bean>
+    <!--  单例的 Tiger  -->
+    <bean id="cat" name="catBEAN" init-method="init" destroy-method="destroy"
+          class="com.springframework.beans.factory.bean.Cat">
+        <property name="name" value="cat-name-xml-init"></property>
+    </bean>
+</beans>
