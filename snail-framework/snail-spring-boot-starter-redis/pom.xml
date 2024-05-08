@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.snail</groupId>
+        <artifactId>snail-framework</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>com.snailframework</groupId>
+    <artifactId>snail-spring-boot-starter-redis</artifactId>
+
+    <dependencies>
+        <!-- Spring Boot Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Redission -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Fastjson -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+
+        <!-- Snail Framework -->
+        <dependency>
+            <groupId>com.snail</groupId>
+            <artifactId>snail-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.snail.framework</groupId>
+            <artifactId>snail-spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.snail.framework.async</groupId>
+            <artifactId>snail-spring-boot-starter-async</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
