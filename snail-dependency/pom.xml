@@ -37,12 +37,12 @@
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>com.snail.framework</groupId>
+                <groupId>com.snail</groupId>
                 <artifactId>snail-spring-boot-starter-web</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>com.snail.framework.async</groupId>
+                <groupId>com.snail</groupId>
                 <artifactId>snail-spring-boot-starter-async</artifactId>
                 <version>${revision}</version>
             </dependency>

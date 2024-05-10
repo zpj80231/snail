@@ -52,11 +52,11 @@
             <artifactId>snail-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.snail.framework</groupId>
+            <groupId>com.snail</groupId>
             <artifactId>snail-spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.snail.framework.async</groupId>
+            <groupId>com.snail</groupId>
             <artifactId>snail-spring-boot-starter-async</artifactId>
         </dependency>
     </dependencies>
