@@ -1,33 +1,49 @@
 package com.snail.framework.async.thread;
 
+import lombok.NonNull;
 import org.slf4j.MDC;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
- * 线程池
+ * 线程池 mdc
  *
  * @author zhangpengjun
  * @date 2022/7/18
  */
-public class ThreadPoolExecutorMdc extends ThreadPoolTaskExecutor {
+public class ThreadPoolExecutorMdc extends ThreadPoolExecutor {
 
-    private static final long serialVersionUID = -8273858932464503828L;
+    public ThreadPoolExecutorMdc(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+    }
 
-    @Override
-    public void execute(Runnable task) {
-        super.execute(ThreadPoolMdcFilter.wrap(task, MDC.getCopyOfContextMap()));
+    public ThreadPoolExecutorMdc(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
+    }
+
+    public ThreadPoolExecutorMdc(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, RejectedExecutionHandler handler) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
+    }
+
+    public ThreadPoolExecutorMdc(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
     }
 
     @Override
-    public <T> Future<T> submit(Callable<T> task) {
-        return super.submit(ThreadPoolMdcFilter.wrap(task, MDC.getCopyOfContextMap()));
+    public void execute(@NonNull Runnable runnable) {
+        super.execute(ThreadPoolMdcFilter.wrap(runnable, MDC.getCopyOfContextMap()));
     }
 
+    @NonNull
     @Override
-    public Future<?> submit(Runnable task) {
-        return super.submit(ThreadPoolMdcFilter.wrap(task, MDC.getCopyOfContextMap()));
+    public Future<?> submit(@NonNull Runnable runnable) {
+        return super.submit(ThreadPoolMdcFilter.wrap(runnable, MDC.getCopyOfContextMap()));
     }
+
+    @NonNull
+    @Override
+    public <T> Future<T> submit(@NonNull Callable<T> callable) {
+        return super.submit(ThreadPoolMdcFilter.wrap(callable, MDC.getCopyOfContextMap()));
+    }
+
 }

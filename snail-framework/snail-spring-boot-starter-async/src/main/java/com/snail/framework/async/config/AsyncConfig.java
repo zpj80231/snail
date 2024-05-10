@@ -1,6 +1,6 @@
 package com.snail.framework.async.config;
 
-import com.snail.framework.async.thread.ThreadPoolExecutorMdc;
+import com.snail.framework.async.thread.ThreadPoolTaskExecutorMdc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -43,14 +43,14 @@ public class AsyncConfig implements AsyncConfigurer {
 
     public static ThreadPoolTaskExecutor createThreadPoolTaskExecutor(int corePoolSize, int maxPoolSize, int keepAliveSeconds,
                                                                       int queueCapacity, String threadNamePrefix) {
-        ThreadPoolExecutorMdc threadPoolExecutorMdc = new ThreadPoolExecutorMdc();
-        threadPoolExecutorMdc.setCorePoolSize(corePoolSize);
-        threadPoolExecutorMdc.setMaxPoolSize(maxPoolSize);
-        threadPoolExecutorMdc.setKeepAliveSeconds(keepAliveSeconds);
-        threadPoolExecutorMdc.setQueueCapacity(queueCapacity);
-        threadPoolExecutorMdc.setThreadNamePrefix(threadNamePrefix);
-        threadPoolExecutorMdc.initialize();
-        return threadPoolExecutorMdc;
+        ThreadPoolTaskExecutorMdc threadPoolTaskExecutorMdc = new ThreadPoolTaskExecutorMdc();
+        threadPoolTaskExecutorMdc.setCorePoolSize(corePoolSize);
+        threadPoolTaskExecutorMdc.setMaxPoolSize(maxPoolSize);
+        threadPoolTaskExecutorMdc.setKeepAliveSeconds(keepAliveSeconds);
+        threadPoolTaskExecutorMdc.setQueueCapacity(queueCapacity);
+        threadPoolTaskExecutorMdc.setThreadNamePrefix(threadNamePrefix);
+        threadPoolTaskExecutorMdc.initialize();
+        return threadPoolTaskExecutorMdc;
     }
 
 }
