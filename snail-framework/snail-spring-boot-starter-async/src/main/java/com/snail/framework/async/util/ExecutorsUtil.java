@@ -20,15 +20,31 @@ public class ExecutorsUtil {
     private static final Map<String, ExecutorService> executors = new ConcurrentHashMap<>();
 
     /**
-     * 初始化一个线程池
+     * 初始化
      *
-     * @param poolName 池名称
-     * @param poolSize 池大小
+     * @param poolName        池名称
+     * @param corePoolSize    核心池大小
+     * @param maximumPoolSize 最大池大小
      * @return {@link ExecutorService }
      */
-    private static ExecutorService init(String poolName, int poolSize) {
-        return new ThreadPoolExecutorMdc(poolSize, poolSize,
-                0L, TimeUnit.MILLISECONDS,
+    private static ExecutorService init(String poolName, int corePoolSize, int maximumPoolSize) {
+        int keepAliveTime = corePoolSize == maximumPoolSize ? 0 : 60;
+        return init(poolName, corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 初始化一个线程池
+     *
+     * @param poolName        池名称
+     * @param corePoolSize    核心池大小
+     * @param maximumPoolSize 最大池大小
+     * @param keepAliveTime   保持活力时间
+     * @param unit            单位
+     * @return {@link ExecutorService }
+     */
+    private static ExecutorService init(String poolName, int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit) {
+        return new ThreadPoolExecutorMdc(corePoolSize, maximumPoolSize,
+                keepAliveTime, unit,
                 new LinkedBlockingQueue<>(),
                 new ThreadFactoryBuilder().setNamePrefix("Pool-" + poolName).setDaemon(false).build(),
                 new ThreadPoolExecutor.CallerRunsPolicy());
@@ -37,17 +53,18 @@ public class ExecutorsUtil {
     /**
      * 加载线程池，没有的话自动创建
      *
-     * @param poolName 池名称
-     * @param poolSize 池大小
+     * @param poolName        池名称
+     * @param corePoolSize    核心池大小
+     * @param maximumPoolSize 最大池大小
      * @return {@link ExecutorService }
      */
-    public static ExecutorService loadExecutors(String poolName, int poolSize) {
+    public static ExecutorService loadExecutors(String poolName, int corePoolSize, int maximumPoolSize) {
         ExecutorService executorService = executors.get(poolName);
         if (null == executorService) {
             synchronized (ExecutorsUtil.class) {
                 executorService = executors.get(poolName);
                 if (null == executorService) {
-                    executorService = init(poolName, poolSize);
+                    executorService = init(poolName, corePoolSize, maximumPoolSize);
                     executors.put(poolName, executorService);
                 }
             }

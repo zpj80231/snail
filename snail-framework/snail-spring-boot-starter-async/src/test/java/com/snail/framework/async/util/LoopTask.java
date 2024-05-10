@@ -119,7 +119,7 @@ class ExecuteTask {
 
         // 并发处理拆分的数据，共用一个线程池
         for (final List<Cat> datas : splitDatas) {
-            ExecutorService executorService = ExecutorsUtil.loadExecutors(taskName, POOL_SIZE);
+            ExecutorService executorService = ExecutorsUtil.loadExecutors(taskName, POOL_SIZE, POOL_SIZE);
             executorService.submit(new Runnable() {
                 @Override
                 public void run() {
