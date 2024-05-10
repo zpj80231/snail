@@ -9,7 +9,6 @@
         <version>${revision}</version>
     </parent>
 
-    <groupId>com.snail.framework</groupId>
     <artifactId>snail-spring-boot-starter-web</artifactId>
 
     <dependencies>

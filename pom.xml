@@ -9,10 +9,9 @@
     <packaging>pom</packaging>
     <version>${revision}</version>
     <modules>
-        <module>spring-framework</module>
-        <module>spring-boot</module>
         <module>snail-framework</module>
         <module>snail-dependency</module>
+        <module>snail-source-code</module>
     </modules>
 
     <properties>

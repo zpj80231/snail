@@ -9,7 +9,6 @@
         <version>${revision}</version>
     </parent>
 
-    <groupId>com.snail.framework.async</groupId>
     <artifactId>snail-spring-boot-starter-async</artifactId>
 
     <dependencies>

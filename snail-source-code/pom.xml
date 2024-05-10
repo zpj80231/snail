@@ -9,13 +9,11 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>snail-framework</artifactId>
+    <artifactId>snail-source-code</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>snail-spring-boot-starter-redis</module>
-        <module>snail-common</module>
-        <module>snail-spring-boot-starter-web</module>
-        <module>snail-spring-boot-starter-async</module>
+        <module>source-spring-framework</module>
+        <module>source-spring-boot</module>
     </modules>
 </project>

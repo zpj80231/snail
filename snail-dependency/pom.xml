@@ -47,6 +47,18 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- 引入 源码 依赖 -->
+            <dependency>
+                <groupId>com.snail</groupId>
+                <artifactId>source-spring-framework</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.snail</groupId>
+                <artifactId>source-spring-boot</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <!-- Hutool 工具类 -->
             <dependency>
                 <groupId>cn.hutool</groupId>
