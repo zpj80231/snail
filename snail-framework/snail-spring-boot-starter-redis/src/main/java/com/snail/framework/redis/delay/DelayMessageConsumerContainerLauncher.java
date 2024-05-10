@@ -1,10 +1,11 @@
 package com.snail.framework.redis.delay;
 
-import com.snail.framework.async.config.AsyncConfig;
+import com.snail.framework.async.util.ExecutorsUtil;
 import com.snail.framework.redis.delay.domain.DelayMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author zhangpengjun
@@ -13,8 +14,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Slf4j
 public class DelayMessageConsumerContainerLauncher implements InitializingBean {
 
-    private static final ThreadPoolTaskExecutor THREAD_POOL = AsyncConfig.createThreadPoolTaskExecutor(4,
-            20, 60, 20000, "delayed-queue-");
+    private static final ExecutorService THREAD_POOL = ExecutorsUtil.loadExecutors("delayed-queue-", 4, 20);
 
     private final DelayQueue delayQueue;
     private final DelayMessageDeadLetterConsumer delayMessageDeadLetterConsumer;
