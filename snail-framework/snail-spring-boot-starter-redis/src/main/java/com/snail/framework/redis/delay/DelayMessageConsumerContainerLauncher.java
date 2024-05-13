@@ -8,6 +8,8 @@ import org.springframework.beans.factory.InitializingBean;
 import java.util.concurrent.ExecutorService;
 
 /**
+ * 延迟消息消费器容器启动器。用于监听延迟队列中的消息，并将其传递给消费者进行处理。
+ *
  * @author zhangpengjun
  * @date 2024/5/8
  */
@@ -34,7 +36,9 @@ public class DelayMessageConsumerContainerLauncher implements InitializingBean {
                         DelayMessage<Object> message = delayQueue.take(queueName);
                         THREAD_POOL.execute(() -> {
                             try {
-                                consumerContainer.invoke(message);
+                                if (message != null) {
+                                    consumerContainer.invoke(message);
+                                }
                             } catch (Exception e) {
                                 delayMessageDeadLetterConsumer.receivedMessage(message);
                                 log.error("队列线程处理异常", e);

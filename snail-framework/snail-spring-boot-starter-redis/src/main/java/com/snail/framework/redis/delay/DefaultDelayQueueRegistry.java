@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 延迟队列消费器注册器
+ *
  * @author zhangpengjun
  * @date 2024/5/7
  */

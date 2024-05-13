@@ -9,6 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
+ * 延迟消息消费器容器，封装了具体的消费器、监听器。
+ *
  * @author zhangpengjun
  * @date 2024/5/7
  */

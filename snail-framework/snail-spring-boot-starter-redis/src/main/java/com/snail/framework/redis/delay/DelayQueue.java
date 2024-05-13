@@ -2,8 +2,6 @@ package com.snail.framework.redis.delay;
 
 import com.snail.framework.redis.delay.domain.DelayMessage;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * 延迟队列
  *
@@ -15,12 +13,9 @@ public interface DelayQueue extends DelayQueueRegistry {
     /**
      * 添加元素
      *
-     * @param value     值
-     * @param delay     延迟时间
-     * @param unit      延迟时间单位
-     * @param queueName 队列名称
+     * @param message 消息
      */
-    <T> void offer(DelayMessage<T> value, long delay, TimeUnit unit, String queueName);
+    <T> void offer(DelayMessage<T> message);
 
     /**
      * 获取元素

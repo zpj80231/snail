@@ -46,6 +46,11 @@
                 <artifactId>snail-spring-boot-starter-async</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>com.snail</groupId>
+                <artifactId>snail-spring-boot-starter-redis</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
             <!-- 引入 源码 依赖 -->
             <dependency>
