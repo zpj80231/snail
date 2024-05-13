@@ -7,6 +7,7 @@ import org.redisson.api.RBlockingDeque;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,12 +32,14 @@ public class RedisDelayQueue extends DefaultDelayQueueRegistry implements DelayQ
         if (!delayMessageInterceptor.producerIntercept(message)) {
             return;
         }
-        String queues = message.getQueues();
+        List<String> queues = message.getQueues();
         long delay = message.getDelay();
         TimeUnit unit = message.getTimeUnit();
-        RBlockingDeque<Object> blockingDeque = redissonClient.getBlockingDeque(queues);
-        RDelayedQueue<Object> delayedQueue = redissonClient.getDelayedQueue(blockingDeque);
-        delayedQueue.offer(message, delay, unit);
+        for (String queue : queues) {
+            RBlockingDeque<Object> blockingDeque = redissonClient.getBlockingDeque(queue);
+            RDelayedQueue<Object> delayedQueue = redissonClient.getDelayedQueue(blockingDeque);
+            delayedQueue.offer(message, delay, unit);
+        }
     }
 
     @Override

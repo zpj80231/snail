@@ -48,7 +48,9 @@ public class DefaultDelayQueueRegistry implements DelayQueueRegistry, BeanPostPr
         if (CollUtil.isNotEmpty(listenerMap)) {
             listenerMap.forEach((method, listener) -> {
                 DelayMessageConsumerContainer consumerContainer = new DelayMessageConsumerContainer(bean, method, listener);
-                consumerContainerMap.computeIfAbsent(listener.queues(), k -> consumerContainer);
+                for (String queue : listener.queues()) {
+                    consumerContainerMap.computeIfAbsent(queue, k -> consumerContainer);
+                }
             });
         }
         return bean;

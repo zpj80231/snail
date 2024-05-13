@@ -27,8 +27,11 @@ public class DelayMessageConsumerContainer {
         this.bean = bean;
         this.method = method;
         this.delayQueueListener = delayQueueListener;
-        if (StrUtil.isBlank(delayQueueListener.queues())) {
-            throw new IllegalArgumentException("DelayQueueListener queues cannot be empty");
+        String[] queues = delayQueueListener.queues();
+        for (String queue : queues) {
+            if (StrUtil.isBlank(queue)) {
+                throw new IllegalArgumentException("DelayQueueListener queue cannot be empty");
+            }
         }
     }
 

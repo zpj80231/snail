@@ -5,6 +5,8 @@ import com.snail.framework.redis.delay.DelayQueue;
 import com.snail.framework.redis.delay.domain.DelayMessage;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 /**
  * 默认延迟消息生成器拦截器
  * <br/>
@@ -24,10 +26,12 @@ public class DefaultDelayMessageProducerInterceptor implements DelayMessageProdu
 
     @Override
     public <T> boolean producerIntercept(DelayMessage<T> message) {
-        String queues = message.getQueues();
-        if (!delayQueue.containsConsumerContainer(queues)) {
-            log.error("No consumer container found for queue: {}, message: {}", queues, JSON.toJSONString(message));
-            return false;
+        List<String> queues = message.getQueues();
+        for (String queue : queues) {
+            if (!delayQueue.containsConsumerContainer(queue)) {
+                log.error("No consumer container found for queue: {}, message: {}", queue, JSON.toJSONString(message));
+                return false;
+            }
         }
         return true;
     }

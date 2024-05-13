@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.lang.NonNull;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +23,7 @@ public class DelayMessage<T> implements Serializable {
      * 队列号
      */
     @NonNull
-    private String queues;
+    private List<String> queues;
 
     /**
      * 延迟时间
@@ -35,18 +36,18 @@ public class DelayMessage<T> implements Serializable {
     TimeUnit timeUnit = TimeUnit.SECONDS;
 
     /**
-     * 头
-     */
-    private Map<String, Object> headers;
-
-    /**
      * 消息 ID
      */
     private String messageId;
 
     /**
+     * 头
+     */
+    private Map<String, Object> header;
+
+    /**
      * 消息体
      */
-    private T messageBody;
+    private T body;
 
 }

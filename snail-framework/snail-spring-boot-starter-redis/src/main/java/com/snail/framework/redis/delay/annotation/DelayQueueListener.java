@@ -1,5 +1,7 @@
 package com.snail.framework.redis.delay.annotation;
 
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,6 +17,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DelayQueueListener {
 
-    String queues();
+    @AliasFor("queues")
+    String[] value() default {};
+
+    @AliasFor("value")
+    String[] queues() default {};
 
 }
