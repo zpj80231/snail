@@ -12,6 +12,7 @@
         <module>snail-framework</module>
         <module>snail-dependency</module>
         <module>snail-source-code</module>
+        <module>snail-module</module>
     </modules>
 
     <properties>

@@ -1,0 +1,90 @@
+---
+## server 配置 ##
+server:
+  servlet:
+    context-path: /
+    encoding:
+      charset: utf-8
+  port: 8000
+
+---
+## spring 配置 ##
+spring:
+  application:
+    name: snail-admin
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+    default-property-inclusion: non_null # null值不返回
+  datasource:
+    dynamic:
+      primary: config
+      datasource:
+        config:
+          url: jdbc:mysql://localhost:3306/snail?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+          username: root
+          password: 12345678
+
+---
+## spring 监控配置 ##
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+---
+## 本地配置优先 ##
+spring:
+  cloud:
+    config:
+      override-none: true
+      allow-override: true
+      override-system-properties: false
+
+---
+## 内部配置 ##
+
+
+---
+## redis 配置 ##
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+
+---
+## mybatis-plus 配置 ##
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml, classpath:/dao/**/*.xml
+  typeAliasesPackage: com.dky.mybatis.entity
+  global-config:
+    db-config:
+      id-type: auto
+    banner: false
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+
+---
+## 日志配置 ##
+logstash:
+  host: 127.0.0.1
+  port: 4560
+logging:
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS
+  level:
+    com.snail: debug
