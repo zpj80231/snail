@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 /**
  * 延迟消息消费器容器，封装了具体的消费器、监听器。
@@ -36,7 +37,22 @@ public class DelayMessageConsumerContainer {
     }
 
     public <T> void invoke(DelayMessage<T> message) throws InvocationTargetException, IllegalAccessException {
-        method.invoke(bean, message);
+        Parameter[] parameters = method.getParameters();
+        Object[] args = new Object[parameters.length];
+        boolean matched = false;
+        for (int i = 0; i < parameters.length; i++) {
+            if (parameters[i].getType().isAssignableFrom(DelayMessage.class)) {
+                args[i] = message;
+                matched = true;
+            } else if (message.getBody() != null && parameters[i].getType().isAssignableFrom(message.getBody().getClass())) {
+                args[i] = message.getBody();
+                matched = true;
+            }
+        }
+        if (!matched) {
+            throw new IllegalArgumentException("Method parameter type mismatch: Expected type DelayMessage<T> or " + message.getBody().getClass().getSimpleName());
+        }
+        method.invoke(bean, args);
     }
 
 }

@@ -69,14 +69,30 @@ public class DelayQueueProducerConsumer {
         delayQueue.offer(new DelayMessage<>(Collections.singletonList(QUEUE_NAME_1 + "no_consumer")));
     }
 
+    /**
+     * 消费者方法。
+     * <p>
+     * 此方法用于消费延迟消息。接收的方法参数可以有多个，但必须至少包含一个 {@link DelayMessage} 类型的参数，或者一个具体的参数类型 {@link Cat}。
+     * </p>
+     * <p>
+     * 示例：
+     * <pre>
+     * {@code @DelayQueueListener({QUEUE_NAME_1, QUEUE_NAME_2})
+     * public void consumer(DelayMessage<Object> message, Cat cat, String useless) {
+     *     log.info("Received, cat: {}, message: {}", cat, message);
+     *     counter.decrementAndGet();
+     * }
+     * }
+     * </pre>
+     * </p>
+     *
+     * @param message 消息，必须为 {@link DelayMessage} 类型
+     * @param cat     DelayMessage body(泛型) 的具体的类型，例如 {@link Cat}
+     * @param useless 多余的无用参数
+     */
     @DelayQueueListener({QUEUE_NAME_1, QUEUE_NAME_2})
-    public void consumer(DelayMessage<Object> message) {
-        log.info("Received message: {}", JSON.toJSONString(message));
-        Object body = message.getBody();
-        if (body instanceof Cat) {
-            Cat cat = (Cat) body;
-            log.info("cat --> name: {}, age: {}", cat.getName(), cat.getAge());
-        }
+    public void consumer(DelayMessage<Object> message, Cat cat, String useless) {
+        log.info("Received, cat: {}, message: {}", cat, message);
         counter.decrementAndGet();
     }
 
