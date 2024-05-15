@@ -40,7 +40,7 @@ public class DelayMessageConsumerContainerLauncher implements InitializingBean {
                                     consumerContainer.invoke(message);
                                 }
                             } catch (Exception e) {
-                                delayMessageDeadLetterConsumer.receivedMessage(message);
+                                delayMessageDeadLetterConsumer.receivedMessage(message, e);
                                 log.error("队列线程处理异常", e);
                             }
                         });

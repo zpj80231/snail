@@ -16,7 +16,8 @@ public interface DelayMessageDeadLetterConsumer {
     * 收到死信消息
     *
     * @param message 消息
+    * @param e
     */
-   <T> void receivedMessage(DelayMessage<T> message);
+   <T> void receivedMessage(DelayMessage<T> message, Exception e);
 
 }

@@ -16,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 public class DefaultDelayMessageDeadLetterConsumer implements DelayMessageDeadLetterConsumer {
 
     @Override
-    public <T> void receivedMessage(DelayMessage<T> message) {
-        log.warn("dead letter message for queues:{}, message:{}", message.getQueues(), JSON.toJSONString(message));
+    public <T> void receivedMessage(DelayMessage<T> message, Exception e) {
+        log.error("dead letter message for message:{}", JSON.toJSONString(message), e);
     }
 
 }
