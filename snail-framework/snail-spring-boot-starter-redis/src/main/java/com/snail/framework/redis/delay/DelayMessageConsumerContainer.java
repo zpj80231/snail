@@ -37,6 +37,10 @@ public class DelayMessageConsumerContainer {
     }
 
     public <T> void invoke(DelayMessage<T> message) throws InvocationTargetException, IllegalAccessException {
+        if (message == null) {
+            return;
+        }
+        T messageBody = message.getBody();
         Parameter[] parameters = method.getParameters();
         Object[] args = new Object[parameters.length];
         boolean matched = false;
@@ -44,13 +48,14 @@ public class DelayMessageConsumerContainer {
             if (parameters[i].getType().isAssignableFrom(DelayMessage.class)) {
                 args[i] = message;
                 matched = true;
-            } else if (message.getBody() != null && parameters[i].getType().isAssignableFrom(message.getBody().getClass())) {
-                args[i] = message.getBody();
+            } else if (messageBody != null && parameters[i].getType().isAssignableFrom(messageBody.getClass())) {
+                args[i] = messageBody;
                 matched = true;
             }
         }
         if (!matched) {
-            throw new IllegalArgumentException("Method parameter type mismatch: Expected type DelayMessage<T> or " + message.getBody().getClass().getSimpleName());
+            throw new IllegalArgumentException("Method parameter type mismatch: Expected type DelayMessage<T> or " +
+                    (messageBody == null ? "T" : messageBody.getClass().getSimpleName()));
         }
         method.invoke(bean, args);
     }

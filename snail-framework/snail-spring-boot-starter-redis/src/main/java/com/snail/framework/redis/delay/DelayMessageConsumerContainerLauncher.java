@@ -36,9 +36,7 @@ public class DelayMessageConsumerContainerLauncher implements InitializingBean {
                         DelayMessage<Object> message = delayQueue.take(queueName);
                         THREAD_POOL.execute(() -> {
                             try {
-                                if (message != null) {
-                                    consumerContainer.invoke(message);
-                                }
+                                consumerContainer.invoke(message);
                             } catch (Exception e) {
                                 delayMessageDeadLetterConsumer.receivedMessage(message, e);
                                 log.error("队列线程处理异常", e);
