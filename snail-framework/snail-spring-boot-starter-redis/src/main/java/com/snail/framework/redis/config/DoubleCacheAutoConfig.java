@@ -36,27 +36,27 @@ public class DoubleCacheAutoConfig {
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public DoubleCacheAspect doubleCacheAspect(CacheManager cacheManager) {
-        return new DoubleCacheAspect(cacheManager);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnBean(Cache.class)
     public LocalCache localCache(Cache<String, Object> caffeineCache) {
         return new LocalCache(caffeineCache);
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnBean(RedisTemplate.class)
     public RedisCache redisCache(RedisTemplate<Object, Object> redisTemplate) {
         return new RedisCache(redisTemplate);
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnBean({ LocalCache.class, RedisCache.class })
     public CacheManager cacheManager(LocalCache localCache, RedisCache redisCache) {
         return new CacheManager(localCache, redisCache);
+    }
+
+    @Bean
+    @ConditionalOnBean(CacheManager.class)
+    public DoubleCacheAspect doubleCacheAspect(CacheManager cacheManager) {
+        return new DoubleCacheAspect(cacheManager);
     }
 
 }

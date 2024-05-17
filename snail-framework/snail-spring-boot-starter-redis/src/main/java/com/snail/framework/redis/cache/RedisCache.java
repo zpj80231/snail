@@ -27,7 +27,7 @@ public class RedisCache {
     }
     public void set(String key, Object value, long expire, TimeUnit timeUnit) {
         if (log.isDebugEnabled()) {
-            log.info("RedisCache set key: {}, value: {}, expire: {}, timeUnit: {}",
+            log.debug("RedisCache set key: {}, value: {}, expire: {}, timeUnit: {}",
                     key, JSON.toJSONString(value), expire, timeUnit);
         }
         redisTemplate.opsForValue().set(key, value, expire, timeUnit == null ? TimeUnit.SECONDS : timeUnit);
@@ -35,7 +35,7 @@ public class RedisCache {
 
     public void delete(String key) {
         if (log.isDebugEnabled()) {
-            log.info("RedisCache delete key: {}", key);
+            log.debug("RedisCache delete key: {}", key);
         }
         redisTemplate.delete(key);
     }

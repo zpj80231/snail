@@ -32,9 +32,6 @@ public class CacheManager {
         if (redisCached) {
             Object redisCacheObj = redisCache.get(key);
             if (Objects.nonNull(redisCacheObj)) {
-                if (localCached) {
-                    localCache.set(key, redisCacheObj);
-                }
                 return redisCacheObj;
             }
         }
