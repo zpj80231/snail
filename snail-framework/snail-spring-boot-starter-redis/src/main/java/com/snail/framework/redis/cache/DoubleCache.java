@@ -3,6 +3,7 @@ package com.snail.framework.redis.cache;
 import com.snail.framework.redis.common.RedisConstant;
 
 import java.lang.annotation.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 双缓存，local + redis，支持各自开关
@@ -38,6 +39,13 @@ public @interface DoubleCache {
      * @return long
      */
     long expireOfRedis() default 30 * 60L;
+
+    /**
+     * 单位，默认：秒
+     *
+     * @return {@link TimeUnit }
+     */
+    TimeUnit timeUnit() default TimeUnit.SECONDS;
 
     /**
      * 缓存类型

@@ -42,8 +42,9 @@ public class CacheManager {
         boolean localCached = doubleCache.localCached();
         boolean redisCached = doubleCache.redisCached();
         long expireOfRedis = doubleCache.expireOfRedis();
+        TimeUnit timeUnit = doubleCache.timeUnit();
         if (redisCached) {
-            redisCache.set(key, value, expireOfRedis, TimeUnit.SECONDS);
+            redisCache.set(key, value, expireOfRedis, timeUnit);
         }
         if (localCached) {
             localCache.set(key, value);
