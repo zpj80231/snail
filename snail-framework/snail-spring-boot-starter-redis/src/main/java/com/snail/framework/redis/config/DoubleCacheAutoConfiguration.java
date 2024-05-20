@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @AutoConfigureAfter({ RedisAutoConfiguration.class })
 @ConditionalOnBean(RedisTemplate.class)
-public class DoubleCacheAutoConfig {
+public class DoubleCacheAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(Cache.class)

@@ -2,7 +2,7 @@ package com.snail.framework.redis.config.cache;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.thread.ThreadUtil;
-import com.snail.framework.redis.config.DoubleCacheAutoConfig;
+import com.snail.framework.redis.config.DoubleCacheAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @Slf4j
 @Import({RedisAutoConfiguration.class, LocalCacheConfig.class, Dog.class})
-@SpringBootTest(classes = {DoubleCacheAutoConfig.class})
+@SpringBootTest(classes = {DoubleCacheAutoConfiguration.class})
 @EnableAspectJAutoProxy
-class DoubleCacheAutoConfigTest {
+class DoubleCacheAutoConfigurationTest {
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
