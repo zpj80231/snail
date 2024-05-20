@@ -7,6 +7,7 @@ package com.snail.framework.redis.common;
 public class RedisConstant {
 
     public static final String DOUBLE_CACHE = "DOUBLE_CACHE:";
+    public static final String LOCK = "LOCK:";
 
     private RedisConstant() {
 
