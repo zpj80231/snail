@@ -1,7 +1,5 @@
 package com.snail.framework.redis.lock;
 
-import org.springframework.core.annotation.AliasFor;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,19 +15,10 @@ import java.util.concurrent.TimeUnit;
 public @interface Lock {
 
     /**
-     * key
+     * SpEl key，默认：类名#方法名
      *
      * @return {@link String }
      */
-    @AliasFor("key")
-    String value() default "";
-
-    /**
-     * key，默认：类名#方法名
-     *
-     * @return {@link String }
-     */
-    @AliasFor("value")
     String key() default "";
 
     /**
