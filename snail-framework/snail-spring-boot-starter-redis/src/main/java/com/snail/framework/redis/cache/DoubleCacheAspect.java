@@ -1,7 +1,5 @@
 package com.snail.framework.redis.cache;
 
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSON;
 import com.snail.framework.redis.common.RedisConstant;
 import com.snail.framework.redis.util.ElParser;
@@ -9,10 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -42,9 +38,9 @@ public class DoubleCacheAspect {
             return point.proceed();
         }
 
-        String cacheNamed = getCacheName(cacheName);
-        String splKey = getSplKey(point, key);
-        String cacheKey = cacheNamed + splKey;
+        String keyPrefix = ElParser.getPrefixKey(cacheName, RedisConstant.DOUBLE_CACHE);
+        String splKey = ElParser.parse(point, key);
+        String cacheKey = keyPrefix + splKey;
 
         if (cacheType == DoubleCacheType.PUT) {
             Object object = point.proceed();
@@ -71,29 +67,6 @@ public class DoubleCacheAspect {
             cacheManager.set(cacheKey, proceed, doubleCache);
         }
         return proceed;
-    }
-
-    private static String getSplKey(ProceedingJoinPoint point, String key) {
-        if (StrUtil.isBlank(key)) {
-            StringBuilder sb = new StringBuilder("args");
-            Arrays.stream(point.getArgs()).forEach(arg -> sb.append(JSON.toJSONString(arg)));
-            String className = point.getSignature().getDeclaringTypeName();
-            String methodName = point.getSignature().getName();
-            key = className + "#" + methodName + "#" + SecureUtil.md5(sb.toString());
-        } else {
-            MethodSignature signature = (MethodSignature) point.getSignature();
-            key = ElParser.parse(signature.getMethod(), point.getArgs(), key);
-        }
-        return key;
-    }
-
-    private static String getCacheName(String cacheName) {
-        if (StrUtil.isBlank(cacheName)) {
-            cacheName = RedisConstant.DOUBLE_CACHE;
-        } else if (cacheName.lastIndexOf(":") == -1) {
-            cacheName = cacheName + ":";
-        }
-        return cacheName;
     }
 
 }
