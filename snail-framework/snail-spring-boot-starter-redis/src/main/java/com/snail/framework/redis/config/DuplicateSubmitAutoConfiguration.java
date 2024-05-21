@@ -17,9 +17,9 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @date 2024/5/20
  */
 @Configuration
-@EnableAspectJAutoProxy
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 @ConditionalOnBean(RedisTemplate.class)
+@EnableAspectJAutoProxy
 public class DuplicateSubmitAutoConfiguration {
 
     @Bean

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -21,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Slf4j
 @Import({RedisAutoConfiguration.class, LocalCacheConfig.class, Dog.class})
 @SpringBootTest(classes = {DoubleCacheAutoConfiguration.class})
-@EnableAspectJAutoProxy
 class DoubleCacheAutoConfigurationTest {
 
     @Autowired
