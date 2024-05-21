@@ -2,7 +2,6 @@ package com.snail.framework.redis.util;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
-import com.alibaba.fastjson.JSON;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -73,6 +72,8 @@ public class ElParser {
 
     /**
      * 获取表达式解析后的值
+     * <p/>
+     * 如果表达式为空，则使用 类名#方法名#参数值md5值 作为解析后的 key
      *
      * @param point 切入点
      * @param key   表达式
@@ -98,15 +99,28 @@ public class ElParser {
             String methodName = point.getSignature().getName();
             key = className + "#" + methodName;
             if (appendArgs) {
-                StringBuilder sb = new StringBuilder("args");
-                Arrays.stream(point.getArgs()).forEach(arg -> sb.append(JSON.toJSONString(arg)));
-                key = className + "#" + methodName + "#" + SecureUtil.md5(sb.toString());
+                key = className + "#" + methodName + "#" + SecureUtil.md5(Arrays.toString(point.getArgs()));
             }
         } else {
             MethodSignature signature = (MethodSignature) point.getSignature();
             key = ElParser.parse(signature.getMethod(), point.getArgs(), key);
         }
         return key;
+    }
+
+    /**
+     * 根据前缀、spElKey，自动解析并拼接返回一个完整的字符串
+     *
+     * @param prefixKey        前缀
+     * @param defaultPrefixKey 默认前缀
+     * @param spElKey          SP EL 键
+     * @param point            点
+     * @return {@link String }
+     */
+    public static String getParseKey(String prefixKey, String defaultPrefixKey, String spElKey, ProceedingJoinPoint point) {
+        String keyPrefix = ElParser.getPrefixKey(prefixKey, defaultPrefixKey);
+        String splKey = ElParser.parse(point, spElKey);
+        return keyPrefix + splKey;
     }
 
     /**

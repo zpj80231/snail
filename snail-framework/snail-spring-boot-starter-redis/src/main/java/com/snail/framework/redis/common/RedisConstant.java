@@ -8,6 +8,7 @@ public class RedisConstant {
 
     public static final String DOUBLE_CACHE = "DOUBLE_CACHE:";
     public static final String LOCK = "LOCK:";
+    public static final String DUPLICATE_SUBMIT = "DUPLICATE_SUBMIT:";
 
     private RedisConstant() {
 
