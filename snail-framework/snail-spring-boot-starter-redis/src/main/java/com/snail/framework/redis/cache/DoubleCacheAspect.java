@@ -38,10 +38,7 @@ public class DoubleCacheAspect {
             return point.proceed();
         }
 
-        String keyPrefix = ElParser.getPrefixKey(cacheName, RedisConstant.DOUBLE_CACHE);
-        String splKey = ElParser.parse(point, key);
-        String cacheKey = keyPrefix + splKey;
-
+        String cacheKey = ElParser.getParseKey(cacheName, RedisConstant.DOUBLE_CACHE, key, point);
         if (cacheType == DoubleCacheType.PUT) {
             Object object = point.proceed();
             cacheManager.set(cacheKey, object, doubleCache);
