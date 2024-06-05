@@ -7,9 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 双缓存，local + redis，支持各自开关
- * <p>
- * 自定义本地缓存，注入一个 Bean {@link com.github.benmanes.caffeine.cache.Cache}，
- * 否则使用默认本地缓存（过期时间5分钟）
  *
  * @author zhangpengjun
  * @date 2024/5/16
@@ -34,14 +31,23 @@ public @interface DoubleCache {
     String key() default "";
 
     /**
-     * Redis 过期时间，单位，秒。
+     * Redis 过期时间，单位，秒。默认 5 分钟。
+     *
+     * @return long
+     */
+    long expireOfLocal() default 5 * 60L;
+
+    /**
+     * Redis 过期时间，单位，秒。默认 30 分钟。
      *
      * @return long
      */
     long expireOfRedis() default 30 * 60L;
 
     /**
-     * 单位，默认：秒
+     *  过期时间单位，默认：秒。
+     *  <b/>
+     *  注意：expireOfLocal 和 expireOfRedis 都使用该单位。
      *
      * @return {@link TimeUnit }
      */

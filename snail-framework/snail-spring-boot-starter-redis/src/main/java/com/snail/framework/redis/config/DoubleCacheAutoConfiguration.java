@@ -2,10 +2,7 @@ package com.snail.framework.redis.config;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.snail.framework.redis.cache.CacheManager;
-import com.snail.framework.redis.cache.DoubleCacheAspect;
-import com.snail.framework.redis.cache.LocalCache;
-import com.snail.framework.redis.cache.RedisCache;
+import com.snail.framework.redis.cache.*;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,8 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.redis.core.RedisTemplate;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author zhangpengjun
@@ -33,7 +28,8 @@ public class DoubleCacheAutoConfiguration {
         return Caffeine.newBuilder()
                 .initialCapacity(128) // 初始大小
                 .maximumSize(5000) // 最大数量
-                .expireAfterWrite(5, TimeUnit.MINUTES) // 过期时间
+                // .expireAfterWrite(5, TimeUnit.MINUTES) // 统一过期时间
+                .expireAfter(new CaffeineExpiry()) // 自定义过期时间
                 .build();
     }
 

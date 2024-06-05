@@ -3,6 +3,8 @@ package com.snail.framework.redis.cache;
 import com.github.benmanes.caffeine.cache.Cache;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author zhangpengjun
  * @date 2024/5/16
@@ -22,11 +24,11 @@ public class LocalCache {
         }
         return cache.getIfPresent(key);
     }
-    public void set(String key, Object value) {
+    public void set(String key, Object value, long expire, TimeUnit timeUnit) {
         if (log.isDebugEnabled()) {
-            log.debug("LocalCache set key: {}, value: {}", key, value);
+            log.debug("LocalCache set key: {}, value: {}, expire: {}, timeUnit: {}", key, value, expire, timeUnit);
         }
-        cache.put(key, value);
+        cache.policy().expireVariably().ifPresent(e -> e.put(key, value, expire, timeUnit));
     }
 
     public void delete(String key) {

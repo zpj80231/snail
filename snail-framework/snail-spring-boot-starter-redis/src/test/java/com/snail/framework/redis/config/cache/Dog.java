@@ -43,4 +43,17 @@ public class Dog {
         return DATAS.get(key);
     }
 
+
+    @DoubleCache(expireOfLocal = 2, expireOfRedis = 5)
+    public Map<String, String> queryDatasCustomExpire() {
+        log.info("queryDatasCustomExpire from db ...");
+        return DATAS;
+    }
+
+    @DoubleCache(key = "#key", expireOfLocal = 6, expireOfRedis = 10)
+    public String queryValueWithCustomExpire(String key) {
+        log.info("queryValueWithCustomExpire:[{}] from db", key);
+        return DATAS.get(key);
+    }
+
 }
