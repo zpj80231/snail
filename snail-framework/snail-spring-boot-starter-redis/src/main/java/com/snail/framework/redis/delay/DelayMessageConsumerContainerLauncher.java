@@ -14,19 +14,29 @@ import java.util.concurrent.TimeUnit;
  * 延迟消息消费器容器启动器。用于监听延迟队列中的消息，并将其传递给消费者进行处理。
  * 该类在 Spring 容器初始化后自动启动，并定期检查监听线程状态，确保线程始终运行。
  *
- * @autor zhangpengjun
+ * @author zhangpengjun
  * @date 2024/5/8
  */
 @Slf4j
 public class DelayMessageConsumerContainerLauncher implements InitializingBean {
 
-    // 创建一个线程池用于执行队列中的任务
+    /**
+     * 创建一个线程池用于执行队列中的任务
+     */
     private static final ExecutorService THREAD_POOL = ExecutorsUtil.loadExecutors("delayed-queue-", 4, 20);
-    // 创建一个单线程的调度程序用于定期检查线程状态
+    /**
+     * 创建一个单线程的调度程序用于定期检查线程状态
+     */
     private static final ScheduledExecutorService SCHEDULER_POOL = Executors.newSingleThreadScheduledExecutor();
 
-    private final DelayQueue delayQueue; // 延迟队列实例
-    private final DelayMessageDeadLetterConsumer delayMessageDeadLetterConsumer; // 死信队列消费者实例
+    /**
+     * 延迟队列实例
+     */
+    private final DelayQueue delayQueue;
+    /**
+     * 死信队列消费者实例
+     */
+    private final DelayMessageDeadLetterConsumer delayMessageDeadLetterConsumer;
 
     /**
      * 构造函数，用于初始化延迟队列和死信队列消费者。
@@ -44,9 +54,7 @@ public class DelayMessageConsumerContainerLauncher implements InitializingBean {
      */
     public void start() {
         // 遍历所有消费者容器，启动并监控每个队列的监听线程
-        delayQueue.getConsumerContainers().forEach((queueName, consumerContainer) -> {
-            startThreadWithScheduledMonitoring(queueName, consumerContainer);
-        });
+        delayQueue.getConsumerContainers().forEach(this::startThreadWithScheduledMonitoring);
     }
 
     /**
@@ -54,9 +62,8 @@ public class DelayMessageConsumerContainerLauncher implements InitializingBean {
      *
      * @param queueName 队列名称
      * @param consumerContainer 消费者容器
-     * @param <T> 泛型
      */
-    private <T> void startThreadWithScheduledMonitoring(String queueName, DelayMessageConsumerContainer consumerContainer) {
+    private void startThreadWithScheduledMonitoring(String queueName, DelayMessageConsumerContainer consumerContainer) {
         // 设置定时任务，每隔10秒检查一次线程状态
         SCHEDULER_POOL.scheduleAtFixedRate(() -> {
             if (!isThreadAlive(queueName)) {
