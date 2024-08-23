@@ -63,6 +63,11 @@
                 <artifactId>source-spring-boot</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>com.snail</groupId>
+                <artifactId>source-jdbc-connection-pool</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
             <!-- Hutool 工具类 -->
             <dependency>
