@@ -1,7 +1,9 @@
 package com.snail.source.code.jdbc.connection.manager;
 
 import com.snail.source.code.jdbc.connection.pool.ConnectionPool;
+import com.snail.source.code.jdbc.connection.pool.SimpleConnectionPool;
 import com.snail.source.code.jdbc.connection.properties.DataSourceProperties;
+import lombok.NoArgsConstructor;
 
 import java.sql.Connection;
 
@@ -9,10 +11,11 @@ import java.sql.Connection;
  * @author zhangpengjun
  * @date 2024/8/22
  */
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class ConnectionPoolManager {
 
     private static final DataSourceProperties config = new DataSourceProperties();
-    private static final ConnectionPool connectionPool = new ConnectionPool(config);
+    private static final ConnectionPool CONNECTION_POOL = new SimpleConnectionPool(config);
 
     /**
      * 获取连接(重复利用机制)
@@ -20,7 +23,7 @@ public class ConnectionPoolManager {
      * @return {@link Connection }
      */
     public static Connection getConnection() {
-        return connectionPool.getConn();
+        return CONNECTION_POOL.getConnection();
     }
 
     /**
@@ -29,7 +32,7 @@ public class ConnectionPoolManager {
      * @param connection 连接
      */
     public static void releaseConnection(Connection connection) {
-        connectionPool.releaseConn(connection);
+        CONNECTION_POOL.releaseConnection(connection);
     }
 
 }

@@ -20,8 +20,12 @@ public class PoolEntry {
      */
     private Connection connection;
     /**
-     * 使用开始时间
+     * 是否使用中
      */
-    private long useStartTime;
+    private boolean inUse;
+    /**
+     * 最后使用时间
+     */
+    private long lastUsed;
 
 }
