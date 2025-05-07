@@ -7,7 +7,17 @@ import com.sanil.source.code.rpc.common.enums.MessageTypeEnum;
  * @date 2025/5/7
  */
 public class ResponseMessage extends Message {
-    private static final long serialVersionUID = 8134854090045617859L;
+
+    private static final long serialVersionUID = 4043827980668524857L;
+
+    /**
+     * 返回值
+     */
+    private Object returnValue;
+    /**
+     * 异常值
+     */
+    private Throwable exceptionValue;
 
     @Override
     public MessageTypeEnum getMessageType() {

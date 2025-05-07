@@ -15,8 +15,11 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<Reques
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RequestMessage msg) throws Exception {
-        // todo 构造响应消息
+        // 构造响应消息
         ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setSequenceId(msg.getSequenceId());
+
+        // 获取服务，本地调用
     }
 
 }

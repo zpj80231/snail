@@ -1,5 +1,7 @@
 package com.sanil.source.code.rpc.common.config;
 
+import com.sanil.source.code.rpc.common.exception.RpcException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -19,9 +21,11 @@ public class RpcConfig {
     static {
         try (InputStream inputStream = RpcConfig.class.getResourceAsStream("rpc.properties")) {
             properties = new Properties();
-            properties.load(inputStream);
+            if (inputStream != null) {
+                properties.load(inputStream);
+            }
         } catch (IOException e) {
-            throw new ExceptionInInitializerError(e);
+            throw new RpcException(e);
         }
     }
 

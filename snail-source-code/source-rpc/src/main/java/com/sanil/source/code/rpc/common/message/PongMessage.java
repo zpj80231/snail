@@ -14,4 +14,5 @@ public class PongMessage extends Message {
     public MessageTypeEnum getMessageType() {
         return MessageTypeEnum.PONG;
     }
+
 }
