@@ -16,5 +16,6 @@
         <module>source-spring-framework</module>
         <module>source-spring-boot</module>
         <module>source-jdbc-connection-pool</module>
+        <module>source-rpc</module>
     </modules>
 </project>
