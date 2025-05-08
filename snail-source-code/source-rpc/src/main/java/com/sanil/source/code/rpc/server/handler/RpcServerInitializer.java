@@ -19,6 +19,7 @@ public class RpcServerInitializer extends ChannelInitializer<Channel> {
 
     public static final MessageCodec MESSAGE_CODEC = new MessageCodec();
     public static final LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
+    public static final RpcRequestMessageHandler RPC_REQUEST_MESSAGE_HANDLER = new RpcRequestMessageHandler();
 
     @Override
     protected void initChannel(Channel channel) throws Exception {
@@ -27,7 +28,7 @@ public class RpcServerInitializer extends ChannelInitializer<Channel> {
         pipeline.addLast(new ProtocolFrameDecoder());
         pipeline.addLast(MESSAGE_CODEC);
         pipeline.addLast(LOGGING_HANDLER);
-        pipeline.addLast(new RpcRequestMessageHandler());
+        pipeline.addLast(RPC_REQUEST_MESSAGE_HANDLER);
     }
 
 }

@@ -1,11 +1,13 @@
 package com.sanil.source.code.rpc.common.message;
 
 import com.sanil.source.code.rpc.common.enums.MessageTypeEnum;
+import lombok.Data;
 
 /**
  * @author zhangpengjun
  * @date 2025/5/7
  */
+@Data
 public class ResponseMessage extends Message {
 
     private static final long serialVersionUID = 4043827980668524857L;

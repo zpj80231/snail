@@ -13,11 +13,13 @@ import com.sanil.source.code.rpc.server.registry.LocalServerRegistry;
 import com.sanil.source.code.rpc.server.registry.LocalServiceRegistry;
 import com.sanil.source.code.rpc.server.registry.ServerRegistry;
 import com.sanil.source.code.rpc.server.registry.ServiceRegistry;
+import com.sanil.source.code.rpc.server.util.NettyAttrUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -31,6 +33,7 @@ import java.util.Set;
  * @date 2025/5/7
  */
 @Slf4j
+@Getter
 public class RpcServerManager {
 
     private final String host;
@@ -69,6 +72,7 @@ public class RpcServerManager {
         try {
             Channel channel = bootstrap.bind(port).sync().channel();
             log.info("rpc server 启动成功，监听地址: {}:{}", host, port);
+            NettyAttrUtil.setManager(channel, this);
             channel.closeFuture().sync();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -129,3 +133,4 @@ public class RpcServerManager {
     }
 
 }
+
