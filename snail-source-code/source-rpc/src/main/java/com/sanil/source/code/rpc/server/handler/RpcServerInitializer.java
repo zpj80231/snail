@@ -19,6 +19,8 @@ public class RpcServerInitializer extends ChannelInitializer<Channel> {
 
     public static final MessageCodec MESSAGE_CODEC = new MessageCodec();
     public static final LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
+    public static final HeartBeatServerHandler HEART_BEAT_SERVER_HANDLER = new HeartBeatServerHandler();
+    public static final PingMessageHandler PING_MESSAGE_HANDLER = new PingMessageHandler();
     public static final RpcRequestMessageHandler RPC_REQUEST_MESSAGE_HANDLER = new RpcRequestMessageHandler();
 
     @Override
@@ -28,6 +30,8 @@ public class RpcServerInitializer extends ChannelInitializer<Channel> {
         pipeline.addLast(new ProtocolFrameDecoder());
         pipeline.addLast(MESSAGE_CODEC);
         pipeline.addLast(LOGGING_HANDLER);
+        pipeline.addLast(HEART_BEAT_SERVER_HANDLER);
+        pipeline.addLast(PING_MESSAGE_HANDLER);
         pipeline.addLast(RPC_REQUEST_MESSAGE_HANDLER);
     }
 

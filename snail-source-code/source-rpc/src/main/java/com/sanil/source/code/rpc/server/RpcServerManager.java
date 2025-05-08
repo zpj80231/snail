@@ -67,7 +67,7 @@ public class RpcServerManager {
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.TCP_NODELAY, true)
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new RpcServerInitializer());
         try {
             Channel channel = bootstrap.bind(port).sync().channel();

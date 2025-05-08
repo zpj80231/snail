@@ -3,6 +3,8 @@ package com.sanil.source.code.rpc.common.message;
 import com.sanil.source.code.rpc.common.enums.MessageTypeEnum;
 
 /**
+ * ping 消息
+ *
  * @author zhangpengjun
  * @date 2025/5/7
  */

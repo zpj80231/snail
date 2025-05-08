@@ -9,8 +9,6 @@ import com.sanil.source.code.rpc.server.util.NettyAttrUtil;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.timeout.IdleState;
-import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,15 +45,4 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<Reques
         ctx.writeAndFlush(responseMessage);
     }
 
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        if (evt instanceof IdleStateEvent) {
-            IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
-            if (idleStateEvent.state() == IdleState.READER_IDLE) {
-                log.warn("channel:{} 长时间未收到心跳包，断开连接", ctx.channel());
-                ctx.close();
-            }
-        }
-        super.userEventTriggered(ctx, evt);
-    }
 }
