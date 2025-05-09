@@ -18,11 +18,11 @@ import java.lang.reflect.Proxy;
  * @author zhangpengjun
  * @date 2025/5/8
  */
-public class RpcClientServiceProxy implements InvocationHandler {
+public class RpcClientProxy implements InvocationHandler {
     
     private final RpcClientManager manager;
 
-    public RpcClientServiceProxy(RpcClientManager manager) {
+    public RpcClientProxy(RpcClientManager manager) {
         this.manager = manager;
     }
 

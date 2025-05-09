@@ -1,9 +1,10 @@
 package com.sanil.source.code.rpc.common.codec;
 
 import com.sanil.source.code.rpc.common.config.RpcConfig;
-import com.sanil.source.code.rpc.common.enums.MessageTypeFactory;
-import com.sanil.source.code.rpc.common.enums.SerializerFactory;
+import com.sanil.source.code.rpc.common.factory.MessageTypeFactory;
+import com.sanil.source.code.rpc.common.factory.SerializerFactory;
 import com.sanil.source.code.rpc.common.message.Message;
+import com.sanil.source.code.rpc.common.serialize.Serializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

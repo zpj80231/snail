@@ -1,4 +1,4 @@
-package com.sanil.source.code.rpc.common.codec;
+package com.sanil.source.code.rpc.common.serialize;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.Feature;
