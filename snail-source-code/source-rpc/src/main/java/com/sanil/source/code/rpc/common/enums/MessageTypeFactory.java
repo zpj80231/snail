@@ -1,6 +1,7 @@
 package com.sanil.source.code.rpc.common.enums;
 
 import com.sanil.source.code.rpc.common.message.Message;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -13,18 +14,19 @@ import java.util.Map;
 @Slf4j
 public class MessageTypeFactory {
 
-    private static final MessageTypeFactory INSTANCE = new MessageTypeFactory();
     private static final Map<Integer, Class<? extends Message>> messageClassMap = new HashMap<>();
+    @Getter
+    private static final MessageTypeFactory instance = new MessageTypeFactory();
 
-    private MessageTypeFactory() {
+    static {
         for (MessageTypeEnum messageTypeEnum : MessageTypeEnum.values()) {
             int type = messageTypeEnum.getType();
             messageClassMap.put(type, messageTypeEnum.getClazz());
         }
     }
 
-    public static MessageTypeFactory getInstance() {
-        return INSTANCE;
+    private MessageTypeFactory() {
+
     }
 
     public Class<? extends Message> getMessageType(int messageType) {

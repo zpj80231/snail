@@ -16,14 +16,14 @@ public class ProtocolFrameDecoder extends LengthFieldBasedFrameDecoder {
      * <table style="border:1px solid black; border-collapse:collapse;">
      *   <tr style="border:1px solid black;"><th style="border:1px solid black; padding: 10px;">参数名</th><th style="border:1px solid black; padding: 10px;">值</th><th style="border:1px solid black; padding: 10px;">含义</th></tr>
      *   <tr style="border:1px solid black;"><td style="border:1px solid black; padding: 6px;">maxFrameLength</td><td style="border:1px solid black; padding: 6px;">1024</td><td style="border:1px solid black; padding: 6px;">协议帧的最大长度，防止解码时占用过多内存。</td></tr>
-     *   <tr style="border:1px solid black;"><td style="border:1px solid black; padding: 6px;">lengthFieldOffset</td><td style="border:1px solid black; padding: 6px;">16</td><td style="border:1px solid black; padding: 6px;">长度字段在协议帧中的起始偏移量（单位是字节）。</td></tr>
+     *   <tr style="border:1px solid black;"><td style="border:1px solid black; padding: 6px;">lengthFieldOffset</td><td style="border:1px solid black; padding: 6px;">24</td><td style="border:1px solid black; padding: 6px;">长度字段在协议帧中的起始偏移量（单位是字节）。</td></tr>
      *   <tr style="border:1px solid black;"><td style="border:1px solid black; padding: 6px;">lengthFieldLength</td><td style="border:1px solid black; padding: 6px;">4</td><td style="border:1px solid black; padding: 6px;">长度字段的字节数。这里为 4 字节，表示使用 32 位整数存储帧长度。</td></tr>
      *   <tr style="border:1px solid black;"><td style="border:1px solid black; padding: 6px;">lengthAdjustment</td><td style="border:1px solid black; padding: 6px;">0</td><td style="border:1px solid black; padding: 6px;">在计算实际帧长度时对读取到的长度值进行调整。</td></tr>
      *   <tr style="border:1px solid black;"><td style="border:1px solid black; padding: 6px;">initialBytesToStrip</td><td style="border:1px solid black; padding: 6px;">0</td><td style="border:1px solid black; padding: 6px;">解码后从缓冲区中移除的初始字节数。设置为 0 表示不解码后不移除任何字节。</td></tr>
      * </table>
      */
     public ProtocolFrameDecoder() {
-        this(1024, 16, 4, 0, 0);
+        this(2 * 1024 * 1024, 20, 4, 0, 0);
     }
 
     /**

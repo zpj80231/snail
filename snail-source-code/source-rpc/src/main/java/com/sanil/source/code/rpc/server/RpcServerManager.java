@@ -13,7 +13,6 @@ import com.sanil.source.code.rpc.server.registry.LocalServerRegistry;
 import com.sanil.source.code.rpc.server.registry.LocalServiceRegistry;
 import com.sanil.source.code.rpc.server.registry.ServerRegistry;
 import com.sanil.source.code.rpc.server.registry.ServiceRegistry;
-import com.sanil.source.code.rpc.server.util.NettyAttrUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -68,11 +67,10 @@ public class RpcServerManager {
                 .channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
-                .childHandler(new RpcServerInitializer());
+                .childHandler(new RpcServerInitializer(this));
         try {
             Channel channel = bootstrap.bind(port).sync().channel();
             log.info("rpc server 启动成功，监听地址: {}:{}", host, port);
-            NettyAttrUtil.setManager(channel, this);
             channel.closeFuture().sync();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

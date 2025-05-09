@@ -19,7 +19,7 @@ public class RpcConfig {
     static Properties properties;
 
     static {
-        try (InputStream inputStream = RpcConfig.class.getResourceAsStream("rpc.properties")) {
+        try (InputStream inputStream = RpcConfig.class.getResourceAsStream("/rpc.properties")) {
             properties = new Properties();
             if (inputStream != null) {
                 properties.load(inputStream);
