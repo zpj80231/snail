@@ -2,6 +2,7 @@ package com.sanil.source.code.rpc.client;
 
 import com.sanil.source.code.rpc.client.domain.RpcClientChannel;
 import com.sanil.source.code.rpc.client.handler.RpcClientInitializer;
+import com.sanil.source.code.rpc.common.config.RpcConfig;
 import com.sanil.source.code.rpc.common.exception.RpcException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -30,6 +31,10 @@ public class RpcClientManager {
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 .handler(new RpcClientInitializer());
+    }
+
+    public RpcClientChannel connect() {
+        return connect(RpcConfig.getServerHost(), RpcConfig.getServerPort());
     }
 
     public RpcClientChannel connect(String host, int port) {

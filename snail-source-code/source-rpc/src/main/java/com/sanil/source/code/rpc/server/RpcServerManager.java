@@ -1,6 +1,7 @@
 package com.sanil.source.code.rpc.server;
 
 import cn.hutool.core.annotation.AnnotationUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -97,9 +98,12 @@ public class RpcServerManager {
                 .orElse(mainClassPath.substring(0, mainClassPath.lastIndexOf(".")));
         Set<Class<?>> classSet = ClassUtil.scanPackageByAnnotation(scanPackage, RpcService.class);
         for (Class<?> aClass : classSet) {
+            if (ArrayUtil.isEmpty(aClass.getInterfaces())) {
+                continue;
+            }
             String serviceName = Optional.ofNullable(aClass.getAnnotation(RpcService.class).name())
                     .filter(StrUtil::isNotBlank)
-                    .orElse(aClass.getCanonicalName());
+                    .orElse(aClass.getInterfaces()[0].getName());
             Object service = ReflectUtil.newInstance(aClass);
             doRegister(serviceName, service);
         }
