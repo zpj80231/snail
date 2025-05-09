@@ -3,6 +3,7 @@ package com.sanil.source.code.rpc.client.handler;
 import com.sanil.source.code.rpc.common.codec.MessageCodec;
 import com.sanil.source.code.rpc.common.codec.ProtocolFrameDecoder;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.logging.LogLevel;
@@ -15,6 +16,7 @@ import io.netty.handler.timeout.IdleStateHandler;
  * @author zhangpengjun
  * @date 2025/5/8
  */
+@ChannelHandler.Sharable
 public class RpcClientInitializer extends ChannelInitializer<Channel> {
 
     public static final MessageCodec MESSAGE_CODEC = new MessageCodec();
@@ -27,7 +29,7 @@ public class RpcClientInitializer extends ChannelInitializer<Channel> {
         pipeline.addLast(new IdleStateHandler(30, 0, 0));
         pipeline.addLast(new ProtocolFrameDecoder());
         pipeline.addLast(MESSAGE_CODEC);
-        pipeline.addLast(LOGGING_HANDLER);
+        // pipeline.addLast(LOGGING_HANDLER);
         pipeline.addLast(RPC_RESPONSE_MESSAGE_HANDLER);
     }
 

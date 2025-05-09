@@ -3,6 +3,7 @@ package com.sanil.source.code.rpc.client.handler;
 import com.sanil.source.code.rpc.client.util.PromiseManager;
 import com.sanil.source.code.rpc.common.exception.RpcException;
 import com.sanil.source.code.rpc.common.message.ResponseMessage;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
@@ -11,6 +12,7 @@ import io.netty.util.concurrent.Promise;
  * @author zhangpengjun
  * @date 2025/5/8
  */
+@ChannelHandler.Sharable
 public class RpcResponseMessageHandler extends SimpleChannelInboundHandler<ResponseMessage> {
 
     @Override

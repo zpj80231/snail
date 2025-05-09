@@ -5,7 +5,6 @@ import com.sanil.source.code.rpc.common.enums.MessageTypeFactory;
 import com.sanil.source.code.rpc.common.enums.SerializerFactory;
 import com.sanil.source.code.rpc.common.message.Message;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -54,16 +53,14 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         // 消息体
         buf.writeBytes(bytes);
 
-        log.info("magicNum: {}, version: {}, serializerType: {}, messageType: {}, sequenceId: {}, length: {}",
-                magicNum, version, serializerType, messageType, sequenceId, bytes.length);
-        log.debug("ByteBuf: {}", ByteBufUtil.hexDump(buf));
+        // log.debug("magicNum: {}, version: {}, serializerType: {}, messageType: {}, sequenceId: {}, length: {}",
+        //         magicNum, version, serializerType, messageType, sequenceId, bytes.length);
+        // log.debug("ByteBuf: {}", ByteBufUtil.hexDump(buf));
         out.add(buf);
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) throws Exception {
-        log.debug("ByteBuf: {}", ByteBufUtil.hexDump(buf));
-
         // 4个字节的魔数
         int magicNum = buf.readInt();
         // 1个字节的版本号
@@ -81,8 +78,9 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         // 消息体
         byte[] bytes = new byte[length];
         buf.readBytes(bytes, 0, length);
-        log.info("magicNum: {}, version: {}, serializerType: {}, messageType: {}, sequenceId: {}, length: {}",
-                magicNum, version, serializerType, messageType, sequenceId, length);
+        // log.debug("ByteBuf: {}", ByteBufUtil.hexDump(buf));
+        // log.debug("magicNum: {}, version: {}, serializerType: {}, messageType: {}, sequenceId: {}, length: {}",
+        //         magicNum, version, serializerType, messageType, sequenceId, length);
 
         // 根据序列化方式反序列化获得消息体
         Serializer serializer = SerializerFactory.getSerializer(serializerType);

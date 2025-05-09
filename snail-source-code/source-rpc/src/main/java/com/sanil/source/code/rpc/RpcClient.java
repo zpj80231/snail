@@ -16,11 +16,12 @@ public class RpcClient {
 
     public static void main(String[] args) {
         RpcClientManager rpcClientManager = new RpcClientManager();
-        RpcClientChannel channel = rpcClientManager.connect();
-
-        HelloService helloService = new RpcClientServiceProxy(channel).getProxyService(HelloServiceImpl.class);
-        String result = helloService.hello("hi");
-        log.info("result: {}", result);
+        for (int i = 0; i < 100; i++) {
+            RpcClientChannel channel = rpcClientManager.connect("127.0.0.1", 8023);
+            HelloService helloService = new RpcClientServiceProxy(channel).getProxyService(HelloServiceImpl.class);
+            String result = helloService.hello("hi-" + i);
+            log.info("result: {}", result);
+        }
     }
 
 }

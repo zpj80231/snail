@@ -38,7 +38,7 @@ public class RpcServerInitializer extends ChannelInitializer<Channel> {
         pipeline.addLast(new IdleStateHandler(30, 0, 0));
         pipeline.addLast(new ProtocolFrameDecoder());
         pipeline.addLast(MESSAGE_CODEC);
-        pipeline.addLast(LOGGING_HANDLER);
+        // pipeline.addLast(LOGGING_HANDLER);
         pipeline.addLast(HEART_BEAT_SERVER_HANDLER);
         pipeline.addLast(PING_MESSAGE_HANDLER);
         pipeline.addLast(RPC_REQUEST_MESSAGE_HANDLER);

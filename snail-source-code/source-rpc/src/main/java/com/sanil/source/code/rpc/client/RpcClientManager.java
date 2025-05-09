@@ -32,10 +32,10 @@ public class RpcClientManager {
                 .handler(new RpcClientInitializer());
     }
 
-    public RpcClientChannel connect() {
+    public RpcClientChannel connect(String host, int port) {
         Channel channel;
         try {
-            channel = bootstrap.connect("127.0.0.1", 8023).sync().channel();
+            channel = bootstrap.connect(host, port).sync().channel();
             channel.closeFuture().addListener(future -> log.debug("client closed"));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

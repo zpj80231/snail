@@ -22,7 +22,7 @@ public class RpcClientChannel {
         if (channel == null || !channel.isOpen() || !channel.isActive()) {
             return;
         }
-        channel.writeAndFlush(message).addListener(future -> log.debug("客户端发送消息成功"));
+        channel.writeAndFlush(message);
     }
 
 }
