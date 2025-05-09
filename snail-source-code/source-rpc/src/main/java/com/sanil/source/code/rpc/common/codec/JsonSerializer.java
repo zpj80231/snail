@@ -1,8 +1,7 @@
 package com.sanil.source.code.rpc.common.codec;
 
-import cn.hutool.json.JSONUtil;
-
-import java.nio.charset.StandardCharsets;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.Feature;
 
 /**
  * @author zhangpengjun
@@ -12,12 +11,12 @@ public class JsonSerializer implements Serializer {
 
     @Override
     public <T> byte[] serialize(T object) {
-        return JSONUtil.toJsonStr(object).getBytes(StandardCharsets.UTF_8);
+        return JSON.toJSONBytes(object);
     }
 
     @Override
     public <T> T deserialize(byte[] bytes, Class<T> clazz) {
-        return JSONUtil.toBean(new String(bytes, StandardCharsets.UTF_8), clazz);
+        return JSON.parseObject(bytes, clazz, Feature.SupportClassForName);
     }
 
 }

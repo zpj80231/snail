@@ -28,6 +28,10 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
         <!-- SLF4J API 依赖 -->
         <dependency>
             <groupId>org.slf4j</groupId>
