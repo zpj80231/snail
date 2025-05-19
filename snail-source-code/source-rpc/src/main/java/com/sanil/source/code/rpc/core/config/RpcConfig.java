@@ -1,6 +1,6 @@
-package com.sanil.source.code.rpc.common.config;
+package com.sanil.source.code.rpc.core.config;
 
-import com.sanil.source.code.rpc.common.exception.RpcException;
+import com.sanil.source.code.rpc.core.exception.RpcException;
 
 import java.io.IOException;
 import java.io.InputStream;

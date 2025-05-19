@@ -1,7 +1,7 @@
-package com.sanil.source.code.rpc.common.factory;
+package com.sanil.source.code.rpc.core.factory;
 
-import com.sanil.source.code.rpc.common.enums.MessageTypeEnum;
-import com.sanil.source.code.rpc.common.message.Message;
+import com.sanil.source.code.rpc.core.enums.MessageTypeEnum;
+import com.sanil.source.code.rpc.core.message.Message;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

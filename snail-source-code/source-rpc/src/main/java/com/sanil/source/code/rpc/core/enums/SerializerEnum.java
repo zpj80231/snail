@@ -1,8 +1,8 @@
-package com.sanil.source.code.rpc.common.enums;
+package com.sanil.source.code.rpc.core.enums;
 
-import com.sanil.source.code.rpc.common.serialize.JavaSerializer;
-import com.sanil.source.code.rpc.common.serialize.JsonSerializer;
-import com.sanil.source.code.rpc.common.serialize.Serializer;
+import com.sanil.source.code.rpc.core.serialize.JavaSerializer;
+import com.sanil.source.code.rpc.core.serialize.JsonSerializer;
+import com.sanil.source.code.rpc.core.serialize.Serializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

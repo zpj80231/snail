@@ -1,10 +1,10 @@
 package com.sanil.source.code.rpc.server.handler;
 
-import com.sanil.source.code.rpc.common.exception.RpcException;
-import com.sanil.source.code.rpc.common.message.RequestMessage;
-import com.sanil.source.code.rpc.common.message.ResponseMessage;
+import com.sanil.source.code.rpc.core.exception.RpcException;
+import com.sanil.source.code.rpc.core.message.RequestMessage;
+import com.sanil.source.code.rpc.core.message.ResponseMessage;
+import com.sanil.source.code.rpc.core.registry.ServiceRegistry;
 import com.sanil.source.code.rpc.server.RpcServerManager;
-import com.sanil.source.code.rpc.server.registry.ServiceRegistry;
 import com.sanil.source.code.rpc.server.util.NettyAttrUtil;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

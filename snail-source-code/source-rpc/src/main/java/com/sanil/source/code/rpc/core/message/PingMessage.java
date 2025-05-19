@@ -1,6 +1,6 @@
-package com.sanil.source.code.rpc.common.message;
+package com.sanil.source.code.rpc.core.message;
 
-import com.sanil.source.code.rpc.common.enums.MessageTypeEnum;
+import com.sanil.source.code.rpc.core.enums.MessageTypeEnum;
 
 /**
  * ping 消息

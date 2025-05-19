@@ -2,8 +2,9 @@ package com.sanil.source.code.rpc.client;
 
 import com.sanil.source.code.rpc.client.domain.RpcClientChannel;
 import com.sanil.source.code.rpc.client.handler.RpcClientInitializer;
-import com.sanil.source.code.rpc.common.config.RpcConfig;
-import com.sanil.source.code.rpc.common.exception.RpcException;
+import com.sanil.source.code.rpc.client.util.ChannelManager;
+import com.sanil.source.code.rpc.core.config.RpcConfig;
+import com.sanil.source.code.rpc.core.exception.RpcException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -11,9 +12,6 @@ import io.netty.channel.ChannelOutboundInvoker;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zhangpengjun
@@ -24,7 +22,6 @@ public class RpcClientManager {
 
     private NioEventLoopGroup group;
     private Bootstrap bootstrap;
-    private Map<String, Channel> channels;
 
     public RpcClientManager() {
         initBootStrap();
@@ -33,7 +30,6 @@ public class RpcClientManager {
     private void initBootStrap() {
         group = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
-        channels = new ConcurrentHashMap<>();
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
@@ -49,8 +45,8 @@ public class RpcClientManager {
         Channel channel;
         try {
             channel = bootstrap.connect(host, port).sync().channel();
-            channels.put(channel.id().asLongText(), channel);
-            channel.closeFuture().addListener(future -> log.debug("client closed"));
+            ChannelManager.add(channel.id().asLongText(), channel);
+            channel.closeFuture();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RpcException("rpc client 启动失败", e);
@@ -60,7 +56,7 @@ public class RpcClientManager {
     }
 
     public void shutdown() {
-        channels.values().parallelStream().forEach(ChannelOutboundInvoker::close);
+        ChannelManager.getChannels().values().parallelStream().forEach(ChannelOutboundInvoker::close);
         group.shutdownGracefully();
     }
 

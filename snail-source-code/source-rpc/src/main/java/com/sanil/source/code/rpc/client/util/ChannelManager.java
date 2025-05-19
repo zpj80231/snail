@@ -23,6 +23,10 @@ public class ChannelManager {
         return CHANNELS.get(key);
     }
 
+    public static Map<String, Channel> getChannels() {
+        return CHANNELS;
+    }
+
     public static void remove(String key) {
         CHANNELS.remove(key);
     }

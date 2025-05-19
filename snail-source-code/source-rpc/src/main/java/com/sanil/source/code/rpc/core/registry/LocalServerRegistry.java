@@ -1,4 +1,4 @@
-package com.sanil.source.code.rpc.server.registry;
+package com.sanil.source.code.rpc.core.registry;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -25,6 +25,11 @@ public class LocalServerRegistry implements ServerRegistry {
     @Override
     public InetSocketAddress getServerAddress(String serviceName) {
         return SERVER_REGISTRY.get(serviceName);
+    }
+
+    @Override
+    public Map<String, InetSocketAddress> getServers() {
+        return SERVER_REGISTRY;
     }
 
 }

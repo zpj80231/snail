@@ -1,4 +1,4 @@
-package com.sanil.source.code.rpc.common.serialize;
+package com.sanil.source.code.rpc.core.serialize;
 
 /**
  * 序列化器

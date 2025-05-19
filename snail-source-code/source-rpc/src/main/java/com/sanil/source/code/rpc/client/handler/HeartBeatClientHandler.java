@@ -1,7 +1,7 @@
 package com.sanil.source.code.rpc.client.handler;
 
 import cn.hutool.core.util.IdUtil;
-import com.sanil.source.code.rpc.common.message.PingMessage;
+import com.sanil.source.code.rpc.core.message.PingMessage;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
@@ -29,6 +29,18 @@ public class HeartBeatClientHandler extends ChannelDuplexHandler {
                 ctx.writeAndFlush(pingMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
             }
         }
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        log.debug("channel:{} 已经断开", ctx.channel());
+        super.channelInactive(ctx);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.error("channel:{} 发生异常", ctx.channel(), cause);
+        super.exceptionCaught(ctx, cause);
     }
 
 }

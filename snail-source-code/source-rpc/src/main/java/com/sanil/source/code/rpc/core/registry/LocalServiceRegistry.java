@@ -1,4 +1,4 @@
-package com.sanil.source.code.rpc.server.registry;
+package com.sanil.source.code.rpc.core.registry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,6 +27,11 @@ public class LocalServiceRegistry implements ServiceRegistry {
     @Override
     public Object getService(String serviceName) {
         return SERVICE_REGISTRY.get(serviceName);
+    }
+
+    @Override
+    public Map<String, Object> getServices() {
+        return SERVICE_REGISTRY;
     }
 
 }

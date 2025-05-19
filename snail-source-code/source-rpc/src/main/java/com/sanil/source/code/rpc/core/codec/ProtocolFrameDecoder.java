@@ -1,4 +1,4 @@
-package com.sanil.source.code.rpc.common.codec;
+package com.sanil.source.code.rpc.core.codec;
 
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 

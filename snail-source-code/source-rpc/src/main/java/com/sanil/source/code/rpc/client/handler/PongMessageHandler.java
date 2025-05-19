@@ -1,6 +1,6 @@
 package com.sanil.source.code.rpc.client.handler;
 
-import com.sanil.source.code.rpc.common.message.PongMessage;
+import com.sanil.source.code.rpc.core.message.PongMessage;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

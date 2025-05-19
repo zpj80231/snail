@@ -1,6 +1,6 @@
-package com.sanil.source.code.rpc.common.enums;
+package com.sanil.source.code.rpc.core.enums;
 
-import com.sanil.source.code.rpc.common.message.*;
+import com.sanil.source.code.rpc.core.message.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

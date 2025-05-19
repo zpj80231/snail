@@ -1,10 +1,10 @@
-package com.sanil.source.code.rpc.common.codec;
+package com.sanil.source.code.rpc.core.codec;
 
-import com.sanil.source.code.rpc.common.config.RpcConfig;
-import com.sanil.source.code.rpc.common.factory.MessageTypeFactory;
-import com.sanil.source.code.rpc.common.factory.SerializerFactory;
-import com.sanil.source.code.rpc.common.message.Message;
-import com.sanil.source.code.rpc.common.serialize.Serializer;
+import com.sanil.source.code.rpc.core.config.RpcConfig;
+import com.sanil.source.code.rpc.core.factory.MessageTypeFactory;
+import com.sanil.source.code.rpc.core.factory.SerializerFactory;
+import com.sanil.source.code.rpc.core.message.Message;
+import com.sanil.source.code.rpc.core.serialize.Serializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

@@ -1,7 +1,7 @@
 package com.sanil.source.code.rpc.server.handler;
 
-import com.sanil.source.code.rpc.common.codec.MessageCodec;
-import com.sanil.source.code.rpc.common.codec.ProtocolFrameDecoder;
+import com.sanil.source.code.rpc.core.codec.MessageCodec;
+import com.sanil.source.code.rpc.core.codec.ProtocolFrameDecoder;
 import com.sanil.source.code.rpc.server.RpcServerManager;
 import com.sanil.source.code.rpc.server.util.NettyAttrUtil;
 import io.netty.channel.Channel;

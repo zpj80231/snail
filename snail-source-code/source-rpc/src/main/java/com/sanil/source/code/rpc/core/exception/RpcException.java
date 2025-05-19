@@ -1,4 +1,4 @@
-package com.sanil.source.code.rpc.common.exception;
+package com.sanil.source.code.rpc.core.exception;
 
 /**
  * @author zhangpengjun

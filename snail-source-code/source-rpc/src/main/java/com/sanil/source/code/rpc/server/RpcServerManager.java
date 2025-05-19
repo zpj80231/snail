@@ -5,15 +5,15 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.sanil.source.code.rpc.common.config.RpcConfig;
-import com.sanil.source.code.rpc.common.exception.RpcException;
+import com.sanil.source.code.rpc.core.config.RpcConfig;
+import com.sanil.source.code.rpc.core.exception.RpcException;
+import com.sanil.source.code.rpc.core.registry.LocalServerRegistry;
+import com.sanil.source.code.rpc.core.registry.LocalServiceRegistry;
+import com.sanil.source.code.rpc.core.registry.ServerRegistry;
+import com.sanil.source.code.rpc.core.registry.ServiceRegistry;
 import com.sanil.source.code.rpc.server.annotation.EnableRpcServer;
 import com.sanil.source.code.rpc.server.annotation.RpcService;
 import com.sanil.source.code.rpc.server.handler.RpcServerInitializer;
-import com.sanil.source.code.rpc.server.registry.LocalServerRegistry;
-import com.sanil.source.code.rpc.server.registry.LocalServiceRegistry;
-import com.sanil.source.code.rpc.server.registry.ServerRegistry;
-import com.sanil.source.code.rpc.server.registry.ServiceRegistry;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -72,7 +72,10 @@ public class RpcServerManager {
         try {
             Channel channel = bootstrap.bind(port).sync().channel();
             log.info("rpc server 启动成功，监听地址: {}:{}", host, port);
-            channel.closeFuture().sync();
+            channel.closeFuture().sync().addListener(future -> {
+                serviceRegistry.getServices().keySet().parallelStream().forEach(serviceRegistry::unregister);
+                serverRegistry.getServers().keySet().parallelStream().forEach(serverRegistry::unregister);
+            });
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("rpc server 启动失败", e);

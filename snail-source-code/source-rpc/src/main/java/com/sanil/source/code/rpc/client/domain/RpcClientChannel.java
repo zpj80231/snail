@@ -1,6 +1,6 @@
 package com.sanil.source.code.rpc.client.domain;
 
-import com.sanil.source.code.rpc.common.message.RequestMessage;
+import com.sanil.source.code.rpc.core.message.RequestMessage;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
