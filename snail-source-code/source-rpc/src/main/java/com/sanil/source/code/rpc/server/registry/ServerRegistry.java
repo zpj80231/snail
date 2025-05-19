@@ -1,6 +1,7 @@
 package com.sanil.source.code.rpc.server.registry;
 
 import java.net.InetSocketAddress;
+import java.util.Map;
 
 /**
  * 服务端注册表：记录服务在哪个server服务器地址的对应关系
@@ -33,5 +34,12 @@ public interface ServerRegistry {
      * @return {@link InetSocketAddress }
      */
     InetSocketAddress getServerAddress(String serviceName);
+
+    /**
+     * 获取所有服务器
+     *
+     * @return {@link Map }<{@link String }, {@link Object }>
+     */
+    Map<String, InetSocketAddress> getServers();
 
 }

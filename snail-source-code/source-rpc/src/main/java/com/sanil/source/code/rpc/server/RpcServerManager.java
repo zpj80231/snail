@@ -72,7 +72,10 @@ public class RpcServerManager {
         try {
             Channel channel = bootstrap.bind(port).sync().channel();
             log.info("rpc server 启动成功，监听地址: {}:{}", host, port);
-            channel.closeFuture().sync();
+            channel.closeFuture().sync().addListener(future -> {
+                serviceRegistry.getServices().keySet().parallelStream().forEach(serviceRegistry::unregister);
+                serverRegistry.getServers().keySet().parallelStream().forEach(serverRegistry::unregister);
+            });
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("rpc server 启动失败", e);

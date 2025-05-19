@@ -1,5 +1,7 @@
 package com.sanil.source.code.rpc.server.registry;
 
+import java.util.Map;
+
 /**
  * 服务注册中心：维护服务和具体的服务实例之间的映射关系
  *
@@ -31,5 +33,12 @@ public interface ServiceRegistry {
      * @return {@link Object }
      */
     Object getService(String serviceName);
+
+    /**
+     * 获取所有服务
+     *
+     * @return {@link Map }<{@link String }, {@link Object }>
+     */
+    Map<String, Object> getServices();
 
 }

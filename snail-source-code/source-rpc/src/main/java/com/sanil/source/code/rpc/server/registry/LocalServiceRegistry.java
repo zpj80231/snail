@@ -29,4 +29,9 @@ public class LocalServiceRegistry implements ServiceRegistry {
         return SERVICE_REGISTRY.get(serviceName);
     }
 
+    @Override
+    public Map<String, Object> getServices() {
+        return SERVICE_REGISTRY;
+    }
+
 }

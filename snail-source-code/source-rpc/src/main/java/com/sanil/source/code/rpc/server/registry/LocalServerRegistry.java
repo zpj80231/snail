@@ -27,4 +27,9 @@ public class LocalServerRegistry implements ServerRegistry {
         return SERVER_REGISTRY.get(serviceName);
     }
 
+    @Override
+    public Map<String, InetSocketAddress> getServers() {
+        return SERVER_REGISTRY;
+    }
+
 }
