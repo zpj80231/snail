@@ -7,9 +7,13 @@ import com.sanil.source.code.rpc.common.exception.RpcException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelOutboundInvoker;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zhangpengjun
@@ -18,14 +22,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RpcClientManager {
 
-    private static final NioEventLoopGroup group = new NioEventLoopGroup();
-    private static final Bootstrap bootstrap = new Bootstrap();
+    private NioEventLoopGroup group;
+    private Bootstrap bootstrap;
+    private Map<String, Channel> channels;
 
     public RpcClientManager() {
         initBootStrap();
     }
 
     private void initBootStrap() {
+        group = new NioEventLoopGroup();
+        bootstrap = new Bootstrap();
+        channels = new ConcurrentHashMap<>();
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
@@ -41,6 +49,7 @@ public class RpcClientManager {
         Channel channel;
         try {
             channel = bootstrap.connect(host, port).sync().channel();
+            channels.put(channel.id().asLongText(), channel);
             channel.closeFuture().addListener(future -> log.debug("client closed"));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -48,6 +57,11 @@ public class RpcClientManager {
         }
 
         return new RpcClientChannel(channel);
+    }
+
+    public void shutdown() {
+        channels.values().parallelStream().forEach(ChannelOutboundInvoker::close);
+        group.shutdownGracefully();
     }
 
 }

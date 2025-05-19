@@ -1,7 +1,9 @@
 package com.sanil.source.code.rpc.common.message;
 
 import com.sanil.source.code.rpc.common.enums.MessageTypeEnum;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 
 import java.io.Serializable;
 
@@ -23,6 +25,7 @@ public abstract class Message implements Serializable {
     /**
      * 消息类型，表示不同消息的类型，比如：登录、退出、各种请求、各种响应、心跳、异常等
      */
+    @Setter(AccessLevel.NONE)
     private MessageTypeEnum messageType;
 
     /**
