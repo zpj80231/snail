@@ -7,10 +7,12 @@ import com.sanil.source.code.rpc.client.util.PromiseManager;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.message.RequestMessage;
 import io.netty.util.concurrent.DefaultPromise;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.InetSocketAddress;
 
 /**
  * RPC 客户端服务代理
@@ -18,6 +20,7 @@ import java.lang.reflect.Proxy;
  * @author zhangpengjun
  * @date 2025/5/8
  */
+@Slf4j
 public class RpcClientProxy implements InvocationHandler {
     
     private final RpcClientManager manager;
@@ -53,7 +56,8 @@ public class RpcClientProxy implements InvocationHandler {
         requestMessage.setParameterValues(args);
         requestMessage.setReturnType(method.getReturnType());
 
-        RpcClientChannel channel = manager.connect();
+        InetSocketAddress socketAddress = manager.getServerDiscovery().lookup(requestMessage.getInterfaceName());
+        RpcClientChannel channel = manager.connect(socketAddress);
         channel.sendMessage(requestMessage);
 
         // 等待远程调用结果
