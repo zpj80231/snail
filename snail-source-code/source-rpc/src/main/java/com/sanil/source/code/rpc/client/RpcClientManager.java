@@ -72,9 +72,11 @@ public class RpcClientManager {
             channel = bootstrap.connect(socketAddress).sync().channel();
             ChannelManager.add(channel.id().asLongText(), channel);
             channel.closeFuture();
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RpcException("rpc client 启动失败", e);
+            throw new RpcException("连接被中断", e);
+        } catch (Exception e) {
+            throw new RpcException("rpc client 启动失败 -> " + e.getCause().getMessage(), e);
         }
 
         return new RpcClientChannel(channel);

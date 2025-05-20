@@ -1,12 +1,9 @@
 package com.sanil.source.code.rpc;
 
-import cn.hutool.core.thread.ThreadUtil;
 import com.sanil.source.code.rpc.client.RpcClientManager;
 import com.sanil.source.code.rpc.client.proxy.RpcClientProxy;
 import com.sanil.source.code.rpc.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author zhangpengjun
@@ -23,11 +20,16 @@ public class RpcClient {
         for (int i = 0; i < 100; i++) {
             // 根据接口创建代理，进行远程调用
             HelloService helloService = proxy.getProxyService(HelloService.class);
-            String result = helloService.hello("hi-" + i);
+            String result = null;
+            try {
+                result = helloService.hello("hi-" + i);
+            } catch (Exception e) {
+                log.error("远程调用失败: {}", e.getMessage());
+                continue;
+            }
             log.info("result: {}", result);
         }
 
-        ThreadUtil.sleep(35, TimeUnit.SECONDS);
         rpcClientManager.shutdown();
     }
 
