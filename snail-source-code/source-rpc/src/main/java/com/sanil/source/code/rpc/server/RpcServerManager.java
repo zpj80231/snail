@@ -22,6 +22,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.Set;
@@ -36,22 +37,28 @@ import java.util.Set;
 @Getter
 public class RpcServerManager {
 
-    private final String host;
-    private final int port;
+    private final InetSocketAddress serverAddress;
     private final ServerRegistry serverRegistry;
     private final ServiceRegistry serviceRegistry;
 
     public RpcServerManager() {
-        this(RpcConfig.getServerHost(), RpcConfig.getServerPort());
+        this(RpcConfig.getServerPort());
+    }
+
+    public RpcServerManager(int port) {
+        this(new InetSocketAddress(RpcConfig.getServerHost(), port));
     }
 
     public RpcServerManager(String host, int port) {
-        this(host, port, new LocalServerRegistry(), new LocalServiceRegistry());
+        this(new InetSocketAddress(host, port));
     }
 
-    public RpcServerManager(String host, int port, ServerRegistry serverRegistry, ServiceRegistry serviceRegistry) {
-        this.host = host;
-        this.port = port;
+    public RpcServerManager(InetSocketAddress serverAddress) {
+        this(serverAddress, new LocalServerRegistry(), new LocalServiceRegistry());
+    }
+
+    public RpcServerManager(InetSocketAddress serverAddress, ServerRegistry serverRegistry, ServiceRegistry serviceRegistry) {
+        this.serverAddress = serverAddress;
         this.serverRegistry = serverRegistry;
         this.serviceRegistry = serviceRegistry;
         autoRegister();
@@ -70,12 +77,9 @@ public class RpcServerManager {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new RpcServerInitializer(this));
         try {
-            Channel channel = bootstrap.bind(port).sync().channel();
-            log.info("rpc server 启动成功，监听地址: {}:{}", host, port);
-            channel.closeFuture().sync().addListener(future -> {
-                serviceRegistry.getServices().keySet().parallelStream().forEach(serviceRegistry::unregister);
-                serverRegistry.getServers().keySet().parallelStream().forEach(serverRegistry::unregister);
-            });
+            Channel channel = bootstrap.bind(serverAddress.getPort()).sync().channel();
+            log.info("rpc server 启动成功，监听地址: {}", serverAddress);
+            channel.closeFuture().sync().addListener(future -> destroy());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("rpc server 启动失败", e);
@@ -94,7 +98,12 @@ public class RpcServerManager {
         Class<?> mainClass = ClassUtil.loadClass(mainClassPath);
         EnableRpcServer enableRpcServer = AnnotationUtil.getAnnotation(mainClass, EnableRpcServer.class);
         if (enableRpcServer == null) {
-            throw new RpcException("启动类未添加 @EnableRpcServer 注解");
+            mainClassPath = findEnableRpcServerClassPath();
+            mainClass = ClassUtil.loadClass(mainClassPath);
+            enableRpcServer = AnnotationUtil.getAnnotation(mainClass, EnableRpcServer.class);
+            if (enableRpcServer == null) {
+                throw new RpcException("启动类未添加或未找到 @EnableRpcServer 注解");
+            }
         }
         String scanPackage = Optional.ofNullable(enableRpcServer.scan())
                 .filter(StrUtil::isNotBlank)
@@ -110,7 +119,7 @@ public class RpcServerManager {
             Object service = ReflectUtil.newInstance(aClass);
             doRegister(serviceName, service);
         }
-
+        Runtime.getRuntime().addShutdownHook(new Thread(this::destroy));
     }
 
     /**
@@ -121,10 +130,10 @@ public class RpcServerManager {
      */
     private void doRegister(String serviceName, Object service) {
         if (log.isDebugEnabled()) {
-            log.debug("register serviceName: {}, service: {}, host: {}, port: {}", serviceName, service, host, port);
+            log.debug("register serviceName: {}, service: {}, serverAddress: {}", serviceName, service, serverAddress);
         }
         serviceRegistry.register(serviceName, service);
-        serverRegistry.register(serviceName, new InetSocketAddress(host, port));
+        serverRegistry.register(serviceName, serverAddress);
     }
 
     /**
@@ -135,6 +144,35 @@ public class RpcServerManager {
     private static String findMainClassPath() {
         StackTraceElement[] stack = new Throwable().getStackTrace();
         return stack[stack.length - 1].getClassName();
+    }
+
+    /**
+     * 查找 EnableRpcServer 类路径
+     *
+     * @return {@link String }
+     */
+    private static String findEnableRpcServerClassPath() {
+        Set<Class<?>> classes = ClassUtil.scanPackage("");
+        for (Class<?> clazz : classes) {
+            if (Modifier.isPublic(clazz.getModifiers()) && Modifier.isStatic(clazz.getModifiers())) {
+                continue;
+            }
+            EnableRpcServer annotation = AnnotationUtil.getAnnotation(clazz, EnableRpcServer.class);
+            if (annotation != null) {
+                return clazz.getName();
+            }
+        }
+        return "";
+    }
+
+    /**
+     * 销毁资源
+     */
+    private void destroy() {
+        serviceRegistry.getServices().keySet().parallelStream().forEach(serviceName -> {
+            serviceRegistry.unregister(serviceName);
+            serverRegistry.unregister(serviceName, serverAddress);
+        });
     }
 
 }
