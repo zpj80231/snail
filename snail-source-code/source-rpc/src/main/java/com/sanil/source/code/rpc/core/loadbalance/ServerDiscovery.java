@@ -1,5 +1,7 @@
 package com.sanil.source.code.rpc.core.loadbalance;
 
+import com.sanil.source.code.rpc.core.extension.SPI;
+
 import java.net.InetSocketAddress;
 
 /**
@@ -8,6 +10,7 @@ import java.net.InetSocketAddress;
  * @author zhangpj
  * @date 2025/5/19
  */
+@SPI
 public interface ServerDiscovery {
 
     /**

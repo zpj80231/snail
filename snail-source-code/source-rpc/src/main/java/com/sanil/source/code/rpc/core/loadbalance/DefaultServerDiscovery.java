@@ -1,5 +1,7 @@
 package com.sanil.source.code.rpc.core.loadbalance;
 
+import com.sanil.source.code.rpc.core.config.RpcConfig;
+import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
 import com.sanil.source.code.rpc.core.registry.ServerRegistry;
 
 import java.net.InetSocketAddress;
@@ -15,8 +17,9 @@ public class DefaultServerDiscovery implements ServerDiscovery {
     private final LoadBalance loadBalance;
     private final ServerRegistry serverRegistry;
 
-    public DefaultServerDiscovery(ServerRegistry serverRegistry) {
-        this(new RoundRobinLoadBalance(), serverRegistry);
+    public DefaultServerDiscovery() {
+        this(ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(RpcConfig.getLoadBalance()),
+                ExtensionLoader.getExtensionLoader(ServerRegistry.class).getExtension(RpcConfig.getServerRegistry()));
     }
 
     public DefaultServerDiscovery(LoadBalance loadBalance, ServerRegistry serverRegistry) {

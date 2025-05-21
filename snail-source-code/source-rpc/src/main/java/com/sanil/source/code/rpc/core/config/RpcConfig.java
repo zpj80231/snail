@@ -55,4 +55,8 @@ public class RpcConfig {
         return getProperty("rpc.registry", "local");
     }
 
+    public static String getDiscovery() {
+        return getProperty("rpc.discovery", "default");
+    }
+
 }

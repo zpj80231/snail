@@ -6,11 +6,8 @@ import com.sanil.source.code.rpc.client.util.ChannelManager;
 import com.sanil.source.code.rpc.core.config.RpcConfig;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
-import com.sanil.source.code.rpc.core.loadbalance.DefaultServerDiscovery;
-import com.sanil.source.code.rpc.core.loadbalance.LoadBalance;
 import com.sanil.source.code.rpc.core.loadbalance.ServerDiscovery;
 import com.sanil.source.code.rpc.core.message.RequestMessage;
-import com.sanil.source.code.rpc.core.registry.ServerRegistry;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -33,19 +30,10 @@ public class RpcClientManager {
 
     private NioEventLoopGroup group;
     private Bootstrap bootstrap;
-    private final LoadBalance loadBalance;
-    private final ServerRegistry serverRegistry;
     private final ServerDiscovery serverDiscovery;
 
     public RpcClientManager() {
-        this(ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(RpcConfig.getLoadBalance()),
-                ExtensionLoader.getExtensionLoader(ServerRegistry.class).getExtension(RpcConfig.getServerRegistry()));
-    }
-
-    public RpcClientManager(LoadBalance loadBalance, ServerRegistry serverRegistry) {
-        this.loadBalance = loadBalance;
-        this.serverRegistry = serverRegistry;
-        this.serverDiscovery = new DefaultServerDiscovery(loadBalance, serverRegistry);
+        this.serverDiscovery = ExtensionLoader.getExtensionLoader(ServerDiscovery.class).getExtension(RpcConfig.getDiscovery());
         initBootStrap();
     }
 
