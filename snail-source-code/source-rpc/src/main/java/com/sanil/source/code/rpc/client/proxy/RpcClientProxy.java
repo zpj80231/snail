@@ -2,17 +2,16 @@ package com.sanil.source.code.rpc.client.proxy;
 
 import cn.hutool.core.util.IdUtil;
 import com.sanil.source.code.rpc.client.RpcClientManager;
-import com.sanil.source.code.rpc.client.domain.RpcClientChannel;
 import com.sanil.source.code.rpc.client.util.PromiseManager;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.message.RequestMessage;
 import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.InetSocketAddress;
 
 /**
  * RPC 客户端服务代理
@@ -44,7 +43,7 @@ public class RpcClientProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         long sequenceId = IdUtil.getSnowflakeNextId();
-        DefaultPromise<Object> promise = new DefaultPromise<Object>() {};
+        Promise<Object> promise = new DefaultPromise<>(manager.getGroup().next());
         PromiseManager.add(sequenceId, promise);
 
         // 构造请求消息，进行远程调用
@@ -56,9 +55,8 @@ public class RpcClientProxy implements InvocationHandler {
         requestMessage.setParameterValues(args);
         requestMessage.setReturnType(method.getReturnType());
 
-        InetSocketAddress socketAddress = manager.getServerDiscovery().lookup(requestMessage.getInterfaceName());
-        RpcClientChannel channel = manager.connect(socketAddress);
-        channel.sendMessage(requestMessage);
+        // 发起rpc请求
+        manager.sendRpcRequest(requestMessage);
 
         // 等待远程调用结果
         promise.await();

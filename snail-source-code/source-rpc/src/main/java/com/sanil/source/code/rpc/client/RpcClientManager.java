@@ -1,6 +1,6 @@
 package com.sanil.source.code.rpc.client;
 
-import com.sanil.source.code.rpc.client.domain.RpcClientChannel;
+import cn.hutool.core.collection.CollUtil;
 import com.sanil.source.code.rpc.client.handler.RpcClientInitializer;
 import com.sanil.source.code.rpc.client.util.ChannelManager;
 import com.sanil.source.code.rpc.core.config.RpcConfig;
@@ -9,21 +9,22 @@ import com.sanil.source.code.rpc.core.loadbalance.DefaultServerDiscovery;
 import com.sanil.source.code.rpc.core.loadbalance.LoadBalance;
 import com.sanil.source.code.rpc.core.loadbalance.RoundRobinLoadBalance;
 import com.sanil.source.code.rpc.core.loadbalance.ServerDiscovery;
+import com.sanil.source.code.rpc.core.message.RequestMessage;
 import com.sanil.source.code.rpc.core.registry.LocalServerRegistry;
 import com.sanil.source.code.rpc.core.registry.ServerRegistry;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelOutboundInvoker;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 
 /**
+ * RPC 客户端管理器
+ *
  * @author zhangpengjun
  * @date 2025/5/8
  */
@@ -58,33 +59,83 @@ public class RpcClientManager {
                 .handler(new RpcClientInitializer());
     }
 
-    public RpcClientChannel connect() {
+    /**
+     * 连接
+     *
+     * @return {@link Channel }
+     */
+    public Channel connect() {
         return connect(RpcConfig.getServerHost(), RpcConfig.getServerPort());
     }
 
-    public RpcClientChannel connect(String host, int port) {
+    /**
+     * 连接
+     *
+     * @param host 主机
+     * @param port 端口
+     * @return {@link Channel }
+     */
+    public Channel connect(String host, int port) {
         return connect(InetSocketAddress.createUnresolved(host, port));
     }
 
-    public RpcClientChannel connect(SocketAddress socketAddress) {
-        Channel channel;
+    /**
+     * 连接
+     *
+     * @param socketAddress socket 地址
+     * @return {@link Channel }
+     */
+    public Channel connect(InetSocketAddress socketAddress) {
+        // 连接复用
+        Channel channel = ChannelManager.get(socketAddress.toString());
+        if (channel != null && channel.isOpen() && channel.isActive()) {
+            return channel;
+        } else {
+            ChannelManager.removeAndClose(socketAddress.toString());
+        }
+
+        // 创建连接
         try {
             channel = bootstrap.connect(socketAddress).sync().channel();
-            ChannelManager.add(channel.id().asLongText(), channel);
-            channel.closeFuture();
+            channel.closeFuture().addListener(future -> {
+                ChannelManager.removeAndClose(socketAddress.toString());
+                shutdown();
+            });
+            ChannelManager.add(socketAddress.toString(), channel);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RpcException("连接被中断", e);
         } catch (Exception e) {
             throw new RpcException("rpc client 启动失败 -> " + e.getCause().getMessage(), e);
+        } finally {
+            shutdown();
         }
 
-        return new RpcClientChannel(channel);
+        return channel;
     }
 
+    /**
+     * 发送 RPC 请求
+     *
+     * @param requestMessage 请求消息
+     */
+    public void sendRpcRequest(RequestMessage requestMessage) {
+        InetSocketAddress socketAddress = serverDiscovery.lookup(requestMessage.getInterfaceName());
+        Channel channel = connect(socketAddress);
+        if (!channel.isOpen() || !channel.isActive()) {
+            ChannelManager.removeAndClose(socketAddress.toString());
+            return;
+        }
+        channel.writeAndFlush(requestMessage);
+    }
+
+    /**
+     * 关闭
+     */
     public void shutdown() {
-        ChannelManager.getChannels().values().parallelStream().forEach(ChannelOutboundInvoker::close);
-        group.shutdownGracefully();
+        if (CollUtil.isEmpty(ChannelManager.getChannels())) {
+            group.shutdownGracefully();
+        }
     }
 
 }

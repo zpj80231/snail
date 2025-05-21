@@ -31,4 +31,11 @@ public class ChannelManager {
         CHANNELS.remove(key);
     }
 
+    public static void removeAndClose(String key) {
+        Channel channel = CHANNELS.remove(key);
+        if (channel != null) {
+            channel.close();
+        }
+    }
+
 }

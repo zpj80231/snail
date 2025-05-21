@@ -20,17 +20,9 @@ public class RpcClient {
         for (int i = 0; i < 100; i++) {
             // 根据接口创建代理，进行远程调用
             HelloService helloService = proxy.getProxyService(HelloService.class);
-            String result = null;
-            try {
-                result = helloService.hello("hi-" + i);
-            } catch (Exception e) {
-                log.error("远程调用失败: {}", e.getMessage());
-                continue;
-            }
+            String result = helloService.hello("hi-" + i);
             log.info("result: {}", result);
         }
-
-        rpcClientManager.shutdown();
     }
 
 }
