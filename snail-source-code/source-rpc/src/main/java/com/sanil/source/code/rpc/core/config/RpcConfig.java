@@ -1,6 +1,7 @@
 package com.sanil.source.code.rpc.core.config;
 
 import com.sanil.source.code.rpc.core.exception.RpcException;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,7 @@ import java.util.Properties;
  * @author zhangpengjun
  * @date 2025/5/7
  */
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class RpcConfig {
 
     public static final String SERVER_HOST = "127.0.0.1";
@@ -47,6 +49,10 @@ public class RpcConfig {
 
     public static String getLoadBalance() {
         return getProperty("rpc.client.loadbalance", "roundRobin");
+    }
+
+    public static String getServerRegistry() {
+        return getProperty("rpc.registry", "local");
     }
 
 }

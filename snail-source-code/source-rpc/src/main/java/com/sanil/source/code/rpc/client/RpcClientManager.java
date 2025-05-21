@@ -10,7 +10,6 @@ import com.sanil.source.code.rpc.core.loadbalance.DefaultServerDiscovery;
 import com.sanil.source.code.rpc.core.loadbalance.LoadBalance;
 import com.sanil.source.code.rpc.core.loadbalance.ServerDiscovery;
 import com.sanil.source.code.rpc.core.message.RequestMessage;
-import com.sanil.source.code.rpc.core.registry.LocalServerRegistry;
 import com.sanil.source.code.rpc.core.registry.ServerRegistry;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -40,7 +39,7 @@ public class RpcClientManager {
 
     public RpcClientManager() {
         this(ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(RpcConfig.getLoadBalance()),
-                new LocalServerRegistry());
+                ExtensionLoader.getExtensionLoader(ServerRegistry.class).getExtension(RpcConfig.getServerRegistry()));
     }
 
     public RpcClientManager(LoadBalance loadBalance, ServerRegistry serverRegistry) {

@@ -1,5 +1,7 @@
 package com.sanil.source.code.rpc.core.registry;
 
+import com.sanil.source.code.rpc.core.extension.SPI;
+
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Set;
@@ -10,6 +12,7 @@ import java.util.Set;
  * @author zhangpengjun
  * @date 2025/5/7
  */
+@SPI
 public interface ServerRegistry {
 
     /**

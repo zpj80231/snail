@@ -7,7 +7,7 @@ import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.sanil.source.code.rpc.core.config.RpcConfig;
 import com.sanil.source.code.rpc.core.exception.RpcException;
-import com.sanil.source.code.rpc.core.registry.LocalServerRegistry;
+import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
 import com.sanil.source.code.rpc.core.registry.LocalServiceRegistry;
 import com.sanil.source.code.rpc.core.registry.ServerRegistry;
 import com.sanil.source.code.rpc.core.registry.ServiceRegistry;
@@ -54,7 +54,9 @@ public class RpcServerManager {
     }
 
     public RpcServerManager(InetSocketAddress serverAddress) {
-        this(serverAddress, new LocalServerRegistry(), new LocalServiceRegistry());
+        this(serverAddress,
+                ExtensionLoader.getExtensionLoader(ServerRegistry.class).getExtension(RpcConfig.getServerRegistry()),
+                new LocalServiceRegistry());
     }
 
     public RpcServerManager(InetSocketAddress serverAddress, ServerRegistry serverRegistry, ServiceRegistry serviceRegistry) {
