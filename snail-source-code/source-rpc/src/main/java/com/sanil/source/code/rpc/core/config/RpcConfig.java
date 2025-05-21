@@ -43,8 +43,8 @@ public class RpcConfig {
         return getProperty("rpc.server.host", SERVER_HOST);
     }
 
-    public static String getSerializer() {
-        return getProperty("rpc.serializer", "json");
+    public static byte getSerializer() {
+        return Byte.parseByte(getProperty("rpc.serializer", "1"));
     }
 
     public static String getLoadBalance() {

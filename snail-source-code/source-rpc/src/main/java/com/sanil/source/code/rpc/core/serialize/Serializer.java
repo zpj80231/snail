@@ -1,5 +1,7 @@
 package com.sanil.source.code.rpc.core.serialize;
 
+import com.sanil.source.code.rpc.core.extension.SPI;
+
 /**
  * 序列化器
  * 用于扩展序列化、反序列化算法
@@ -7,6 +9,7 @@ package com.sanil.source.code.rpc.core.serialize;
  * @author zhangpengjun
  * @date 2025/5/7
  */
+@SPI
 public interface Serializer {
 
     /**
