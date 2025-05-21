@@ -45,4 +45,8 @@ public class RpcConfig {
         return getProperty("rpc.serializer", "json");
     }
 
+    public static String getLoadBalance() {
+        return getProperty("rpc.client.loadbalance", "roundRobin");
+    }
+
 }

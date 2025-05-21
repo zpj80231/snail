@@ -5,9 +5,9 @@ import com.sanil.source.code.rpc.client.handler.RpcClientInitializer;
 import com.sanil.source.code.rpc.client.util.ChannelManager;
 import com.sanil.source.code.rpc.core.config.RpcConfig;
 import com.sanil.source.code.rpc.core.exception.RpcException;
+import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
 import com.sanil.source.code.rpc.core.loadbalance.DefaultServerDiscovery;
 import com.sanil.source.code.rpc.core.loadbalance.LoadBalance;
-import com.sanil.source.code.rpc.core.loadbalance.RoundRobinLoadBalance;
 import com.sanil.source.code.rpc.core.loadbalance.ServerDiscovery;
 import com.sanil.source.code.rpc.core.message.RequestMessage;
 import com.sanil.source.code.rpc.core.registry.LocalServerRegistry;
@@ -39,7 +39,8 @@ public class RpcClientManager {
     private final ServerDiscovery serverDiscovery;
 
     public RpcClientManager() {
-        this(new RoundRobinLoadBalance(), new LocalServerRegistry());
+        this(ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(RpcConfig.getLoadBalance()),
+                new LocalServerRegistry());
     }
 
     public RpcClientManager(LoadBalance loadBalance, ServerRegistry serverRegistry) {
