@@ -1,7 +1,7 @@
-package com.snail.source.code.jdbc.connection.pool;
+package com.snail.source.code.jdbc.pool.support;
 
-import com.snail.source.code.jdbc.connection.domain.PoolEntry;
-import com.snail.source.code.jdbc.connection.properties.DataSourceProperties;
+import com.snail.source.code.jdbc.pool.domain.PoolEntry;
+import com.snail.source.code.jdbc.pool.properties.DataSourceProperties;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;

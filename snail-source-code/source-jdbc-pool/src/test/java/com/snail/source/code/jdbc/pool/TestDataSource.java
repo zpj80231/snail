@@ -1,6 +1,6 @@
-package com.snail.source.code.jdbc.connection;
+package com.snail.source.code.jdbc.pool;
 
-import com.snail.source.code.jdbc.connection.manager.ConnectionPoolManager;
+import com.snail.source.code.jdbc.pool.manager.ConnectionPoolManager;
 
 import java.sql.Connection;
 

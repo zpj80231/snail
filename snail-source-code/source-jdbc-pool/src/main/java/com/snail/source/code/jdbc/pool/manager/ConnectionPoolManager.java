@@ -1,8 +1,8 @@
-package com.snail.source.code.jdbc.connection.manager;
+package com.snail.source.code.jdbc.pool.manager;
 
-import com.snail.source.code.jdbc.connection.pool.ConnectionPool;
-import com.snail.source.code.jdbc.connection.pool.SimpleConnectionPool;
-import com.snail.source.code.jdbc.connection.properties.DataSourceProperties;
+import com.snail.source.code.jdbc.pool.properties.DataSourceProperties;
+import com.snail.source.code.jdbc.pool.support.ConnectionPool;
+import com.snail.source.code.jdbc.pool.support.SimpleConnectionPool;
 import lombok.NoArgsConstructor;
 
 import java.sql.Connection;
