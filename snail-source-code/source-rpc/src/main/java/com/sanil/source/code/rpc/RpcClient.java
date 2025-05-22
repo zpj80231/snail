@@ -1,9 +1,13 @@
 package com.sanil.source.code.rpc;
 
+import cn.hutool.core.thread.ThreadUtil;
 import com.sanil.source.code.rpc.client.RpcClientManager;
 import com.sanil.source.code.rpc.client.proxy.RpcClientProxy;
 import com.sanil.source.code.rpc.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author zhangpengjun
@@ -12,19 +16,42 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RpcClient {
 
-    public static void main(String[] args) {
-        RpcClientManager rpcClientManager = new RpcClientManager();
-        RpcClientProxy proxy = new RpcClientProxy(rpcClientManager);
+    /**
+     * 用于请求发起，模拟一次请求
+     */
+    private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
-        // 模拟100次请求
-        for (int i = 0; i < 100; i++) {
-            // 根据接口创建代理，进行远程调用
-            HelloService helloService = proxy.getProxyService(HelloService.class);
-            String result = helloService.hello("hi-" + i);
-            log.info("result: {}", result);
-            // 测试调用期间，多个服务端任意启动关闭，客户端自动负载均衡
-            // ThreadUtil.sleep(2000);
+    public static void main(String[] args) {
+        RpcClientProxy proxy = new RpcClientProxy(new RpcClientManager());
+        HelloService helloService = proxy.getProxyService(HelloService.class);
+
+        // 可随时启动关闭多个服务端，查看客户端负载均衡
+        int i = 0;
+        while (i <= Integer.MAX_VALUE) {
+            ThreadUtil.sleep(1000);
+            executorService.execute(new Controller(helloService, "hello-" + i++));
         }
+    }
+
+    /**
+     * 模拟一个 Controller
+     */
+    private static class Controller implements Runnable {
+
+        private final HelloService helloService;
+        private final String msg;
+
+        public Controller(HelloService helloService, String msg) {
+            this.helloService = helloService;
+            this.msg = msg;
+        }
+
+        @Override
+        public void run() {
+            String result = helloService.hello(msg);
+            log.info("result: {}", result);
+        }
+
     }
 
 }
