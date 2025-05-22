@@ -7,11 +7,13 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author zhangpengjun
  * @date 2025/5/8
  */
+@Slf4j
 @ChannelHandler.Sharable
 public class RpcResponseMessageHandler extends SimpleChannelInboundHandler<ResponseMessage> {
 
@@ -23,6 +25,7 @@ public class RpcResponseMessageHandler extends SimpleChannelInboundHandler<Respo
         Throwable exceptionValue = msg.getExceptionValue();
         Promise<Object> promise = PromiseManager.remove(sequenceId);
         if (promise == null) {
+            log.error("未找到对应的promise, sequenceId: {}", sequenceId);
             throw new RpcException("未找到对应的promise, sequenceId: " + sequenceId);
         }
         if (exceptionValue != null) {

@@ -89,12 +89,16 @@ public class RpcClientManager {
                 ChannelManager.removeAndClose(socketAddress.toString());
                 shutdown();
             });
+            log.info("rpc client 连接成功 -> {}", socketAddress);
             ChannelManager.add(socketAddress.toString(), channel);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            log.error("rpc client 连接被中断", e);
             throw new RpcException("连接被中断", e);
         } catch (Exception e) {
-            throw new RpcException("rpc client 启动失败 -> " + e.getCause().getMessage(), e);
+            Throwable cause = e.getCause() == null ? e : e.getCause();
+            log.error("rpc client 启动失败 -> {}", cause.getMessage(), e);
+            throw new RpcException("rpc client 启动失败 -> " + cause.getMessage(), e);
         } finally {
             shutdown();
         }

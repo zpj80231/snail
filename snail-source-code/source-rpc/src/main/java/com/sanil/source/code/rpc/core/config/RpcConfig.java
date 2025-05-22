@@ -2,6 +2,7 @@ package com.sanil.source.code.rpc.core.config;
 
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,7 @@ import java.util.Properties;
  * @author zhangpengjun
  * @date 2025/5/7
  */
+@Slf4j
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class RpcConfig {
 
@@ -27,7 +29,8 @@ public class RpcConfig {
                 properties.load(inputStream);
             }
         } catch (IOException e) {
-            throw new RpcException(e);
+            log.error("初始化配置文件异常", e);
+            throw new RpcException("初始化配置文件异常", e);
         }
     }
 

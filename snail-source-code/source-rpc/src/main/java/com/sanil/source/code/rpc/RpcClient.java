@@ -22,6 +22,8 @@ public class RpcClient {
             HelloService helloService = proxy.getProxyService(HelloService.class);
             String result = helloService.hello("hi-" + i);
             log.info("result: {}", result);
+            // 测试调用期间，多个服务端任意启动关闭，客户端自动负载均衡
+            // ThreadUtil.sleep(2000);
         }
     }
 

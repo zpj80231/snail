@@ -59,7 +59,8 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
 
             // log.debug("magicNum: {}, version: {}, serializerType: {}, messageType: {}, sequenceId: {}, length: {}",
             //         magicNum, version, serializerType, messageType, sequenceId, bytes.length);
-            // log.debug("ByteBuf: {}", ByteBufUtil.hexDump(buf));
+            // log.debug("ByteBuf encode: {}", ByteBufUtil.prettyHexDump(buf));
+
             out.add(buf);
         } catch (Exception e) {
             log.error("编码过程中发生异常，请检查相关配置和数据。", e);
@@ -69,6 +70,7 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) throws Exception {
+        // log.debug("ByteBuf decode: {}", ByteBufUtil.prettyHexDump(buf));
         try {
             // 4个字节的魔数
             int magicNum = buf.readInt();
@@ -87,7 +89,7 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
             // 消息体
             byte[] bytes = new byte[length];
             buf.readBytes(bytes, 0, length);
-            // log.debug("ByteBuf: {}", ByteBufUtil.hexDump(buf));
+
             // log.debug("magicNum: {}, version: {}, serializerType: {}, messageType: {}, sequenceId: {}, length: {}",
             //         magicNum, version, serializerType, messageType, sequenceId, length);
 

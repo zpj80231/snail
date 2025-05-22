@@ -40,6 +40,10 @@ public class HeartBeatClientHandler extends ChannelDuplexHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("channel:{} 发生异常", ctx.channel(), cause);
+        // 关闭通道前检查是否已经关闭
+        if (ctx.channel().isActive() || ctx.channel().isOpen()) {
+            ctx.close();
+        }
         super.exceptionCaught(ctx, cause);
     }
 
