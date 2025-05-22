@@ -29,7 +29,6 @@ public class RpcConfig {
                 properties.load(inputStream);
             }
         } catch (IOException e) {
-            log.error("初始化配置文件异常", e);
             throw new RpcException("初始化配置文件异常", e);
         }
     }

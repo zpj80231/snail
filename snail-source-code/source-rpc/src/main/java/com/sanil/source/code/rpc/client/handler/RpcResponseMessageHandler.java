@@ -25,7 +25,6 @@ public class RpcResponseMessageHandler extends SimpleChannelInboundHandler<Respo
         Throwable exceptionValue = msg.getExceptionValue();
         Promise<Object> promise = PromiseManager.remove(sequenceId);
         if (promise == null) {
-            log.error("未找到对应的promise, sequenceId: {}", sequenceId);
             throw new RpcException("未找到对应的promise, sequenceId: " + sequenceId);
         }
         if (exceptionValue != null) {

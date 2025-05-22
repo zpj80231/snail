@@ -12,7 +12,7 @@ public class HelloServiceImpl implements HelloService {
 
     @Override
     public String hello(String name) {
-        return name + " hello-rpc-server!";
+        return "hello-rpc " + name;
     }
 
 }

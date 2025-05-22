@@ -59,11 +59,10 @@ public class RpcClientProxy implements InvocationHandler {
         manager.sendRpcRequest(requestMessage);
 
         // 等待远程调用结果
-        promise.await();
+        promise.await(5000);
         if (promise.isSuccess()) {
             return promise.getNow();
         } else {
-            log.error("远程调用异常", promise.cause());
             throw new RpcException("远程调用异常", promise.cause());
         }
     }
