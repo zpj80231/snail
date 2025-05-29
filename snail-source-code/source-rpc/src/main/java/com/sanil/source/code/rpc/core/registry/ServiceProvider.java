@@ -1,6 +1,6 @@
 package com.sanil.source.code.rpc.core.registry;
 
-import java.util.Map;
+import com.sanil.source.code.rpc.core.extension.SPI;
 
 import java.util.Map;
 
@@ -10,7 +10,8 @@ import java.util.Map;
  * @author zhangpengjun
  * @date 2025/5/7
  */
-public interface ServiceRegistry {
+@SPI
+public interface ServiceProvider {
 
     /**
      * 注册

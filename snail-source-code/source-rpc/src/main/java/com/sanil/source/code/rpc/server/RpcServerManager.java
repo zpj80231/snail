@@ -8,9 +8,8 @@ import cn.hutool.core.util.StrUtil;
 import com.sanil.source.code.rpc.core.config.RpcConfig;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
-import com.sanil.source.code.rpc.core.registry.LocalServiceRegistry;
 import com.sanil.source.code.rpc.core.registry.ServerRegistry;
-import com.sanil.source.code.rpc.core.registry.ServiceRegistry;
+import com.sanil.source.code.rpc.core.registry.ServiceProvider;
 import com.sanil.source.code.rpc.server.annotation.EnableRpcServer;
 import com.sanil.source.code.rpc.server.annotation.RpcService;
 import com.sanil.source.code.rpc.server.handler.RpcServerInitializer;
@@ -40,7 +39,7 @@ public class RpcServerManager {
     private static final RpcConfig rpcConfig = RpcConfig.loadFromFile();
     private final InetSocketAddress serverAddress;
     private final ServerRegistry serverRegistry;
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceProvider serviceProvider;
 
     public RpcServerManager() {
         this(rpcConfig.getServerPort());
@@ -57,13 +56,13 @@ public class RpcServerManager {
     public RpcServerManager(InetSocketAddress serverAddress) {
         this(serverAddress,
                 ExtensionLoader.getExtensionLoader(ServerRegistry.class).getExtension(rpcConfig.getServerRegistry()),
-                new LocalServiceRegistry());
+                ExtensionLoader.getExtensionLoader(ServiceProvider.class).getExtension(rpcConfig.getServiceProvider()));
     }
 
-    public RpcServerManager(InetSocketAddress serverAddress, ServerRegistry serverRegistry, ServiceRegistry serviceRegistry) {
+    public RpcServerManager(InetSocketAddress serverAddress, ServerRegistry serverRegistry, ServiceProvider serviceProvider) {
         this.serverAddress = serverAddress;
         this.serverRegistry = serverRegistry;
-        this.serviceRegistry = serviceRegistry;
+        this.serviceProvider = serviceProvider;
         autoRegister();
     }
 
@@ -135,7 +134,7 @@ public class RpcServerManager {
         if (log.isDebugEnabled()) {
             log.debug("register serviceName: {}, service: {}, serverAddress: {}", serviceName, service, serverAddress);
         }
-        serviceRegistry.register(serviceName, service);
+        serviceProvider.register(serviceName, service);
         serverRegistry.register(serviceName, serverAddress);
     }
 
@@ -172,8 +171,8 @@ public class RpcServerManager {
      * 销毁资源
      */
     private void destroy() {
-        serviceRegistry.getServices().keySet().parallelStream().forEach(serviceName -> {
-            serviceRegistry.unregister(serviceName);
+        serviceProvider.getServices().keySet().parallelStream().forEach(serviceName -> {
+            serviceProvider.unregister(serviceName);
             serverRegistry.unregister(serviceName, serverAddress);
         });
     }

@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2025/5/7
  */
 @Slf4j
-public class LocalServiceRegistry implements ServiceRegistry {
+public class LocalServiceProvider implements ServiceProvider {
 
     private static final Map<String, Object> SERVICE_REGISTRY = new ConcurrentHashMap<>();
 

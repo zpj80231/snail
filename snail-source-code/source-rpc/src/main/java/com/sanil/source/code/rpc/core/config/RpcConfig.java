@@ -26,6 +26,7 @@ public class RpcConfig {
     private byte serializer = 1;
     private String loadBalance = "roundRobin";
     private String serverRegistry = "local";
+    private String serviceProvider = "local";
     private String discovery = "default";
     private byte compress = 1;
 
@@ -44,7 +45,8 @@ public class RpcConfig {
         config.setServerPort(Integer.parseInt(props.getProperty("rpc.server.port", String.valueOf(config.getServerPort()))));
         config.setSerializer(Byte.parseByte(props.getProperty("rpc.serializer", String.valueOf(config.getSerializer()))));
         config.setLoadBalance(props.getProperty("rpc.client.loadbalance", config.getLoadBalance()));
-        config.setServerRegistry(props.getProperty("rpc.registry", config.getServerRegistry()));
+        config.setServerRegistry(props.getProperty("rpc.registry.server", config.getServerRegistry()));
+        config.setServerRegistry(props.getProperty("rpc.registry.provider", config.getServerRegistry()));
         config.setDiscovery(props.getProperty("rpc.discovery", config.getDiscovery()));
         config.setCompress(Byte.parseByte(props.getProperty("rpc.compress", String.valueOf(config.getCompress()))));
 

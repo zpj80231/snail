@@ -3,7 +3,7 @@ package com.sanil.source.code.rpc.server.handler;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.message.RequestMessage;
 import com.sanil.source.code.rpc.core.message.ResponseMessage;
-import com.sanil.source.code.rpc.core.registry.ServiceRegistry;
+import com.sanil.source.code.rpc.core.registry.ServiceProvider;
 import com.sanil.source.code.rpc.server.RpcServerManager;
 import com.sanil.source.code.rpc.server.util.NettyAttrUtil;
 import io.netty.channel.ChannelHandler;
@@ -30,8 +30,8 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<Reques
 
         // 获取service实现类，本地调用
         RpcServerManager manager = NettyAttrUtil.getManager(ctx.channel());
-        ServiceRegistry serviceRegistry = manager.getServiceRegistry();
-        Object service = serviceRegistry.getService(msg.getInterfaceName());
+        ServiceProvider serviceProvider = manager.getServiceProvider();
+        Object service = serviceProvider.getService(msg.getInterfaceName());
         Method method;
         try {
             method = service.getClass().getMethod(msg.getMethodName(), msg.getParameterTypes());
