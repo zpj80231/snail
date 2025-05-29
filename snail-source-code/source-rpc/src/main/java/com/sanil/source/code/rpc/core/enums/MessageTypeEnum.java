@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum MessageTypeEnum {
+public enum MessageTypeEnum implements MessageType {
 
     PING(0, "PING", PingMessage.class),
     PONG(1, "PONG", PongMessage.class),
