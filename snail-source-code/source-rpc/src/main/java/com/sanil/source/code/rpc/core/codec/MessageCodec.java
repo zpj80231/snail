@@ -7,6 +7,7 @@ import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
 import com.sanil.source.code.rpc.core.factory.MessageTypeFactory;
 import com.sanil.source.code.rpc.core.message.Message;
 import com.sanil.source.code.rpc.core.serialize.Serializer;
+import com.sanil.source.code.rpc.server.util.NettyAttrUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,12 +28,13 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
+        RpcConfig config = NettyAttrUtil.getRpcConfig(ctx.channel());
         try {
             // 压缩方式
-            byte compressType = RpcConfig.getCompress();
+            byte compressType = config.getCompress();
             Compress compress = ExtensionLoader.getExtensionLoader(Compress.class).getExtension(String.valueOf(compressType));
             // 获取序列化方式
-            byte serializerType = RpcConfig.getSerializer();
+            byte serializerType = config.getSerializer();
             // int serializerType = SerializerFactory.getSerializerType(serializerName);
 
             int magicNum = 8023;

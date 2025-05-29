@@ -1,6 +1,7 @@
 package com.sanil.source.code.rpc.core.config;
 
 import com.sanil.source.code.rpc.core.exception.RpcException;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,54 +16,39 @@ import java.util.Properties;
  * @date 2025/5/7
  */
 @Slf4j
+@Data
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class RpcConfig {
 
-    public static final String SERVER_HOST = "127.0.0.1";
-    public static final int SERVER_PORT = 8023;
-    static Properties properties;
+    private static final String path = "/rpc.properties";
+    private String serverHost = "127.0.0.1";
+    private int serverPort = 8023;
+    private byte serializer = 1;
+    private String loadBalance = "roundRobin";
+    private String serverRegistry = "local";
+    private String discovery = "default";
+    private byte compress = 1;
 
-    static {
-        try (InputStream inputStream = RpcConfig.class.getResourceAsStream("/rpc.properties")) {
-            properties = new Properties();
+    public static RpcConfig loadFromFile() {
+        Properties props = new Properties();
+        try (InputStream inputStream = RpcConfig.class.getResourceAsStream(path)) {
             if (inputStream != null) {
-                properties.load(inputStream);
+                props.load(inputStream);
             }
         } catch (IOException e) {
             throw new RpcException("初始化配置文件异常", e);
         }
-    }
 
-    public static String getProperty(String key, String defaultValue) {
-        return properties.getProperty(key, defaultValue);
-    }
+        RpcConfig config = new RpcConfig();
+        config.setServerHost(props.getProperty("rpc.server.host", config.getServerHost()));
+        config.setServerPort(Integer.parseInt(props.getProperty("rpc.server.port", String.valueOf(config.getServerPort()))));
+        config.setSerializer(Byte.parseByte(props.getProperty("rpc.serializer", String.valueOf(config.getSerializer()))));
+        config.setLoadBalance(props.getProperty("rpc.client.loadbalance", config.getLoadBalance()));
+        config.setServerRegistry(props.getProperty("rpc.registry", config.getServerRegistry()));
+        config.setDiscovery(props.getProperty("rpc.discovery", config.getDiscovery()));
+        config.setCompress(Byte.parseByte(props.getProperty("rpc.compress", String.valueOf(config.getCompress()))));
 
-    public static int getServerPort() {
-        return Integer.parseInt(getProperty("rpc.server.port", String.valueOf(SERVER_PORT)));
-    }
-
-    public static String getServerHost() {
-        return getProperty("rpc.server.host", SERVER_HOST);
-    }
-
-    public static byte getSerializer() {
-        return Byte.parseByte(getProperty("rpc.serializer", "1"));
-    }
-
-    public static String getLoadBalance() {
-        return getProperty("rpc.client.loadbalance", "roundRobin");
-    }
-
-    public static String getServerRegistry() {
-        return getProperty("rpc.registry", "local");
-    }
-
-    public static String getDiscovery() {
-        return getProperty("rpc.discovery", "default");
-    }
-
-    public static byte getCompress() {
-        return Byte.parseByte(getProperty("rpc.compress", "1"));
+        return config;
     }
 
 }

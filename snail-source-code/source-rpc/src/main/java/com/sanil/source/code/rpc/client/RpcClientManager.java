@@ -28,12 +28,13 @@ import java.net.InetSocketAddress;
 @Getter
 public class RpcClientManager {
 
+    private static final RpcConfig rpcConfig = RpcConfig.loadFromFile();
     private NioEventLoopGroup group;
     private Bootstrap bootstrap;
     private final ServerDiscovery serverDiscovery;
 
     public RpcClientManager() {
-        this.serverDiscovery = ExtensionLoader.getExtensionLoader(ServerDiscovery.class).getExtension(RpcConfig.getDiscovery());
+        this.serverDiscovery = ExtensionLoader.getExtensionLoader(ServerDiscovery.class).getExtension(rpcConfig.getDiscovery());
         initBootStrap();
     }
 
@@ -44,7 +45,7 @@ public class RpcClientManager {
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                .handler(new RpcClientInitializer());
+                .handler(new RpcClientInitializer(rpcConfig));
     }
 
     /**
@@ -53,7 +54,7 @@ public class RpcClientManager {
      * @return {@link Channel }
      */
     public Channel connect() {
-        return connect(RpcConfig.getServerHost(), RpcConfig.getServerPort());
+        return connect(rpcConfig.getServerHost(), rpcConfig.getServerPort());
     }
 
     /**

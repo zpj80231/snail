@@ -2,6 +2,7 @@ package com.sanil.source.code.rpc.server.handler;
 
 import com.sanil.source.code.rpc.core.codec.MessageCodec;
 import com.sanil.source.code.rpc.core.codec.ProtocolFrameDecoder;
+import com.sanil.source.code.rpc.core.config.RpcConfig;
 import com.sanil.source.code.rpc.server.RpcServerManager;
 import com.sanil.source.code.rpc.server.util.NettyAttrUtil;
 import io.netty.channel.Channel;
@@ -19,6 +20,7 @@ import io.netty.handler.timeout.IdleStateHandler;
  */
 public class RpcServerInitializer extends ChannelInitializer<Channel> {
 
+    private final RpcConfig rpcConfig;
     private final RpcServerManager rpcServerManager;
 
     public static final MessageCodec MESSAGE_CODEC = new MessageCodec();
@@ -27,7 +29,8 @@ public class RpcServerInitializer extends ChannelInitializer<Channel> {
     public static final PingMessageHandler PING_MESSAGE_HANDLER = new PingMessageHandler();
     public static final RpcRequestMessageHandler RPC_REQUEST_MESSAGE_HANDLER = new RpcRequestMessageHandler();
 
-    public RpcServerInitializer(RpcServerManager rpcServerManager) {
+    public RpcServerInitializer(RpcConfig rpcConfig, RpcServerManager rpcServerManager) {
+        this.rpcConfig = rpcConfig;
         this.rpcServerManager = rpcServerManager;
     }
 
@@ -35,6 +38,7 @@ public class RpcServerInitializer extends ChannelInitializer<Channel> {
     protected void initChannel(Channel channel) throws Exception {
         ChannelPipeline pipeline = channel.pipeline();
         NettyAttrUtil.setManager(channel, rpcServerManager);
+        NettyAttrUtil.setRpcConfig(channel, rpcConfig);
         pipeline.addLast(new IdleStateHandler(30, 0, 0));
         pipeline.addLast(new ProtocolFrameDecoder());
         pipeline.addLast(MESSAGE_CODEC);

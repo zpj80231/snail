@@ -37,16 +37,17 @@ import java.util.Set;
 @Getter
 public class RpcServerManager {
 
+    private static final RpcConfig rpcConfig = RpcConfig.loadFromFile();
     private final InetSocketAddress serverAddress;
     private final ServerRegistry serverRegistry;
     private final ServiceRegistry serviceRegistry;
 
     public RpcServerManager() {
-        this(RpcConfig.getServerPort());
+        this(rpcConfig.getServerPort());
     }
 
     public RpcServerManager(int port) {
-        this(new InetSocketAddress(RpcConfig.getServerHost(), port));
+        this(new InetSocketAddress(rpcConfig.getServerHost(), port));
     }
 
     public RpcServerManager(String host, int port) {
@@ -55,7 +56,7 @@ public class RpcServerManager {
 
     public RpcServerManager(InetSocketAddress serverAddress) {
         this(serverAddress,
-                ExtensionLoader.getExtensionLoader(ServerRegistry.class).getExtension(RpcConfig.getServerRegistry()),
+                ExtensionLoader.getExtensionLoader(ServerRegistry.class).getExtension(rpcConfig.getServerRegistry()),
                 new LocalServiceRegistry());
     }
 
@@ -77,7 +78,7 @@ public class RpcServerManager {
                 .channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
-                .childHandler(new RpcServerInitializer(this));
+                .childHandler(new RpcServerInitializer(rpcConfig, this));
         try {
             Channel channel = bootstrap.bind(serverAddress.getPort()).sync().channel();
             log.info("rpc server 启动成功，监听地址: {}", serverAddress);

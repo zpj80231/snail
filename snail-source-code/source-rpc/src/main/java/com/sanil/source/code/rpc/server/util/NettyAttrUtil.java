@@ -1,5 +1,6 @@
 package com.sanil.source.code.rpc.server.util;
 
+import com.sanil.source.code.rpc.core.config.RpcConfig;
 import com.sanil.source.code.rpc.server.RpcServerManager;
 import io.netty.channel.Channel;
 import io.netty.util.Attribute;
@@ -78,6 +79,28 @@ public class NettyAttrUtil {
     public static <T> void removeAttribute(Channel channel, AttributeKey<T> key) {
         Attribute<T> attr = channel.attr(key);
         attr.set(null); // 在 Netty 中直接 set(null) 会将属性移除
+    }
+
+    /**
+     * 设置 RpcConfig
+     *
+     * @param channel 渠道
+     * @param manager 上下文信息
+     */
+    public static void setRpcConfig(Channel channel, RpcConfig manager) {
+        Attribute<RpcConfig> attr = channel.attr(AttributeKey.valueOf("RpcConfig"));
+        attr.set(manager);
+    }
+
+    /**
+     * 获取 RpcConfig
+     *
+     * @param channel 渠道
+     * @return {@link RpcConfig }
+     */
+    public static RpcConfig getRpcConfig(Channel channel) {
+        Attribute<RpcConfig> attr = channel.attr(AttributeKey.valueOf("RpcConfig"));
+        return attr.get();
     }
 
     /**

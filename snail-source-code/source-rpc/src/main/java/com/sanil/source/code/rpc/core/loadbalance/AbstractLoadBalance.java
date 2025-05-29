@@ -1,7 +1,6 @@
 package com.sanil.source.code.rpc.core.loadbalance;
 
-import cn.hutool.core.collection.CollUtil;
-import com.sanil.source.code.rpc.core.config.RpcConfig;
+import com.sun.istack.internal.NotNull;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -13,10 +12,7 @@ import java.util.List;
 public abstract class AbstractLoadBalance implements LoadBalance {
 
     @Override
-    public InetSocketAddress select(List<InetSocketAddress> servers) {
-        if (CollUtil.isEmpty(servers)) {
-            return new InetSocketAddress(RpcConfig.getServerHost(), RpcConfig.getServerPort());
-        }
+    public InetSocketAddress select(@NotNull List<InetSocketAddress> servers) {
         if (servers.size() == 1) {
             return servers.get(0);
         }
