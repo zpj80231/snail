@@ -1,5 +1,5 @@
-# java
-0=com.sanil.source.code.rpc.core.serialize.JavaSerializer
-
 # json
 1=com.sanil.source.code.rpc.core.serialize.JsonSerializer
+# java
+2=com.sanil.source.code.rpc.core.serialize.JavaSerializer
+

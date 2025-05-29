@@ -1,5 +1,6 @@
 package com.sanil.source.code.rpc.core.codec;
 
+import com.sanil.source.code.rpc.core.compress.Compress;
 import com.sanil.source.code.rpc.core.config.RpcConfig;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
@@ -27,6 +28,9 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
     @Override
     protected void encode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
         try {
+            // 压缩方式
+            byte compressType = RpcConfig.getCompress();
+            Compress compress = ExtensionLoader.getExtensionLoader(Compress.class).getExtension(String.valueOf(compressType));
             // 获取序列化方式
             byte serializerType = RpcConfig.getSerializer();
             // int serializerType = SerializerFactory.getSerializerType(serializerName);
@@ -41,10 +45,12 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
             buf.writeInt(magicNum);
             // 1个字节的版本号
             buf.writeByte(version);
-            // 1个字节的序列化方式（jdk：0，json：1）
+            // 1个字节的序列化方式
             buf.writeByte(serializerType);
-            // 2个填充字节，补齐长度
-            buf.writeBytes(new byte[]{0, 0});
+            // 1个字节的压缩算法
+            buf.writeByte(compressType);
+            // 1个填充字节，补齐长度
+            buf.writeBytes(new byte[]{0});
             // 4个字节的消息指令类型
             buf.writeInt(messageType);
             // 8个字节的消息序号
@@ -53,6 +59,7 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
             // Serializer serializer = SerializerFactory.getSerializer(serializerType);
             Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class).getExtension(String.valueOf(serializerType));
             byte[] bytes = serializer.serialize(msg);
+            bytes = compress.compress(bytes);
             buf.writeInt(bytes.length);
             // 消息体
             buf.writeBytes(bytes);
@@ -75,10 +82,12 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
             int magicNum = buf.readInt();
             // 1个字节的版本号
             byte version = buf.readByte();
-            // 1个字节的序列化方式（jdk：0，json：1）
+            // 1个字节的序列化方式
             byte serializerType = buf.readByte();
-            // 2个填充字节，补齐长度
-            buf.readBytes(2);
+            // 1个字节，压缩算法
+            byte compressType = buf.readByte();
+            // 1个填充字节，补齐长度
+            buf.readBytes(1);
             // 4个字节的消息指令类型
             int messageType = buf.readInt();
             // 8个字节的消息序号
@@ -92,7 +101,10 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
             // log.debug("magicNum: {}, version: {}, serializerType: {}, messageType: {}, sequenceId: {}, length: {}",
             //         magicNum, version, serializerType, messageType, sequenceId, length);
 
-            // 根据序列化方式反序列化获得消息体
+            // 解压缩
+            Compress compress = ExtensionLoader.getExtensionLoader(Compress.class).getExtension(String.valueOf(compressType));
+            bytes = compress.decompress(bytes);
+            // 反序列化
             // Serializer serializer = SerializerFactory.getSerializer(serializerType);
             Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class).getExtension(String.valueOf(serializerType));
             Class<? extends Message> messageClass = MessageTypeFactory.getInstance().getMessageType(messageType);

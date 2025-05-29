@@ -14,8 +14,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SerializerEnum {
 
-    JAVA(0, "java", JavaSerializer.class),
-    JSON(1,"json", JsonSerializer.class),
+    JAVA(1, "java", JavaSerializer.class),
+    JSON(2,"json", JsonSerializer.class),
     ;
 
     private final int type;

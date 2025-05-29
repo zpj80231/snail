@@ -61,4 +61,8 @@ public class RpcConfig {
         return getProperty("rpc.discovery", "default");
     }
 
+    public static byte getCompress() {
+        return Byte.parseByte(getProperty("rpc.compress", "1"));
+    }
+
 }
