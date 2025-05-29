@@ -106,7 +106,7 @@ public class RpcClientManager {
      * @param requestMessage 请求消息
      */
     public void sendRpcRequest(RequestMessage requestMessage) {
-        InetSocketAddress socketAddress = serverDiscovery.lookup(requestMessage.getInterfaceName());
+        InetSocketAddress socketAddress = serverDiscovery.lookup(requestMessage.getRpcServiceName());
         Channel channel = connect(socketAddress);
         if (!channel.isOpen() || !channel.isActive()) {
             ChannelManager.removeAndClose(socketAddress.toString());

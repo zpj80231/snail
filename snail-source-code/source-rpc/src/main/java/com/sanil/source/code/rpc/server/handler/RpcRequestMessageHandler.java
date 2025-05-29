@@ -31,7 +31,7 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<Reques
         // 获取service实现类，本地调用
         RpcServerManager manager = NettyAttrUtil.getManager(ctx.channel());
         ServiceProvider serviceProvider = manager.getServiceProvider();
-        Object service = serviceProvider.getService(msg.getInterfaceName());
+        Object service = serviceProvider.getService(msg.getRpcServiceName());
         Method method;
         try {
             method = service.getClass().getMethod(msg.getMethodName(), msg.getParameterTypes());

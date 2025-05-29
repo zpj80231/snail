@@ -1,8 +1,11 @@
 package com.sanil.source.code.rpc.client.proxy;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import com.sanil.source.code.rpc.client.RpcClientManager;
 import com.sanil.source.code.rpc.client.util.PromiseManager;
+import com.sanil.source.code.rpc.core.annotation.RpcReference;
+import com.sanil.source.code.rpc.core.config.RpcServiceConfig;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.message.RequestMessage;
 import io.netty.util.concurrent.DefaultPromise;
@@ -23,9 +26,15 @@ import java.lang.reflect.Proxy;
 public class RpcClientProxy implements InvocationHandler {
     
     private final RpcClientManager manager;
+    private RpcServiceConfig rpcServiceConfig;
 
     public RpcClientProxy(RpcClientManager manager) {
         this.manager = manager;
+    }
+
+    public RpcClientProxy(RpcClientManager manager, RpcServiceConfig config) {
+        this.manager = manager;
+        this.rpcServiceConfig = config;
     }
 
     /**
@@ -37,6 +46,14 @@ public class RpcClientProxy implements InvocationHandler {
     @SuppressWarnings("unchecked")
     public <T> T getProxyService(Class<T> interfaceClazz) {
         ClassLoader classLoader = interfaceClazz.getClassLoader();
+        RpcReference rpcReference = interfaceClazz.getAnnotation(RpcReference.class);
+        if (rpcReference != null && rpcServiceConfig == null) {
+            rpcServiceConfig = RpcServiceConfig.builder()
+                    .serviceName(rpcReference.serviceName())
+                    .group(rpcReference.group())
+                    .version(rpcReference.version())
+                    .build();
+        }
         return (T) Proxy.newProxyInstance(classLoader, new Class[]{interfaceClazz}, this);
     }
 
@@ -54,6 +71,12 @@ public class RpcClientProxy implements InvocationHandler {
         requestMessage.setParameterTypes(method.getParameterTypes());
         requestMessage.setParameterValues(args);
         requestMessage.setReturnType(method.getReturnType());
+        if (rpcServiceConfig != null) {
+            String serviceName = rpcServiceConfig.getServiceName();
+            requestMessage.setInterfaceName(StrUtil.isNotBlank(serviceName) ? serviceName : requestMessage.getInterfaceName());
+            requestMessage.setGroup(rpcServiceConfig.getGroup());
+            requestMessage.setVersion(rpcServiceConfig.getVersion());
+        }
 
         // 发起rpc请求
         manager.sendRpcRequest(requestMessage);

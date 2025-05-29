@@ -10,6 +10,7 @@ import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
 import com.sanil.source.code.rpc.core.registry.ServerRegistry;
 import com.sanil.source.code.rpc.core.registry.ServiceProvider;
+import com.sanil.source.code.rpc.core.util.RpcServiceUtil;
 import com.sanil.source.code.rpc.server.annotation.EnableRpcServer;
 import com.sanil.source.code.rpc.server.annotation.RpcService;
 import com.sanil.source.code.rpc.server.handler.RpcServerInitializer;
@@ -115,11 +116,13 @@ public class RpcServerManager {
             if (ArrayUtil.isEmpty(aClass.getInterfaces())) {
                 continue;
             }
-            String serviceName = Optional.ofNullable(aClass.getAnnotation(RpcService.class).name())
-                    .filter(StrUtil::isNotBlank)
-                    .orElse(aClass.getInterfaces()[0].getName());
+            RpcService rpcServiceAnnotation = aClass.getAnnotation(RpcService.class);
+            String serviceName = Optional.ofNullable(rpcServiceAnnotation.name())
+                    .filter(StrUtil::isNotBlank).orElse(aClass.getInterfaces()[0].getName());
+            String group = rpcServiceAnnotation.group();
+            String version = rpcServiceAnnotation.version();
             Object service = ReflectUtil.newInstance(aClass);
-            doRegister(serviceName, service);
+            doRegister(RpcServiceUtil.getProviderName(serviceName, group, version), service);
         }
         Runtime.getRuntime().addShutdownHook(new Thread(this::destroy));
     }

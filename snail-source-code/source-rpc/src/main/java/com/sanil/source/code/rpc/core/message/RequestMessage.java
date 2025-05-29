@@ -1,6 +1,7 @@
 package com.sanil.source.code.rpc.core.message;
 
 import com.sanil.source.code.rpc.core.enums.MessageTypeEnum;
+import com.sanil.source.code.rpc.core.util.RpcServiceUtil;
 import lombok.Data;
 
 /**
@@ -16,6 +17,14 @@ public class RequestMessage extends Message {
      * 接口名称
      */
     private String interfaceName;
+    /**
+     * 接口分组
+     */
+    private String group;
+    /**
+     * 接口版本
+     */
+    private String version;
     /**
      * 方法名称
      */
@@ -37,4 +46,9 @@ public class RequestMessage extends Message {
     public MessageTypeEnum getMessageType() {
         return MessageTypeEnum.REQUEST;
     }
+
+    public String getRpcServiceName() {
+        return RpcServiceUtil.getProviderName(interfaceName, group, version);
+    }
+
 }
