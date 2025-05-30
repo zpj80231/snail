@@ -174,10 +174,8 @@ public class RpcServerManager {
      * 销毁资源
      */
     private void destroy() {
-        serviceProvider.getServices().keySet().parallelStream().forEach(serviceName -> {
-            serviceProvider.unregister(serviceName);
-            serverRegistry.unregister(serviceName, serverAddress);
-        });
+        serviceProvider.getServices().keySet().parallelStream().forEach(serviceProvider::unregister);
+        serverRegistry.getServers().keySet().parallelStream().forEach(serviceName -> serverRegistry.unregister(serviceName, serverAddress));
     }
 
 }

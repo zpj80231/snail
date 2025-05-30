@@ -50,7 +50,15 @@ public class LocalServerRegistry implements ServerRegistry {
 
     private InetSocketAddress removeToFile(String serviceName, InetSocketAddress serverAddress) {
         String addrPath = getAddrPath(serviceName, serverAddress);
+        File addrDir = FileUtil.getParent(FileUtil.file(addrPath), 1);
         boolean success = FileUtil.del(addrPath);
+        if (addrDir != null && FileUtil.isDirEmpty(addrDir)) {
+            try {
+                FileUtil.del(addrDir);
+            } catch (Exception e) {
+                // nothing
+            }
+        }
         return success ? serverAddress : null;
     }
 
