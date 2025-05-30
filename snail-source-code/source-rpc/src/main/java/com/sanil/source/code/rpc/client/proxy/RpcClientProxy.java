@@ -3,9 +3,8 @@ package com.sanil.source.code.rpc.client.proxy;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.sanil.source.code.rpc.client.RpcClientManager;
+import com.sanil.source.code.rpc.client.annotation.RpcReference;
 import com.sanil.source.code.rpc.client.util.PromiseManager;
-import com.sanil.source.code.rpc.core.annotation.RpcReference;
-import com.sanil.source.code.rpc.core.config.RpcServiceConfig;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.message.RequestMessage;
 import io.netty.util.concurrent.DefaultPromise;
@@ -15,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Optional;
 
 /**
  * RPC 客户端服务代理
@@ -26,15 +26,15 @@ import java.lang.reflect.Proxy;
 public class RpcClientProxy implements InvocationHandler {
     
     private final RpcClientManager manager;
-    private RpcServiceConfig rpcServiceConfig;
+    private RpcReferenceBuilder rpcReferenceBuilder;
 
     public RpcClientProxy(RpcClientManager manager) {
         this.manager = manager;
     }
 
-    public RpcClientProxy(RpcClientManager manager, RpcServiceConfig config) {
+    public RpcClientProxy(RpcClientManager manager, RpcReferenceBuilder config) {
         this.manager = manager;
-        this.rpcServiceConfig = config;
+        this.rpcReferenceBuilder = config;
     }
 
     /**
@@ -47,11 +47,11 @@ public class RpcClientProxy implements InvocationHandler {
     public <T> T getProxyService(Class<T> interfaceClazz) {
         ClassLoader classLoader = interfaceClazz.getClassLoader();
         RpcReference rpcReference = interfaceClazz.getAnnotation(RpcReference.class);
-        if (rpcReference != null && rpcServiceConfig == null) {
-            rpcServiceConfig = RpcServiceConfig.builder()
-                    .serviceName(rpcReference.serviceName())
+        if (rpcReference != null && rpcReferenceBuilder == null) {
+            rpcReferenceBuilder = RpcReferenceBuilder.builder()
                     .group(rpcReference.group())
                     .version(rpcReference.version())
+                    .service(interfaceClazz)
                     .build();
         }
         return (T) Proxy.newProxyInstance(classLoader, new Class[]{interfaceClazz}, this);
@@ -71,11 +71,11 @@ public class RpcClientProxy implements InvocationHandler {
         requestMessage.setParameterTypes(method.getParameterTypes());
         requestMessage.setParameterValues(args);
         requestMessage.setReturnType(method.getReturnType());
-        if (rpcServiceConfig != null) {
-            String serviceName = rpcServiceConfig.getServiceName();
+        if (rpcReferenceBuilder != null) {
+            String serviceName = Optional.ofNullable(rpcReferenceBuilder.getService()).map(Class::getName).orElse(null);
             requestMessage.setInterfaceName(StrUtil.isNotBlank(serviceName) ? serviceName : requestMessage.getInterfaceName());
-            requestMessage.setGroup(rpcServiceConfig.getGroup());
-            requestMessage.setVersion(rpcServiceConfig.getVersion());
+            requestMessage.setGroup(rpcReferenceBuilder.getGroup());
+            requestMessage.setVersion(rpcReferenceBuilder.getVersion());
         }
 
         // 发起rpc请求

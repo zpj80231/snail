@@ -1,4 +1,4 @@
-package com.sanil.source.code.rpc.core.config;
+package com.sanil.source.code.rpc.client.proxy;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,14 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RpcServiceConfig {
+public class RpcReferenceBuilder {
 
     /**
-     * 服务名称
-     */
-    private String serviceName;
-    /**
-     * 群
+     * 分组
      */
     private String group;
     /**
@@ -28,8 +24,8 @@ public class RpcServiceConfig {
      */
     private String version;
     /**
-     * 服务
+     * service
      */
-    private Object service;
+    private Class<?> service;
 
 }

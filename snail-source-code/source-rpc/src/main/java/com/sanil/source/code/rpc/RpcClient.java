@@ -1,9 +1,10 @@
 package com.sanil.source.code.rpc;
 
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.sanil.source.code.rpc.client.RpcClientManager;
 import com.sanil.source.code.rpc.client.proxy.RpcClientProxy;
-import com.sanil.source.code.rpc.core.config.RpcServiceConfig;
+import com.sanil.source.code.rpc.client.proxy.RpcReferenceBuilder;
 import com.sanil.source.code.rpc.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,28 +24,27 @@ public class RpcClient {
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public static void main(String[] args) {
-        // 模拟默认代理，加不加 @RpcReference 都行
-        RpcClientProxy proxy = new RpcClientProxy(new RpcClientManager());
+        RpcClientManager rpcClientManager = new RpcClientManager();
+
+        // 测试1：默认代理，加 @RpcReference 的话，按注解的分组和版本号走
+        RpcClientProxy proxy = new RpcClientProxy(rpcClientManager);
         HelloService helloService = proxy.getProxyService(HelloService.class);
 
-        // 为一个代理手动指定分组和版本，模拟加了 @RpcReference 情况
-        RpcServiceConfig rpcServiceConfig = RpcServiceConfig.builder()
-                .serviceName(HelloService.class.getName())
-                .group("uat")
-                .version("2.0.0")
-                .build();
-        RpcClientProxy proxyRpcReference = new RpcClientProxy(new RpcClientManager(), rpcServiceConfig);
+        // 测试2：为代理手动指定分组和版本，模拟加了 @RpcReference 情况 (方便和 Spring 集成)
+        RpcReferenceBuilder rpcReferenceBuilder = RpcReferenceBuilder.builder()
+                .group("uat").version("2.0.0").service(HelloService.class).build();
+        RpcClientProxy proxyRpcReference = new RpcClientProxy(rpcClientManager, rpcReferenceBuilder);
         HelloService helloServiceV2 = proxyRpcReference.getProxyService(HelloService.class);
 
-        // 可随时启动关闭多个服务端，查看客户端负载均衡
+        // 测试3：可随时启动关闭多个服务端，查看客户端自动负载均衡
         int i = 0;
         while (i <= Integer.MAX_VALUE) {
             ThreadUtil.sleep(1000);
-            if (i % 2 == 0) {
-                executorService.execute(new Controller(helloService, " --> 默认hi-" + i++));
-            } else {
-                executorService.execute(new Controller(helloServiceV2, " --> hi-手动模拟@RpcReference-" + i++));
+            if (RandomUtil.randomInt(10) > 7) {
+                executorService.execute(new Controller(helloServiceV2, " --> 手动hi-模拟@RpcReference-" + i++));
+                continue;
             }
+            executorService.execute(new Controller(helloService, " --> 默认hi-" + i++));
         }
     }
 

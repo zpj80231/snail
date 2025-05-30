@@ -1,4 +1,4 @@
-package com.sanil.source.code.rpc.core.annotation;
+package com.sanil.source.code.rpc.client.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
