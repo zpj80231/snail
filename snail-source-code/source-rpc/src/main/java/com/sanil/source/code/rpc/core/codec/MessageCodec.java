@@ -7,7 +7,7 @@ import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
 import com.sanil.source.code.rpc.core.factory.MessageTypeFactory;
 import com.sanil.source.code.rpc.core.message.Message;
 import com.sanil.source.code.rpc.core.serialize.Serializer;
-import com.sanil.source.code.rpc.server.util.NettyAttrUtil;
+import com.sanil.source.code.rpc.core.util.NettyAttrUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

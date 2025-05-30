@@ -1,4 +1,4 @@
-package com.sanil.source.code.rpc.client.util;
+package com.sanil.source.code.rpc.core.util;
 
 import io.netty.channel.Channel;
 import lombok.NoArgsConstructor;

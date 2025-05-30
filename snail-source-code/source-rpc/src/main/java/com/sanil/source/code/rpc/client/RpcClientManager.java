@@ -2,12 +2,12 @@ package com.sanil.source.code.rpc.client;
 
 import cn.hutool.core.collection.CollUtil;
 import com.sanil.source.code.rpc.client.handler.RpcClientInitializer;
-import com.sanil.source.code.rpc.client.util.ChannelManager;
 import com.sanil.source.code.rpc.core.config.RpcConfig;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
 import com.sanil.source.code.rpc.core.loadbalance.ServerDiscovery;
 import com.sanil.source.code.rpc.core.message.RequestMessage;
+import com.sanil.source.code.rpc.core.util.ChannelManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;

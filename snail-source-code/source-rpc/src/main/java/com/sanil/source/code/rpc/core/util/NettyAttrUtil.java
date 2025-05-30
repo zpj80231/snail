@@ -1,4 +1,4 @@
-package com.sanil.source.code.rpc.server.util;
+package com.sanil.source.code.rpc.core.util;
 
 import com.sanil.source.code.rpc.core.config.RpcConfig;
 import com.sanil.source.code.rpc.server.RpcServerManager;

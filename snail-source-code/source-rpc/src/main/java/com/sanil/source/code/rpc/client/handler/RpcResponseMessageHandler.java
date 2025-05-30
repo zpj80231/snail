@@ -1,8 +1,8 @@
 package com.sanil.source.code.rpc.client.handler;
 
-import com.sanil.source.code.rpc.client.util.PromiseManager;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.message.ResponseMessage;
+import com.sanil.source.code.rpc.core.util.PromiseManager;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
