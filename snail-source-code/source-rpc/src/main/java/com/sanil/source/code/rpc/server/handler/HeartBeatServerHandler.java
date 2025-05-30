@@ -29,6 +29,12 @@ public class HeartBeatServerHandler extends ChannelDuplexHandler {
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        log.debug("channel:{} 已连接", ctx.channel());
+        super.channelActive(ctx);
+    }
+
+    @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.debug("channel:{} 已断开连接", ctx.channel());
         super.channelInactive(ctx);
