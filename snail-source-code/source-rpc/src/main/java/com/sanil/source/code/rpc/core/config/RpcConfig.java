@@ -28,7 +28,7 @@ public class RpcConfig {
     private String serverRegistry = "local";
     private String serviceProvider = "local";
     private String discovery = "default";
-    private byte compress = 1;
+    private String compress = "gzip";
 
     public static RpcConfig loadFromFile() {
         Properties props = new Properties();
@@ -43,12 +43,12 @@ public class RpcConfig {
         RpcConfig config = new RpcConfig();
         config.setServerHost(props.getProperty("rpc.server.host", config.getServerHost()));
         config.setServerPort(Integer.parseInt(props.getProperty("rpc.server.port", String.valueOf(config.getServerPort()))));
-        config.setSerializer(props.getProperty("rpc.serializer", String.valueOf(config.getSerializer())));
+        config.setSerializer(props.getProperty("rpc.serializer", config.getSerializer()));
         config.setLoadBalance(props.getProperty("rpc.client.loadbalance", config.getLoadBalance()));
         config.setServerRegistry(props.getProperty("rpc.registry.server", config.getServerRegistry()));
         config.setServerRegistry(props.getProperty("rpc.registry.provider", config.getServerRegistry()));
         config.setDiscovery(props.getProperty("rpc.discovery", config.getDiscovery()));
-        config.setCompress(Byte.parseByte(props.getProperty("rpc.compress", String.valueOf(config.getCompress()))));
+        config.setCompress(props.getProperty("rpc.compress", config.getCompress()));
 
         return config;
     }

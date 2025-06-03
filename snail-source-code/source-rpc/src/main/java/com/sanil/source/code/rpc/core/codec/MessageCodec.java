@@ -2,6 +2,7 @@ package com.sanil.source.code.rpc.core.codec;
 
 import com.sanil.source.code.rpc.core.compress.Compress;
 import com.sanil.source.code.rpc.core.config.RpcConfig;
+import com.sanil.source.code.rpc.core.enums.CompressEnum;
 import com.sanil.source.code.rpc.core.enums.SerializerEnum;
 import com.sanil.source.code.rpc.core.exception.RpcException;
 import com.sanil.source.code.rpc.core.extension.ExtensionLoader;
@@ -32,11 +33,13 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         RpcConfig config = NettyAttrUtil.getRpcConfig(ctx.channel());
         try {
             // 压缩方式
-            byte compressType = config.getCompress();
-            Compress compress = ExtensionLoader.getExtensionLoader(Compress.class).getExtension(String.valueOf(compressType));
+            String compressName = config.getCompress();
+            byte compressType = CompressEnum.getType(compressName);
+            Compress compress = ExtensionLoader.getExtensionLoader(Compress.class).getExtension(compressName);
             // 获取序列化方式
             String serializerName = config.getSerializer();
             byte serializerType = SerializerEnum.getType(serializerName);
+            Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class).getExtension(serializerName);
 
             int magicNum = 8023;
             byte version = 1;
@@ -59,8 +62,6 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
             // 8个字节的消息序号
             buf.writeLong(sequenceId);
             // 4个字节的消息体长度
-            // Serializer serializer = SerializerFactory.getSerializer(serializerType);
-            Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class).getExtension(serializerName);
             byte[] bytes = serializer.serialize(msg);
             bytes = compress.compress(bytes);
             buf.writeInt(bytes.length);
@@ -90,6 +91,7 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
             String serializerName = SerializerEnum.getName(serializerType);
             // 1个字节，压缩算法
             byte compressType = buf.readByte();
+            String compressName = CompressEnum.getName(compressType);
             // 1个填充字节，补齐长度
             buf.readBytes(1);
             // 4个字节的消息指令类型
@@ -106,10 +108,9 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
             //         magicNum, version, serializerType, messageType, sequenceId, length);
 
             // 解压缩
-            Compress compress = ExtensionLoader.getExtensionLoader(Compress.class).getExtension(String.valueOf(compressType));
+            Compress compress = ExtensionLoader.getExtensionLoader(Compress.class).getExtension(compressName);
             bytes = compress.decompress(bytes);
             // 反序列化
-            // Serializer serializer = SerializerFactory.getSerializer(serializerType);
             Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class).getExtension(serializerName);
             Class<? extends Message> messageClass = MessageTypeFactory.getInstance().getMessageType(messageType);
             Message message = serializer.deserialize(bytes, messageClass);
