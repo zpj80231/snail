@@ -23,6 +23,8 @@ public class RpcConfig {
     private static final String path = "/rpc.properties";
     private String serverHost = "127.0.0.1";
     private int serverPort = 8023;
+    private int magicNum = 8023;
+    private byte version = (byte) 0x01;
     private String serializer = "json";
     private String loadBalance = "roundRobin";
     private String serverRegistry = "local";
@@ -42,6 +44,8 @@ public class RpcConfig {
 
         RpcConfig config = new RpcConfig();
         config.setServerHost(props.getProperty("rpc.server.host", config.getServerHost()));
+        config.setServerPort(Integer.parseInt(props.getProperty("rpc.magicNum", String.valueOf(config.getMagicNum()))));
+        config.setServerPort(Byte.parseByte(props.getProperty("rpc.version", String.valueOf(config.getVersion()))));
         config.setServerPort(Integer.parseInt(props.getProperty("rpc.server.port", String.valueOf(config.getServerPort()))));
         config.setSerializer(props.getProperty("rpc.serializer", config.getSerializer()));
         config.setLoadBalance(props.getProperty("rpc.client.loadbalance", config.getLoadBalance()));

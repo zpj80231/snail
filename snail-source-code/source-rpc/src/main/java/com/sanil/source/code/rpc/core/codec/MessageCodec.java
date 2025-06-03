@@ -41,8 +41,8 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
             byte serializerType = SerializerEnum.getType(serializerName);
             Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class).getExtension(serializerName);
 
-            int magicNum = 8023;
-            byte version = 1;
+            int magicNum = config.getMagicNum();
+            byte version = config.getVersion();
             int messageType = msg.getMessageType().getType();
             long sequenceId = msg.getSequenceId();
 
