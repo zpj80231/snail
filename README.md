@@ -30,6 +30,9 @@
 
 ## 手写 Netty RPC
 
+- [手写 RPC 01：从零实现到扩展性设计](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-01.html)
+- [手写 RPC 02：项目结构及远程调用](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-02.html)
+
 - 基础定义：
   - 自定义传输协议
   - 自定义编解码器
@@ -56,7 +59,3 @@
   - 服务注册：基于 SPI 实现动态扩展
   - 服务发现：基于 SPI 实现动态扩展
   - 压缩算法：基于 SPI 实现动态扩展
-
-- [手写 RPC 01：从零实现到扩展性设计](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-01.html)
-- [手写 RPC 02：项目结构及远程调用](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-02.html)
-
