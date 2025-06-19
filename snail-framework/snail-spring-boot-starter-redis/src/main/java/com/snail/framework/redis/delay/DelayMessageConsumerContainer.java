@@ -3,11 +3,14 @@ package com.snail.framework.redis.delay;
 import cn.hutool.core.util.StrUtil;
 import com.snail.framework.redis.delay.annotation.DelayQueueListener;
 import com.snail.framework.redis.delay.domain.DelayMessage;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * 延迟消息消费器容器，封装了具体的消费器、监听器。
@@ -16,6 +19,7 @@ import java.lang.reflect.Parameter;
  * @date 2024/5/7
  */
 @Slf4j
+@Getter
 public class DelayMessageConsumerContainer {
 
     private final Object bean;
@@ -58,6 +62,19 @@ public class DelayMessageConsumerContainer {
                     (messageBody == null ? "T" : messageBody.getClass().getSimpleName()));
         }
         method.invoke(bean, args);
+    }
+
+    @Override
+    public String toString() {
+        String className = bean.getClass().getName();
+        String methodName = method.getName();
+        String paramTypes = Arrays.stream(method.getParameterTypes())
+                .map(Class::getSimpleName)
+                .collect(Collectors.joining(", "));
+        int beanHash = System.identityHashCode(bean);
+
+        return String.format("{class=%s, method=%s(%s), beanHash=%d}",
+                className, methodName, paramTypes, beanHash);
     }
 
 }

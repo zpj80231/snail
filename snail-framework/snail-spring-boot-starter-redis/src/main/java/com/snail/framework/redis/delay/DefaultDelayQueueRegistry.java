@@ -1,6 +1,7 @@
 package com.snail.framework.redis.delay;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.snail.framework.redis.delay.annotation.DelayQueueListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
@@ -49,7 +50,12 @@ public class DefaultDelayQueueRegistry implements DelayQueueRegistry, BeanPostPr
             listenerMap.forEach((method, listener) -> {
                 DelayMessageConsumerContainer consumerContainer = new DelayMessageConsumerContainer(bean, method, listener);
                 for (String queue : listener.queues()) {
-                    consumerContainerMap.computeIfAbsent(queue, k -> consumerContainer);
+                    DelayMessageConsumerContainer realContainer = consumerContainerMap.computeIfAbsent(queue, k -> consumerContainer);
+                    if (realContainer != consumerContainer) {
+                        String message = StrUtil.format("The queue name:{} consumer is repeated, already exists:{}, but current is:{}",
+                                queue, realContainer, consumerContainer);
+                        throw new IllegalArgumentException(message);
+                    }
                 }
             });
         }

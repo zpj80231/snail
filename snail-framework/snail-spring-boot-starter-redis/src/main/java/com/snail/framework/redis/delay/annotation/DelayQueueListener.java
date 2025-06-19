@@ -20,8 +20,16 @@ import java.lang.annotation.Target;
  * <p>
  * <pre>
  * {@code @DelayQueueListener({QUEUE_NAME_1, QUEUE_NAME_2})
- * public void consumer(DelayMessage<Object> message, Cat cat, String useless) {
- *     log.info("Received, cat: {}, message: {}", cat, message);
+ * public void consumer(DelayMessage<Object> message) {
+ *     log.info("Received, message: {}", message);
+ *     counter.decrementAndGet();
+ * }
+ * }
+ * </pre>
+ * <pre>
+ * {@code @DelayQueueListener({QUEUE_NAME_1, QUEUE_NAME_2})
+ * public void consumer(Cat cat) {
+ *     log.info("Received, cat: {}", cat);
  *     counter.decrementAndGet();
  * }
  * }

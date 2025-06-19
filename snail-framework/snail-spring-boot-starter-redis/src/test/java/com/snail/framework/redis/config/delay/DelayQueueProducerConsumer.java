@@ -54,7 +54,7 @@ public class DelayQueueProducerConsumer {
                 delayMessage.setBody(JSON.toJSONString(delayMessage));
             }
 
-            log.info("Send delayMessage: {}", JSON.toJSONString(delayMessage));
+            log.info("Send delayMessage1: {}", JSON.toJSONString(delayMessage));
             delayQueue.offer(delayMessage);
             counter.incrementAndGet();
         }
@@ -78,22 +78,36 @@ public class DelayQueueProducerConsumer {
      * 示例：
      * <pre>
      * {@code @DelayQueueListener({QUEUE_NAME_1, QUEUE_NAME_2})
-     * public void consumer(DelayMessage<Object> message, Cat cat, String useless) {
-     *     log.info("Received, cat: {}, message: {}", cat, message);
+     * public void consumer(DelayMessage<Object> message) {
+     *     log.info("Received, message: {}", message);
+     *     counter.decrementAndGet();
+     * }
+     * }
+     * </pre>
+     * <pre>
+     * {@code @DelayQueueListener({QUEUE_NAME_1, QUEUE_NAME_2})
+     * public void consumer(Cat cat) {
+     *     log.info("Received, cat: {}", cat);
      *     counter.decrementAndGet();
      * }
      * }
      * </pre>
      * </p>
      *
-     * @param message 消息，必须为 {@link DelayMessage} 类型
-     * @param cat     DelayMessage body(泛型) 的具体的类型，例如 {@link Cat}
-     * @param useless 多余的无用参数
+     * @param cat     Cat 类型的消息
+     * @param str     str 类型消息
+     * @param message 不知道啥类型的，必须为 {@link DelayMessage} 类型
      */
     @DelayQueueListener({QUEUE_NAME_1, QUEUE_NAME_2})
-    public void consumer(DelayMessage<Object> message, Cat cat, String useless) {
-        log.info("Received, cat: {}, message: {}", cat, message);
+    public void consumer(Cat cat, String str, DelayMessage<Object> message) {
+        log.info("Received, cat:{}, str:{}, message:{}", cat, str, message);
         counter.decrementAndGet();
     }
+
+    // @DelayQueueListener({QUEUE_NAME_1})
+    // public void consumer(Cat cat) {
+    //     log.info("Received, cat: {}", cat);
+    //     counter.decrementAndGet();
+    // }
 
 }
