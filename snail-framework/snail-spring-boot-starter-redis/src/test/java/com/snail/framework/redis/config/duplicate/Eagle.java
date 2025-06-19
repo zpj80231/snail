@@ -16,12 +16,18 @@ public class Eagle {
         return count;
     }
 
+    /**
+     * 3秒内不允许重复
+     */
     @DuplicateSubmit(expire = 3L)
     public void fly() {
         count++;
         log.info("fly...");
     }
 
+    /**
+     * key是EL表达式解析后的值（默认1秒不允许重复）
+     */
     @DuplicateSubmit(key = "#rounds")
     public void flyCount(int rounds) {
         for (int i = 0; i < rounds; i++) {

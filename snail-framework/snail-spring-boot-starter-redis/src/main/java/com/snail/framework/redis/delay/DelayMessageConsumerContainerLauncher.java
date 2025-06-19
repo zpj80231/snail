@@ -92,7 +92,6 @@ public class DelayMessageConsumerContainerLauncher implements InitializingBean {
                         } catch (Exception e) {
                             // 如果处理消息时出现异常，将消息传递到死信队列消费者进行处理
                             delayMessageDeadLetterConsumer.receivedMessage(message, e);
-                            log.error("队列线程处理异常", e);
                         }
                     });
                 } catch (InterruptedException e) {

@@ -31,7 +31,7 @@ public @interface DoubleCache {
     String key() default "";
 
     /**
-     * Redis 过期时间，单位，秒。默认 5 分钟。
+     * 本地缓存 过期时间，单位，秒。默认 5 分钟。
      *
      * @return long
      */

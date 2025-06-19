@@ -31,7 +31,10 @@ public class Dog {
         return DATAS.get(key);
     }
 
-    @DoubleCache(expireOfRedis = 5, key = "#key", redisCached = false)
+    /**
+     * 自定义key，本地缓存过期时间是5秒，不启用redis缓存
+     */
+    @DoubleCache(expireOfLocal = 5, key = "#key", redisCached = false)
     public String queryValueWithElKeyOnlyLocalCache(String key) {
         log.info("queryValueWithElKeyOnlyLocalCache:[{}] from db", key);
         return DATAS.get(key);
@@ -50,6 +53,9 @@ public class Dog {
         return DATAS;
     }
 
+    /**
+     * 自定义key，本地缓存过期时间是6秒，redis缓存过期时间是10秒
+     */
     @DoubleCache(key = "#key", expireOfLocal = 6, expireOfRedis = 10)
     public String queryValueWithCustomExpire(String key) {
         log.info("queryValueWithCustomExpire:[{}] from db", key);
