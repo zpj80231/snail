@@ -24,6 +24,17 @@
 - [手写 Spring 14 - 循环引用及三级缓存](https://zpj80231.github.io/znote/views/source/code/spring/spring-source-14.html)
 - [手写 Spring 15 - 数据类型转换](https://zpj80231.github.io/znote/views/source/code/spring/spring-source-15.html)
 
+## 手写 Spring Boot Starter
+
+开箱即用的分布式解决方案，优雅的注解驱动编程模型，轻量无依赖的 Spring Boot 集成。
+
+- [手写 Spring Boot Starter：实现分布式锁、防重攻击、二级缓存与延时队列](https://zpj80231.github.io/znote/views/source/code/starter/spring-boot-starter-redis.html)
+
+1. **分布式锁**：通过注解实现声明式加锁，支持超时或阻塞。（一个注解搞定）
+2. **防重攻击**：基于用户指纹或请求参数生成唯一标识，防止重复提交。（一个注解搞定）
+3. **二级缓存**：整合 Caffeine 与 Redis，优化高并发读性能。（读、写、删，一个注解搞定）
+4. **延时队列**：利用 Redis ZSet 实现消息延时投递，支持自定义消费逻辑。（发消息一行代码搞定，监听消息一个注解搞定）
+
 ## 手写 JDBC 连接池
 
 - [手写 JDBC 连接池](https://zpj80231.github.io/znote/views/source/code/jdbc/jdbc-pool-source-01.html)
