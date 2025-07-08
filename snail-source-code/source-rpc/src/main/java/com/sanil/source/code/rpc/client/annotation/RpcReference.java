@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * @author zhangpj
  * @date 2025/5/29
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RpcReference {
 
