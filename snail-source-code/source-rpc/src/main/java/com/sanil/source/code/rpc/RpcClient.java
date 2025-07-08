@@ -9,7 +9,6 @@ import com.sanil.source.code.rpc.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author zhangpengjun
@@ -21,7 +20,7 @@ public class RpcClient {
     /**
      * 用于请求发起，模拟一次请求
      */
-    private static final ExecutorService executorService = Executors.newCachedThreadPool();
+    private static final ExecutorService executorService = ThreadUtil.newExecutor(10);
 
     public static void main(String[] args) {
         RpcClientManager rpcClientManager = new RpcClientManager();
@@ -37,14 +36,13 @@ public class RpcClient {
         HelloService helloServiceV2 = proxyRpcReference.getProxyService(HelloService.class);
 
         // 测试3：可随时启动关闭多个服务端，查看客户端自动负载均衡
-        int i = 0;
-        while (i <= Integer.MAX_VALUE) {
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
             ThreadUtil.sleep(1000);
             if (RandomUtil.randomInt(10) > 7) {
-                executorService.execute(new Controller(helloServiceV2, " --> 手动hi-模拟@RpcReference-" + i++));
+                executorService.execute(new Controller(helloServiceV2, " --> 手动hi-模拟@RpcReference-" + i));
                 continue;
             }
-            executorService.execute(new Controller(helloService, " --> 默认hi-" + i++));
+            executorService.execute(new Controller(helloService, " --> 默认hi-" + i));
         }
     }
 

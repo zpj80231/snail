@@ -25,7 +25,7 @@ public class SpringRpcClientScanExample {
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringRpcClientScanExample.class);
         HelloController helloController = context.getBean(HelloController.class);
-        while (true) {
+        for (;;) {
             try {
                 ThreadUtil.sleep(1000);
                 helloController.hello("cat");
