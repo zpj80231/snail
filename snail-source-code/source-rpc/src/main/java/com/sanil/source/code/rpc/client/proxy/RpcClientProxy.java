@@ -86,7 +86,7 @@ public class RpcClientProxy implements InvocationHandler {
         if (promise.isSuccess()) {
             return promise.getNow();
         } else {
-            throw new RpcException("远程调用异常", promise.cause());
+            throw new RpcException(promise.cause());
         }
     }
 
