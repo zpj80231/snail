@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.snail</groupId>
+        <artifactId>source-rpc</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>source-rpc-client</artifactId>
+    <description>Spring 和 RPC Client 集成使用 Demo</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.snail</groupId>
+            <artifactId>source-rpc-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.snail</groupId>
+            <artifactId>source-rpc-core</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.snail</groupId>
+            <artifactId>snail-spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

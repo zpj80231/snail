@@ -5,18 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.snail</groupId>
-        <artifactId>snail-source-code</artifactId>
+        <artifactId>source-rpc</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>source-rpc</artifactId>
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>source-rpc-core</module>
-        <module>source-rpc-server</module>
-        <module>source-rpc-client</module>
-        <module>source-rpc-api</module>
-    </modules>
+    <artifactId>source-rpc-api</artifactId>
 
 </project>

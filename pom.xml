@@ -30,6 +30,7 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- snail 依赖管理 -->
             <dependency>
                 <groupId>com.snail</groupId>
                 <artifactId>snail-dependency</artifactId>
