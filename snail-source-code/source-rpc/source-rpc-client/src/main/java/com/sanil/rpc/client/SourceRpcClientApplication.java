@@ -1,6 +1,6 @@
 package com.sanil.rpc.client;
 
-import com.sanil.source.code.rpc.spring.EnableRpcScan;
+import com.sanil.source.code.rpc.spring.EnableRpcClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author zhangpj
  * @date 2025/7/8
  */
-@EnableRpcScan("com.snail.rpc")
+@EnableRpcClient
 @SpringBootApplication
 public class SourceRpcClientApplication {
 

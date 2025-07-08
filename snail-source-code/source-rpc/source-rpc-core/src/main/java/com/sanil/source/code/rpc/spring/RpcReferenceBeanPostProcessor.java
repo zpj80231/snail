@@ -20,11 +20,11 @@ import java.lang.reflect.Field;
  */
 @Slf4j
 @Component
-public class RpcServiceBeanPostProcessor implements BeanPostProcessor {
+public class RpcReferenceBeanPostProcessor implements BeanPostProcessor {
 
     private final RpcClientManager rpcClientManager;
 
-    public RpcServiceBeanPostProcessor() {
+    public RpcReferenceBeanPostProcessor() {
         rpcClientManager = new RpcClientManager();
     }
 

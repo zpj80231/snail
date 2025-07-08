@@ -1,7 +1,7 @@
 package com.sanil.source.code.rpc;
 
 import com.sanil.source.code.rpc.server.RpcServerManager;
-import com.sanil.source.code.rpc.spring.EnableRpcScan;
+import com.sanil.source.code.rpc.spring.EnableRpcService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @author zhangpj
  * @date 2025/7/7
  */
-@EnableRpcScan
+@EnableRpcService
 public class SpringRpcServerScanExample {
 
     public static void main(String[] args) {

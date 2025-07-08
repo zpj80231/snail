@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -108,12 +109,25 @@ public class RpcServerManager {
                 throw new RpcException("启动类未添加或未找到 @EnableRpcServer 注解");
             }
         }
-        String scanPackage = Optional.ofNullable(enableRpcServer.value())
-                .filter(StrUtil::isNotBlank)
-                .orElse(mainClassPath.substring(0, mainClassPath.lastIndexOf(".")));
-        Set<Class<?>> classSet = ClassUtil.scanPackageByAnnotation(scanPackage, RpcService.class);
+
+        // 处理多个包路径
+        Set<Class<?>> classSet = new HashSet<>();
+        String[] basePackages = enableRpcServer.value();
+        if (ArrayUtil.isEmpty(basePackages) || (basePackages.length == 1 && StrUtil.isBlank(basePackages[0]))) {
+            // 没有指定包路径，使用默认包路径
+            String defaultPackage = mainClassPath.substring(0, mainClassPath.lastIndexOf("."));
+            classSet.addAll(ClassUtil.scanPackageByAnnotation(defaultPackage, RpcService.class));
+        } else {
+            // 扫描所有指定的包路径
+            for (String basePackage : basePackages) {
+                if (StrUtil.isNotBlank(basePackage)) {
+                    classSet.addAll(ClassUtil.scanPackageByAnnotation(basePackage, RpcService.class));
+                }
+            }
+        }
         for (Class<?> aClass : classSet) {
-            if (ArrayUtil.isEmpty(aClass.getInterfaces())) {
+            // 检查类是否为接口（如果是接口则跳过，只扫描实现类）
+            if (ArrayUtil.isEmpty(aClass.getInterfaces()) || aClass.isInterface() || Modifier.isAbstract(aClass.getModifiers())) {
                 continue;
             }
             RpcService rpcServiceAnnotation = aClass.getAnnotation(RpcService.class);

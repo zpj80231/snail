@@ -2,7 +2,7 @@ package com.sanil.rpc.server;
 
 import cn.hutool.core.thread.ThreadUtil;
 import com.sanil.source.code.rpc.server.RpcServerManager;
-import com.sanil.source.code.rpc.server.annotation.EnableRpcServer;
+import com.sanil.source.code.rpc.spring.EnableRpcService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
  * @author zhangpj
  * @date 2025/7/8
  */
-@EnableRpcServer
+@EnableRpcService
 @SpringBootApplication
 public class SourceRpcServerApplication {
 

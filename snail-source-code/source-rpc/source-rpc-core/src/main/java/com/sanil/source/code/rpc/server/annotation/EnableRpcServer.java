@@ -1,9 +1,7 @@
 package com.sanil.source.code.rpc.server.annotation;
 
-import com.sanil.source.code.rpc.spring.RpcServiceScannerRegistrar;
-import org.springframework.context.annotation.Import;
-
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -13,11 +11,9 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-@Import(RpcServiceScannerRegistrar.class)
+@Inherited
 public @interface EnableRpcServer {
 
-    String value() default "";
-
-    String[] basePackage() default {};
+    String[] value() default {};
 
 }

@@ -29,7 +29,7 @@ public class RpcServiceScannerRegistrar implements ImportBeanDefinitionRegistrar
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         // 获取启动注解的属性
         AnnotationAttributes attributes = AnnotationAttributes.fromMap(
-                importingClassMetadata.getAnnotationAttributes(EnableRpcScan.class.getName()));
+                importingClassMetadata.getAnnotationAttributes(EnableRpcService.class.getName()));
         if (attributes == null) {
             log.warn("annotation not found on {}", importingClassMetadata.getClassName());
             return;
@@ -69,9 +69,14 @@ public class RpcServiceScannerRegistrar implements ImportBeanDefinitionRegistrar
             basePackages.addAll(Arrays.asList(valuePackages));
         }
         // 从 basePackages 属性获取
-        String[] basePackageArray = attributes.getStringArray("basePackage");
+        String[] basePackageArray = attributes.getStringArray("basePackages");
         if (basePackageArray.length > 0) {
             basePackages.addAll(Arrays.asList(basePackageArray));
+        }
+        // 从 basePackageClasses 获取
+        Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
+        for (Class<?> basePackageClass : basePackageClasses) {
+            basePackages.add(ClassUtils.getPackageName(basePackageClass));
         }
         // 如果没有指定任何包，使用标注注解的类所在的包
         if (basePackages.isEmpty()) {

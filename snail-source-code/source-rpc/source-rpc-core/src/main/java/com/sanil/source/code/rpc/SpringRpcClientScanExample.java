@@ -3,14 +3,11 @@ package com.sanil.source.code.rpc;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.sanil.source.code.rpc.client.annotation.RpcReference;
-import com.sanil.source.code.rpc.server.serviceImpl.HelloServiceImpl;
 import com.sanil.source.code.rpc.service.HelloService;
-import com.sanil.source.code.rpc.spring.EnableRpcScan;
+import com.sanil.source.code.rpc.spring.EnableRpcClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * 示例：RPC客户端和Spring集成，使用方式
@@ -19,7 +16,7 @@ import javax.annotation.Resource;
  * @date 2025/7/7
  */
 @Slf4j
-@EnableRpcScan
+@EnableRpcClient
 public class SpringRpcClientScanExample {
 
     public static void main(String[] args) {
@@ -45,8 +42,6 @@ public class SpringRpcClientScanExample {
         private HelloService helloServiceUat;
         @RpcReference(group = "unknow", version = "unknow")
         private HelloService helloServiceUnknow;
-        @Resource(type = HelloServiceImpl.class)
-        private HelloService helloServiceAutowired;
 
         public void hello(String msg) {
             int randomInt = RandomUtil.randomInt(15);
