@@ -3,9 +3,11 @@ package com.sanil.source.code.rpc.spring;
 import com.sanil.source.code.rpc.server.annotation.RpcService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.ClassUtils;
@@ -23,7 +25,14 @@ import java.util.stream.Collectors;
  * @date 2025/7/7
  */
 @Slf4j
-public class RpcServiceScannerRegistrar implements ImportBeanDefinitionRegistrar {
+public class RpcServiceScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+
+    private ResourceLoader resourceLoader;
+
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -45,6 +54,7 @@ public class RpcServiceScannerRegistrar implements ImportBeanDefinitionRegistrar
         // 创建并配置扫描器
         ClassPathBeanDefinitionScanner rpcServiceScanner = new ClassPathBeanDefinitionScanner(registry);
         rpcServiceScanner.addIncludeFilter(new AnnotationTypeFilter(RpcService.class));
+        rpcServiceScanner.setResourceLoader(resourceLoader);
 
         // 执行扫描
         String[] packagesToScan = basePackages.toArray(new String[0]);

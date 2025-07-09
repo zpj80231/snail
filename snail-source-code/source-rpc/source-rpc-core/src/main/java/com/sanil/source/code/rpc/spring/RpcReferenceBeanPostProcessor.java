@@ -7,7 +7,6 @@ import com.sanil.source.code.rpc.client.proxy.RpcReferenceBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -19,7 +18,6 @@ import java.lang.reflect.Field;
  * @date 2025/7/7
  */
 @Slf4j
-@Component
 public class RpcReferenceBeanPostProcessor implements BeanPostProcessor {
 
     private final RpcClientManager rpcClientManager;
