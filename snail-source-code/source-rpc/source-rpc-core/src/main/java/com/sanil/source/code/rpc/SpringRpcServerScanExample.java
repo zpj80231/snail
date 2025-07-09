@@ -1,9 +1,9 @@
 package com.sanil.source.code.rpc;
 
-import com.sanil.source.code.rpc.server.RpcServerManager;
+import cn.hutool.json.JSONUtil;
 import com.sanil.source.code.rpc.spring.EnableRpcService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.stereotype.Component;
 
 /**
  * 示例：RPC服务端和Spring集成，使用方式
@@ -11,18 +11,13 @@ import org.springframework.stereotype.Component;
  * @author zhangpj
  * @date 2025/7/7
  */
+@Slf4j
 @EnableRpcService
 public class SpringRpcServerScanExample {
 
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringRpcServerScanExample.class);
-        SpringRpcServerManager manager = context.getBean(SpringRpcServerManager.class);
-        manager.start();
-    }
-
-    @Component
-    static class SpringRpcServerManager extends RpcServerManager {
-
+        log.info("Spring启动成功, context:{}", JSONUtil.toJsonPrettyStr(context.getBeanDefinitionNames()));
     }
 
 }

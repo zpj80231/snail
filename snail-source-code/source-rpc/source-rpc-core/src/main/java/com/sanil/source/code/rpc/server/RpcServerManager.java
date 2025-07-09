@@ -46,6 +46,11 @@ public class RpcServerManager {
     private final ServerRegistry serverRegistry;
     private final ServiceProvider serviceProvider;
 
+    NioEventLoopGroup bossGroup;
+    NioEventLoopGroup workerGroup;
+    ServerBootstrap bootstrap;
+    Channel channel;
+
     public RpcServerManager() {
         this(RPC_CONFIG.getServerPort());
     }
@@ -75,18 +80,18 @@ public class RpcServerManager {
      * rpc服务端启动，同步
      */
     public void start() {
-        NioEventLoopGroup bossGroup = new NioEventLoopGroup();
-        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
-        ServerBootstrap bootstrap = new ServerBootstrap();
+        bossGroup = new NioEventLoopGroup();
+        workerGroup = new NioEventLoopGroup();
+        bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new RpcServerInitializer(RPC_CONFIG, this));
         try {
-            Channel channel = bootstrap.bind(serverAddress.getPort()).sync().channel();
+            channel = bootstrap.bind(serverAddress.getPort()).sync().channel();
             log.info("rpc server 启动成功，监听地址: {}", serverAddress);
-            channel.closeFuture().sync().addListener(future -> destroy());
+            channel.closeFuture().sync().addListener(future -> destroyResource());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("rpc server 启动失败", e);
@@ -155,7 +160,7 @@ public class RpcServerManager {
             Object service = ReflectUtil.newInstance(aClass);
             doRegister(RpcServiceUtil.getProviderName(serviceName, group, version), service);
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(this::destroy));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::destroyResource));
     }
 
     /**
@@ -204,9 +209,24 @@ public class RpcServerManager {
     /**
      * 销毁资源
      */
-    private void destroy() {
+    private void destroyResource() {
         serviceProvider.getServices().keySet().parallelStream().forEach(serviceProvider::unregister);
         serverRegistry.getServers().keySet().parallelStream().forEach(serviceName -> serverRegistry.unregister(serviceName, serverAddress));
+    }
+
+    /**
+     * 销毁 rpc 服务
+     */
+    public void destroy() {
+        if (channel != null) {
+            channel.close();
+        }
+        if (bossGroup != null) {
+            bossGroup.shutdownGracefully();
+        }
+        if (workerGroup != null) {
+            workerGroup.shutdownGracefully();
+        }
     }
 
 }

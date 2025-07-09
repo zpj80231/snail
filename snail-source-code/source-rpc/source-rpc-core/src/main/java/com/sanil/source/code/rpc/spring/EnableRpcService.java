@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-@Import(RpcServiceScannerRegistrar.class)
+@Import({RpcServiceScannerRegistrar.class, RpcServerAutoStarter.class})
 @EnableRpcServer
 public @interface EnableRpcService {
 
