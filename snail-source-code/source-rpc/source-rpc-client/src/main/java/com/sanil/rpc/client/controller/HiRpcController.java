@@ -25,7 +25,7 @@ public class HiRpcController {
     private HiService hiServiceUnknow;
 
     /**
-     * 刷新页面查看rpc调用结果，http://127.0.0.1:8022/hi
+     * 刷新页面查看rpc调用结果，http://127.0.0.1:8021/hi
      *
      * @return {@link String }
      */

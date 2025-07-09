@@ -1,6 +1,7 @@
 package com.sanil.source.code.rpc.server;
 
 import cn.hutool.core.annotation.AnnotationUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -14,6 +15,7 @@ import com.sanil.source.code.rpc.core.util.RpcServiceUtil;
 import com.sanil.source.code.rpc.server.annotation.EnableRpcServer;
 import com.sanil.source.code.rpc.server.annotation.RpcService;
 import com.sanil.source.code.rpc.server.handler.RpcServerInitializer;
+import com.sanil.source.code.rpc.spring.EnableRpcService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -22,6 +24,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
 import java.util.HashSet;
@@ -38,17 +41,17 @@ import java.util.Set;
 @Getter
 public class RpcServerManager {
 
-    private static final RpcConfig rpcConfig = RpcConfig.loadFromFile();
+    private static final RpcConfig RPC_CONFIG = RpcConfig.loadFromFile();
     private final InetSocketAddress serverAddress;
     private final ServerRegistry serverRegistry;
     private final ServiceProvider serviceProvider;
 
     public RpcServerManager() {
-        this(rpcConfig.getServerPort());
+        this(RPC_CONFIG.getServerPort());
     }
 
     public RpcServerManager(int port) {
-        this(new InetSocketAddress(rpcConfig.getServerHost(), port));
+        this(new InetSocketAddress(RPC_CONFIG.getServerHost(), port));
     }
 
     public RpcServerManager(String host, int port) {
@@ -57,8 +60,8 @@ public class RpcServerManager {
 
     public RpcServerManager(InetSocketAddress serverAddress) {
         this(serverAddress,
-                ExtensionLoader.getExtensionLoader(ServerRegistry.class).getExtension(rpcConfig.getServerRegistry()),
-                ExtensionLoader.getExtensionLoader(ServiceProvider.class).getExtension(rpcConfig.getServiceProvider()));
+                ExtensionLoader.getExtensionLoader(ServerRegistry.class).getExtension(RPC_CONFIG.getServerRegistry()),
+                ExtensionLoader.getExtensionLoader(ServiceProvider.class).getExtension(RPC_CONFIG.getServiceProvider()));
     }
 
     public RpcServerManager(InetSocketAddress serverAddress, ServerRegistry serverRegistry, ServiceProvider serviceProvider) {
@@ -69,7 +72,7 @@ public class RpcServerManager {
     }
 
     /**
-     * rpc服务端启动
+     * rpc服务端启动，同步
      */
     public void start() {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -79,7 +82,7 @@ public class RpcServerManager {
                 .channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
-                .childHandler(new RpcServerInitializer(rpcConfig, this));
+                .childHandler(new RpcServerInitializer(RPC_CONFIG, this));
         try {
             Channel channel = bootstrap.bind(serverAddress.getPort()).sync().channel();
             log.info("rpc server 启动成功，监听地址: {}", serverAddress);
@@ -94,25 +97,39 @@ public class RpcServerManager {
     }
 
     /**
-     * 自动注册相关 service提供者
+     * rpc服务端启动，异步
+     */
+    public void startAsync() {
+        ThreadUtil.execAsync(this::start);
+    }
+
+
+    /**
+     * 自动注册相关提供者
      */
     private void autoRegister() {
-        // 根据 EnableRpcServer 确定扫描范围（为空则从main类开始扫描），扫描指定包下的类，并完成注册
+        // 根据 Enable注解 确定扫描范围（为空则从main类开始扫描），扫描指定包下的类，并完成注册
         String mainClassPath = findMainClassPath();
         Class<?> mainClass = ClassUtil.loadClass(mainClassPath);
+        EnableRpcService enableRpcService = AnnotationUtil.getAnnotation(mainClass, EnableRpcService.class);
         EnableRpcServer enableRpcServer = AnnotationUtil.getAnnotation(mainClass, EnableRpcServer.class);
-        if (enableRpcServer == null) {
-            mainClassPath = findEnableRpcServerClassPath();
+        if (enableRpcService == null && enableRpcServer == null) {
+            mainClassPath = findAnnotationClassPath(EnableRpcService.class);
+            mainClass = ClassUtil.loadClass(mainClassPath);
+            enableRpcService = AnnotationUtil.getAnnotation(mainClass, EnableRpcService.class);
+        }
+        if (enableRpcService == null && enableRpcServer == null) {
+            mainClassPath = findAnnotationClassPath(EnableRpcServer.class);
             mainClass = ClassUtil.loadClass(mainClassPath);
             enableRpcServer = AnnotationUtil.getAnnotation(mainClass, EnableRpcServer.class);
             if (enableRpcServer == null) {
-                throw new RpcException("启动类未添加或未找到 @EnableRpcServer 注解");
+                throw new RpcException("启动类未添加或未找到 @EnableRpcService 或 @EnableRpcServer 注解");
             }
         }
 
         // 处理多个包路径
         Set<Class<?>> classSet = new HashSet<>();
-        String[] basePackages = enableRpcServer.value();
+        String[] basePackages = enableRpcService != null ? enableRpcService.value() : enableRpcServer.value();
         if (ArrayUtil.isEmpty(basePackages) || (basePackages.length == 1 && StrUtil.isBlank(basePackages[0]))) {
             // 没有指定包路径，使用默认包路径
             String defaultPackage = mainClassPath.substring(0, mainClassPath.lastIndexOf("."));
@@ -166,17 +183,17 @@ public class RpcServerManager {
     }
 
     /**
-     * 查找 EnableRpcServer 类路径
+     * 查找 指定注解 类路径
      *
      * @return {@link String }
      */
-    private static String findEnableRpcServerClassPath() {
+    private static <A extends Annotation> String findAnnotationClassPath(Class<A> annotationType) {
         Set<Class<?>> classes = ClassUtil.scanPackage("");
         for (Class<?> clazz : classes) {
             if (Modifier.isPublic(clazz.getModifiers()) && Modifier.isStatic(clazz.getModifiers())) {
                 continue;
             }
-            EnableRpcServer annotation = AnnotationUtil.getAnnotation(clazz, EnableRpcServer.class);
+            Annotation annotation = AnnotationUtil.getAnnotation(clazz, annotationType);
             if (annotation != null) {
                 return clazz.getName();
             }
