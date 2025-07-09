@@ -1,6 +1,5 @@
 package com.sanil.source.code.rpc.spring;
 
-import com.sanil.source.code.rpc.server.annotation.EnableRpcServer;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 
@@ -17,7 +16,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Import({RpcServiceAutoConfiguration.class, RpcServiceScannerRegistrar.class})
-@EnableRpcServer
 public @interface EnableRpcService {
 
     /**

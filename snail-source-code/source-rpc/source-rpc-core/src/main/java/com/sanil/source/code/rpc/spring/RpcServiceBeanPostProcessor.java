@@ -42,7 +42,7 @@ public class RpcServiceBeanPostProcessor implements BeanPostProcessor {
             // 注册服务
             String providerName = RpcServiceUtil.getProviderName(serviceName, group, version);
             InetSocketAddress serverAddress = rpcServerManager.getServerAddress();
-            log.debug("register RpcService: {}, service: {}, serverAddress: {}", serviceName, bean, serverAddress);
+            log.debug("register RpcService: {}, service: {}, serverAddress: {}", providerName, bean, serverAddress);
             rpcServerManager.getServiceProvider().register(providerName, bean);
             rpcServerManager.getServerRegistry().register(providerName, serverAddress);
         }

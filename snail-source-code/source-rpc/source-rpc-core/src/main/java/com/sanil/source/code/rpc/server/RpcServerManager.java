@@ -15,7 +15,6 @@ import com.sanil.source.code.rpc.core.util.RpcServiceUtil;
 import com.sanil.source.code.rpc.server.annotation.EnableRpcServer;
 import com.sanil.source.code.rpc.server.annotation.RpcService;
 import com.sanil.source.code.rpc.server.handler.RpcServerInitializer;
-import com.sanil.source.code.rpc.spring.EnableRpcService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -94,9 +93,9 @@ public class RpcServerManager {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new RpcServerInitializer(RPC_CONFIG, this));
         try {
+            autoRegister();
             channel = bootstrap.bind(serverAddress.getPort()).sync().channel();
             log.info("rpc server 启动成功，监听地址: {}", serverAddress);
-            autoRegister();
             channel.closeFuture().sync().addListener(future -> unregisterResource());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -125,25 +124,19 @@ public class RpcServerManager {
         // 根据 Enable注解 确定扫描范围（为空则从main类开始扫描），扫描指定包下的类，并完成注册
         String mainClassPath = findMainClassPath();
         Class<?> mainClass = ClassUtil.loadClass(mainClassPath);
-        EnableRpcService enableRpcService = AnnotationUtil.getAnnotation(mainClass, EnableRpcService.class);
         EnableRpcServer enableRpcServer = AnnotationUtil.getAnnotation(mainClass, EnableRpcServer.class);
-        if (enableRpcService == null && enableRpcServer == null) {
-            mainClassPath = findAnnotationClassPath(EnableRpcService.class);
-            mainClass = ClassUtil.loadClass(mainClassPath);
-            enableRpcService = AnnotationUtil.getAnnotation(mainClass, EnableRpcService.class);
-        }
-        if (enableRpcService == null && enableRpcServer == null) {
+        if (enableRpcServer == null) {
             mainClassPath = findAnnotationClassPath(EnableRpcServer.class);
             mainClass = ClassUtil.loadClass(mainClassPath);
             enableRpcServer = AnnotationUtil.getAnnotation(mainClass, EnableRpcServer.class);
             if (enableRpcServer == null) {
-                throw new RpcException("启动类未添加或未找到 @EnableRpcService 或 @EnableRpcServer 注解");
+                throw new RpcException("启动类未添加或未找到 @EnableRpcServer 注解");
             }
         }
 
         // 处理多个包路径
         Set<Class<?>> classSet = new HashSet<>();
-        String[] basePackages = enableRpcService != null ? enableRpcService.value() : enableRpcServer.value();
+        String[] basePackages = enableRpcServer.value();
         if (ArrayUtil.isEmpty(basePackages) || (basePackages.length == 1 && StrUtil.isBlank(basePackages[0]))) {
             // 没有指定包路径，使用默认包路径
             String defaultPackage = mainClassPath.substring(0, mainClassPath.lastIndexOf("."));
