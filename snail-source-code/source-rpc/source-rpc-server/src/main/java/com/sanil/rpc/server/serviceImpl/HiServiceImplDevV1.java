@@ -1,5 +1,6 @@
 package com.sanil.rpc.server.serviceImpl;
 
+import cn.hutool.core.util.StrUtil;
 import com.sanil.rpc.api.HiService;
 import com.sanil.source.code.rpc.server.annotation.RpcService;
 
@@ -12,7 +13,7 @@ public class HiServiceImplDevV1 implements HiService {
 
     @Override
     public String hi(String name) {
-        return "hi-rpc group:dev version:1.0.0 " + name;
+        return StrUtil.join("<br><br>", name, getClass().getName(), "group:dev version:1.0.0");
     }
 
 }

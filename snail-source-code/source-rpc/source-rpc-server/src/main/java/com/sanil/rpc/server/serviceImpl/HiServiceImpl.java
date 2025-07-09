@@ -1,5 +1,6 @@
 package com.sanil.rpc.server.serviceImpl;
 
+import cn.hutool.core.util.StrUtil;
 import com.sanil.rpc.api.HiService;
 import com.sanil.source.code.rpc.server.annotation.RpcService;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +17,7 @@ public class HiServiceImpl implements HiService {
 
     @Override
     public String hi(String name) {
-        return "hi-rpc " + name + ", from port: " + port;
+        return StrUtil.join("<br><br>", name, getClass().getName(), "spring port: " + port);
     }
 
 }

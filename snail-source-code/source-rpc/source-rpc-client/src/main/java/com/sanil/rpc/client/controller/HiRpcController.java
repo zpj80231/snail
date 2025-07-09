@@ -31,7 +31,7 @@ public class HiRpcController {
      */
     @GetMapping("/hi")
     public String hi() {
-        String msg = "hello world";
+        String msg = "Hi RPC!";
         int randomInt = RandomUtil.randomInt(15);
         String result;
         if (randomInt <= 4) {
@@ -42,7 +42,12 @@ public class HiRpcController {
             result = hiServiceUat.hi(msg);
         } else {
             // 未知服务
-            result = hiServiceUnknow.hi(msg);
+            try {
+                result = hiServiceUnknow.hi(msg);
+            } catch (Exception e) {
+                log.error("模拟未知服务", e);
+                result = e.getMessage();
+            }
         }
         log.info("hi result: {}", result);
         return result;
