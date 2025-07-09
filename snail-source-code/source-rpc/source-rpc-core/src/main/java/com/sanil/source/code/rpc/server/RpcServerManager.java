@@ -51,6 +51,8 @@ public class RpcServerManager {
     ServerBootstrap bootstrap;
     Channel channel;
 
+    private boolean autoRegister = true;
+
     public RpcServerManager() {
         this(RPC_CONFIG.getServerPort());
     }
@@ -73,7 +75,10 @@ public class RpcServerManager {
         this.serverAddress = serverAddress;
         this.serverRegistry = serverRegistry;
         this.serviceProvider = serviceProvider;
-        autoRegister();
+    }
+
+    public void setAutoRegister(boolean autoRegister) {
+        this.autoRegister = autoRegister;
     }
 
     /**
@@ -91,7 +96,8 @@ public class RpcServerManager {
         try {
             channel = bootstrap.bind(serverAddress.getPort()).sync().channel();
             log.info("rpc server 启动成功，监听地址: {}", serverAddress);
-            channel.closeFuture().sync().addListener(future -> destroyResource());
+            autoRegister();
+            channel.closeFuture().sync().addListener(future -> unregisterResource());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("rpc server 启动失败", e);
@@ -113,6 +119,9 @@ public class RpcServerManager {
      * 自动注册相关提供者
      */
     private void autoRegister() {
+        if (!autoRegister) {
+            return;
+        }
         // 根据 Enable注解 确定扫描范围（为空则从main类开始扫描），扫描指定包下的类，并完成注册
         String mainClassPath = findMainClassPath();
         Class<?> mainClass = ClassUtil.loadClass(mainClassPath);
@@ -160,7 +169,7 @@ public class RpcServerManager {
             Object service = ReflectUtil.newInstance(aClass);
             doRegister(RpcServiceUtil.getProviderName(serviceName, group, version), service);
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(this::destroyResource));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::unregisterResource));
     }
 
     /**
@@ -207,9 +216,10 @@ public class RpcServerManager {
     }
 
     /**
-     * 销毁资源
+     * unregister 资源
      */
-    private void destroyResource() {
+    private void unregisterResource() {
+        log.debug("unregister rpc server resource");
         serviceProvider.getServices().keySet().parallelStream().forEach(serviceProvider::unregister);
         serverRegistry.getServers().keySet().parallelStream().forEach(serviceName -> serverRegistry.unregister(serviceName, serverAddress));
     }
@@ -218,6 +228,7 @@ public class RpcServerManager {
      * 销毁 rpc 服务
      */
     public void destroy() {
+        unregisterResource();
         if (channel != null) {
             channel.close();
         }
@@ -227,6 +238,7 @@ public class RpcServerManager {
         if (workerGroup != null) {
             workerGroup.shutdownGracefully();
         }
+        log.debug("destroy rpc server");
     }
 
 }

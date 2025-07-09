@@ -10,6 +10,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import java.net.InetSocketAddress;
 import java.util.Optional;
 
 /**
@@ -40,8 +41,10 @@ public class RpcServiceBeanPostProcessor implements BeanPostProcessor {
             String version = rpcService.version();
             // 注册服务
             String providerName = RpcServiceUtil.getProviderName(serviceName, group, version);
+            InetSocketAddress serverAddress = rpcServerManager.getServerAddress();
+            log.debug("register RpcService: {}, service: {}, serverAddress: {}", serviceName, bean, serverAddress);
             rpcServerManager.getServiceProvider().register(providerName, bean);
-            log.debug("注册服务: {}", providerName);
+            rpcServerManager.getServerRegistry().register(providerName, serverAddress);
         }
         return bean;
     }

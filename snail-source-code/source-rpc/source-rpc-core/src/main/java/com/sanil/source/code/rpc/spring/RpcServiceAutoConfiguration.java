@@ -15,7 +15,9 @@ public class RpcServiceAutoConfiguration {
 
     @Bean(initMethod = "startAsync", destroyMethod = "destroy")
     public RpcServerManager rpcServerManager() {
-        return new RpcServerManager();
+        RpcServerManager manager = new RpcServerManager();
+        manager.setAutoRegister(false);
+        return manager;
     }
 
     @Bean
