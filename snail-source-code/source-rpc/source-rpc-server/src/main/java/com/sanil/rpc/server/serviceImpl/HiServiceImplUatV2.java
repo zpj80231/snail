@@ -13,7 +13,7 @@ public class HiServiceImplUatV2 implements HiService {
 
     @Override
     public String hi(String name) {
-        return StrUtil.join("<br><br>", name, getClass().getName(), "group:uat version:2.0.0");
+        return StrUtil.join("<br>", name, "group: uat", "version: 2.0.0");
     }
 
 }

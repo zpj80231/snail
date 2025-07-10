@@ -31,7 +31,7 @@ public class HiRpcController {
      */
     @GetMapping("/hi")
     public String hi() {
-        String msg = "Hi RPC!";
+        String msg = "Hi RPC! <br>";
         int randomInt = RandomUtil.randomInt(15);
         String result;
         if (randomInt <= 4) {

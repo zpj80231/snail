@@ -17,7 +17,7 @@ public class HiServiceImpl implements HiService {
 
     @Override
     public String hi(String name) {
-        return StrUtil.join("<br><br>", name, getClass().getName(), "spring port: " + port);
+        return StrUtil.join("<br>", name, "group: default", "version: default", "spring port: " + port);
     }
 
 }
