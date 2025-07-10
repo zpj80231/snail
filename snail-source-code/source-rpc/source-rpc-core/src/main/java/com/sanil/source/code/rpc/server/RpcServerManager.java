@@ -99,7 +99,10 @@ public class RpcServerManager {
             channel.closeFuture().sync().addListener(future -> unregisterResource());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.error("rpc server 启动失败", e);
+            log.error("rpc server 启动被中断", e);
+        } catch (Exception e) {
+            log.error("rpc server 启动失败: {}", e.getMessage(), e);
+            throw new RpcException("rpc server 启动失败: " + e.getMessage(), e);
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
