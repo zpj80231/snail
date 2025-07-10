@@ -43,6 +43,7 @@
 
 - [手写 RPC 01：从零实现到扩展性设计](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-01.html)
 - [手写 RPC 02：项目结构及远程调用](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-02.html)
+- [手写 RPC 03：与 Spring 深度集成](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-03.html)
 
 - 基础定义：
   - 自定义传输协议
@@ -64,9 +65,14 @@
   - 远程调用：通过自定义rpc进行远程调用
   - 多实例启动：可同时启动多个服务端，模拟多实例场景，以供客户端负载均衡
   - 优雅关闭：无可用 rpc 连接时（如多个服务端全部宕机），自动关闭服务
-- 其他：
+- SPI 扩展：
   - 序列化：基于 SPI 实现动态扩展
   - 负载均衡：基于 SPI 实现动态扩展
   - 服务注册：基于 SPI 实现动态扩展
   - 服务发现：基于 SPI 实现动态扩展
   - 压缩算法：基于 SPI 实现动态扩展
+- Spring 深度集成：
+  - @EnableRpcClient：标识开启 rpc 客户端，用于自动服务发现、远程调用
+  - @RpcReference：类似 @Autowire，标识注入一个远程服务
+  - @EnableRpcService：标识开启 rpc 服务端，用于自动服务暴露
+  - @RpcService：标识一个真正的服务提供者
