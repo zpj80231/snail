@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -121,9 +122,13 @@ public class RpcServerManager {
      * 自动注册相关提供者
      */
     private void autoRegister() {
+        // 是否自动注册服务
+        // 1. Spring集成时用的是 @EnableRpcService 注解，作为bean注入，不用走默认的 autoRegister()
+        // 2. RPC服务端单独使用时，使用的是的 @EnableRpcServer 注解，走 autoRegister() 逻辑
         if (!autoRegister) {
             return;
         }
+
         // 根据 Enable注解 确定扫描范围（为空则从main类开始扫描），扫描指定包下的类，并完成注册
         String mainClassPath = findMainClassPath();
         Class<?> mainClass = ClassUtil.loadClass(mainClassPath);
@@ -146,15 +151,13 @@ public class RpcServerManager {
             classSet.addAll(ClassUtil.scanPackageByAnnotation(defaultPackage, RpcService.class));
         } else {
             // 扫描所有指定的包路径
-            for (String basePackage : basePackages) {
-                if (StrUtil.isNotBlank(basePackage)) {
-                    classSet.addAll(ClassUtil.scanPackageByAnnotation(basePackage, RpcService.class));
-                }
-            }
+            Arrays.stream(basePackages).filter(StrUtil::isNotBlank)
+                    .forEach(basePackage -> classSet.addAll(ClassUtil.scanPackageByAnnotation(basePackage, RpcService.class)));
         }
+
+        // 注册符合条件的服务
         for (Class<?> aClass : classSet) {
-            // 检查类是否为接口（如果是接口则跳过，只扫描实现类）
-            if (ArrayUtil.isEmpty(aClass.getInterfaces()) || aClass.isInterface() || Modifier.isAbstract(aClass.getModifiers())) {
+            if (isInvalidServiceImpl(aClass)) {
                 continue;
             }
             RpcService rpcServiceAnnotation = aClass.getAnnotation(RpcService.class);
@@ -165,7 +168,18 @@ public class RpcServerManager {
             Object service = ReflectUtil.newInstance(aClass);
             doRegister(RpcServiceUtil.getProviderName(serviceName, group, version), service);
         }
+
         Runtime.getRuntime().addShutdownHook(new Thread(this::unregisterResource));
+    }
+
+    /**
+     * 是否为无效的 serviceImpl
+     *
+     * @param clazz 克拉兹
+     * @return boolean
+     */
+    private boolean isInvalidServiceImpl(Class<?> clazz) {
+        return ArrayUtil.isEmpty(clazz.getInterfaces()) || clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers());
     }
 
     /**
