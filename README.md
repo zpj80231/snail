@@ -30,12 +30,13 @@
 
 本 Starter 提供即插即用的分布式能力，采用注解驱动的方式，集成简单、无额外依赖，助力 Spring Boot 项目轻松实现分布式锁、防重、缓存、延时队列等功能。
 
-- [手写 Spring Boot Starter：实现分布式锁、防重攻击、二级缓存与延时队列](https://zpj80231.github.io/znote/views/source/code/starter/spring-boot-starter-redis.html)
+- [手写 Spring Boot Starter 01：基于 Redis 的分布式服务增强（分布式锁、防重、二级缓存、延时队列）实践指南](https://zpj80231.github.io/znote/views/source/code/starter/spring-boot-starter-redis-01.html)
+- [手写 Spring Boot Starter 02：基于 Redis 的分布式服务增强（分布式锁、防重、二级缓存、延时队列）深入解析](https://zpj80231.github.io/znote/views/source/code/starter/spring-boot-starter-redis-02.html)
 
-1. **分布式锁**：通过注解实现声明式加锁，支持超时或阻塞。（一个注解搞定）
-2. **防重攻击**：基于用户指纹或请求参数生成唯一标识，防止重复提交。（一个注解搞定）
-3. **二级缓存**：整合 Caffeine 与 Redis，优化高并发读性能。（读、写、删，一个注解搞定）
-4. **延时队列**：利用 Redis ZSet 实现消息延时投递，支持自定义消费逻辑。（发消息一行代码搞定，监听消息一个注解搞定）
+1.  **分布式锁**：通过 `@Lock` 注解实现声明式加锁，支持超时或阻塞等待，轻松解决并发控制问题。
+2.  **防重攻击**：利用 `@DuplicateSubmit` 注解，基于用户指纹或请求参数生成唯一标识，有效防止重复提交，保障业务数据一致性。
+3.  **二级缓存**：借助 `@DoubleCache` 注解，无缝整合 Caffeine（本地缓存）与 Redis（分布式缓存），提供高性能的读写体验，全面优化高并发场景下的数据访问效率。
+4.  **延时队列**：基于 Redis ZSet 实现消息的延时投递与消费。通过 `DelayQueue` 发送消息，并使用 `@DelayQueueListener` 简洁地处理延时消息，满足各类延时消息场景。
 
 ## 手写 JDBC 连接池
 
