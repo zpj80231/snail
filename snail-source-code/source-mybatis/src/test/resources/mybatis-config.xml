@@ -1,0 +1,17 @@
+<configuration>
+
+    <!--数据源配置-->
+    <dataSource>
+        <property name="driverClassname" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/test"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="12345678"></property>
+    </dataSource>
+
+    <!--mapper文件配置-->
+    <mappers>
+        <mapper resource="mapper/UserMapper-01.xml"/>
+        <mapper resource="mapper/UserMapper-02.xml"/>
+    </mappers>
+
+</configuration>

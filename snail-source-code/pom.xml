@@ -17,5 +17,6 @@
         <module>source-spring-boot</module>
         <module>source-jdbc-pool</module>
         <module>source-rpc</module>
+        <module>source-mybatis</module>
     </modules>
 </project>

@@ -1,0 +1,14 @@
+<!--命名空间必须是接口全限定名-->
+<mapper namespace="com.snail.source.mybatis.mapper.UserMapper">
+    <!--查询所有-->
+    <select id="selectList" resultType="com.snail.source.mybatis.entity.User">
+        select *
+        from user
+    </select>
+
+    <!--查询单个-->
+    <select id="selectOne" resultType="com.snail.source.mybatis.entity.User"
+            parameterType="com.snail.source.mybatis.entity.User">
+        select * from user where id = #{id} and name = #{name}
+    </select>
+</mapper>
