@@ -2,7 +2,7 @@ package com.sanil.rpc.client.controller;
 
 import cn.hutool.core.util.RandomUtil;
 import com.sanil.rpc.api.HiService;
-import com.sanil.source.code.rpc.client.annotation.RpcReference;
+import com.sanil.source.rpc.client.annotation.RpcReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +25,7 @@ public class HiRpcController {
     private HiService hiServiceUnknow;
 
     /**
-     * 刷新页面查看rpc调用结果，http://127.0.0.1:8021/hi
+     * 刷新页面查看rpc调用结果，http://127.0.0.1:8025/hi
      *
      * @return {@link String }
      */

@@ -2,7 +2,7 @@ package com.sanil.rpc.server.serviceImpl;
 
 import cn.hutool.core.util.StrUtil;
 import com.sanil.rpc.api.HiService;
-import com.sanil.source.code.rpc.server.annotation.RpcService;
+import com.sanil.source.rpc.server.annotation.RpcService;
 
 /**
  * @author zhangpengjun

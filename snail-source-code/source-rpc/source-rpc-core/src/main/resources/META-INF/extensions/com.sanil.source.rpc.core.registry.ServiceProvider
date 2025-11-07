@@ -1,0 +1,2 @@
+#local
+local=com.sanil.source.rpc.core.registry.LocalServiceProvider

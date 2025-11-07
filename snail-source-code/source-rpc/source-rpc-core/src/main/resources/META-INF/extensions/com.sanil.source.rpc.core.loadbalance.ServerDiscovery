@@ -1,0 +1,2 @@
+# default
+default=com.sanil.source.rpc.core.loadbalance.DefaultServerDiscovery

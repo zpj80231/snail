@@ -1,0 +1,6 @@
+# local
+local=com.sanil.source.rpc.core.registry.LocalServerRegistry
+
+# nacos
+
+# zookeeper

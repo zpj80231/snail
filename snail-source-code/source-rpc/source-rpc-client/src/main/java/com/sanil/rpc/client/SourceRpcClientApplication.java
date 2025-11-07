@@ -1,6 +1,6 @@
 package com.sanil.rpc.client;
 
-import com.sanil.source.code.rpc.spring.EnableRpcClient;
+import com.sanil.source.rpc.spring.EnableRpcClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
