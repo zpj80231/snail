@@ -1,4 +1,4 @@
-package com.snail.source.code.jdbc.pool.support;
+package com.snail.source.jdbc.pool.support;
 
 import java.sql.Connection;
 import java.sql.SQLException;

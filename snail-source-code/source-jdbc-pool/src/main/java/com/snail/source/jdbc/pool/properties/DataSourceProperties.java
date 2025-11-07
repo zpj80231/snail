@@ -1,4 +1,4 @@
-package com.snail.source.code.jdbc.pool.properties;
+package com.snail.source.jdbc.pool.properties;
 
 import lombok.Data;
 

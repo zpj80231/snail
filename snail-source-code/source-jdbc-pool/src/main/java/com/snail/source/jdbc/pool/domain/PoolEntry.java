@@ -1,4 +1,4 @@
-package com.snail.source.code.jdbc.pool.domain;
+package com.snail.source.jdbc.pool.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
