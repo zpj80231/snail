@@ -6,9 +6,20 @@
 
 本项目致力于通过手写实现主流框架的核心功能，带你深入理解其底层原理与设计思想。在动手实践的过程中，不仅能够加深对源码的理解，还能有效提升架构能力与编码水平。
 
+目录：
+<!-- TOC -->
+  * [手写 Spring](#手写-spring)
+  * [手写 Spring Boot Starter](#手写-spring-boot-starter)
+  * [手写 JDBC 连接池](#手写-jdbc-连接池)
+  * [手写 Netty RPC](#手写-netty-rpc)
+  * [手写 Mybatis](#手写-mybatis)
+<!-- TOC -->
+
 ## 手写 Spring
 
-手写 Spring 旨在通过一步步实现 Spring 框架的核心功能，深入理解其底层原理与设计思想。每一章节都会带你从零构建，帮助你掌握 Spring 的精髓（核心容器、生命周期管理、AOP、注解驱动等关键模块），提升架构能力与编码水平。通过亲手实现这些内容，不仅能加深对源码的理解，还能在实际开发中灵活运用相关设计思想与模式。
+手写 Spring 旨在通过一步步实现 Spring 框架的核心功能，深入理解其底层原理与设计思想。<br>
+每一章节都会带你从零构建，帮助你掌握 Spring 的精髓（核心容器、生命周期管理、AOP、注解驱动等关键模块），提升架构能力与编码水平。<br>
+通过亲手实现这些内容，不仅能加深对源码的理解，还能在实际开发中灵活运用相关设计思想与模式。<br>
 
 - [手写 Spring 01 - 核心容器实现](https://zpj80231.github.io/znote/views/source/code/spring/spring-source-01.html)
 - [手写 Spring 02 - 添加外部资源加载器以及和现有容器结合](https://zpj80231.github.io/znote/views/source/code/spring/spring-source-02.html)
@@ -40,17 +51,21 @@
 
 ## 手写 JDBC 连接池
 
-手写 JDBC 简单连接池旨在理解数据库连接池的底层实现原理。通过一步步实现连接池的核心功能（如连接复用、池化管理、动态扩容、超时回收等），你将掌握数据库连接池的设计思想与关键技术点。项目简单，代码结构清晰，易于扩展，适合入门学习。通过亲手实现这些内容，不仅能加深对 JDBC 及数据库连接管理的理解，还能提升系统性能优化与架构设计能力。
+通过一步步实现 JDBC 连接池的核心功能（如连接复用、池化管理、动态扩容、超时回收等），你将掌握数据库连接池的设计思想与关键技术点。<br>
+项目简单，代码结构清晰，易于扩展，适合入门学习。<br>
+通过亲手实现这些内容，不仅能加深对 JDBC 及数据库连接管理的理解，还能提升系统性能优化与架构设计能力。<br>
 
 - [手写 JDBC 连接池](https://zpj80231.github.io/znote/views/source/code/jdbc/jdbc-pool-source-01.html)
 
 ## 手写 Netty RPC
 
-手写 Netty RPC 框架，旨在理解分布式服务调用的底层原理与实现细节。本项目不仅实现了自定义协议、编解码、序列化、注册中心、负载均衡等核心功能，还支持与 Spring 深度集成，开箱即用，便于二次开发和扩展。通过逐步手写这些内容，你将掌握 RPC 框架的设计思想、模块拆分、SPI 扩展机制，以及如何优雅地与主流框架集成，提升架构能力与编码水平。
+手写 Netty RPC 框架，旨在理解分布式服务调用的底层原理与实现细节。<br>
+本项目不仅实现了自定义协议、编解码、序列化、注册中心、负载均衡等核心功能，还支持与 Spring 深度集成，开箱即用，便于二次开发和扩展。<br>
+通过逐步手写这些内容，你将掌握 RPC 框架的设计思想、模块拆分、SPI 扩展机制，以及如何优雅地与主流框架集成，提升架构能力与编码水平。<br>
 
 - [手写 RPC 01：框架设计与核心概念](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-01.html)
 - [手写 RPC 02：快速实践与运行测试](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-02.html)
-- [手写 RPC 03：核心实现解析](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-03.html)
+- [手写 RPC 03：核心编码实现](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-03.html)
 - [手写 RPC 04：Spring 框架深度集成](https://zpj80231.github.io/znote/views/source/code/rpc/rpc-source-04.html)
 
 | 分类              | 实现功能点        | 备注                                         |
@@ -60,3 +75,18 @@
 | **客户端（服务发现）** | - 自动发现（基于注册中心、API 分组、API 版本号）<br>- 负载均衡（随机、轮询，可扩展）<br>- 连接复用（每个服务端只需复用一个连接）<br>- 服务代理（客户端调用远程方法如同本地方法）<br>- 远程调用（通过自定义 rpc 进行远程调用）<br>- 多实例启动（可同时启动多个服务端，模拟多实例场景）<br>- 优雅关闭（无可用 rpc 连接时自动关闭服务） | 提升调用效率，支持高可用和多实例部署         |
 | **SPI 扩展**     | - 序列化（基于 SPI 实现动态扩展）<br>- 负载均衡（基于 SPI 实现动态扩展）<br>- 服务注册（基于 SPI 实现动态扩展）<br>- 服务发现（基于 SPI 实现动态扩展）<br>- 压缩算法（基于 SPI 实现动态扩展）                                 | 插拔式扩展，便于自定义和集成第三方实现       |
 | **Spring 深度集成** | - `@EnableRpcClient`（开启 rpc 客户端，自动服务发现、远程调用）<br>- `@RpcReference`（类似 @Autowire，注入远程服务）<br>- `@EnableRpcService`（开启 rpc 服务端，自动服务暴露）<br>- `@RpcService`（标识一个真正的服务提供者） | 与 Spring 生态无缝集成，提升开发效率         |
+
+## 手写 Mybatis
+
+通过逐步手写这些内容，你将掌握 Mybatis 框架的核心要点：
+
+| 设计     | 思想                                                         |
+| -------- | ------------------------------------------------------------ |
+| 设计思想 | 简化数据库操作，将配置、SQL 语句与 Java 代码分离，提供灵活的 SQL 管理方式和强大的对象关系映射（ORM）能力 |
+| 模块拆分 | * 用户层：开发者只需关心配置、Mapper Sql 语句等<br/> * 框架层：核心实现层，包括配置解析、SQL 解析、参数转换、执行器等模块<br/> * 运行层：Executor 封装 JDBC 实际执行 SQL 语句并与数据库交互的组件 |
+| 运行流程 | 配置文件解析 → 创建 SqlSessionFactory → 获取 SqlSession → 执行 Mapper 接口方法（或指定 statementId） → SQL 执行与结果返回 |
+| 核心组件 | * 配置解析：解析 XML 配置文件，生成 Configuration 对象<br/> * SQL 映射解析：解析 XML 或注解形式的 SQL 语句，生成可执行的 MappedStatement<br/> * 参数绑定：将 Java 对象参数与 SQL 语句中的占位符进行映射绑定<br/> * 执行器：执行 SQL 语句并返回结果 * 结果映射：将数据库查询结果集映射为 Java 对象，支持复杂的结果映射关系<br/> * 其它：缓存、插件、拦截器、Spring 集成等（可扩展） |
+
+- [手写 Mybatis-01：框架设计与核心概念](https://zpj80231.github.io/znote/views/source/code/mybatis/mybatis-source-01.html)
+- [手写 Mybatis 02：核心框架编码实现](https://zpj80231.github.io/znote/views/source/code/mybatis/mybatis-source-02.html)
+- [手写 Mybatis 03：基本框架优化，使用Mapper接口代替指定StatementId](https://zpj80231.github.io/znote/views/source/code/mybatis/mybatis-source-03.html)
