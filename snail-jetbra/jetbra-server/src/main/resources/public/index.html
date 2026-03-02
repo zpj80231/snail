@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Generate License</title>
+    <style>
+        .jetbra-button {
+            background-color: #04AA6D;
+            border: none;
+            color: white;
+            padding: 8px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            transition-duration: 0.4s;
+        }
+
+        .jetbra-button:hover {
+            background-color: #057e47;
+            color: white;
+        }
+    </style>
+    <style>
+        .form {
+            background-color: #15172b;
+            border-radius: 20px;
+            box-sizing: border-box;
+            height: 500px;
+            padding: 20px;
+            width: 320px;
+        }
+
+        .title {
+            color: #eee;
+            font-family: sans-serif;
+            font-size: 36px;
+            font-weight: 600;
+            margin-top: 30px;
+        }
+
+        .subtitle {
+            color: #eee;
+            font-family: sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .input-container {
+            height: 50px;
+            position: relative;
+            width: 100%;
+        }
+
+        .ic1 {
+            margin-top: 40px;
+        }
+
+        .ic2 {
+            margin-top: 30px;
+        }
+
+        .input {
+            background-color: #303245;
+            border-radius: 12px;
+            border: 0;
+            box-sizing: border-box;
+            color: #eee;
+            font-size: 18px;
+            height: 100%;
+            outline: 0;
+            padding: 4px 20px 0;
+            width: 100%;
+        }
+
+        .cut {
+            background-color: #15172b;
+            border-radius: 10px;
+            height: 20px;
+            left: 20px;
+            position: absolute;
+            top: -20px;
+            transform: translateY(0);
+            transition: transform 200ms;
+            width: 76px;
+        }
+
+        .cut-short {
+            width: 50px;
+        }
+
+        .input:focus ~ .cut,
+        .input:not(:placeholder-shown) ~ .cut {
+            transform: translateY(8px);
+        }
+
+        .placeholder {
+            color: #65657b;
+            font-family: sans-serif;
+            left: 20px;
+            line-height: 14px;
+            pointer-events: none;
+            position: absolute;
+            transform-origin: 0 50%;
+            transition: transform 200ms, color 200ms;
+            top: 20px;
+        }
+
+        .input:focus ~ .placeholder,
+        .input:not(:placeholder-shown) ~ .placeholder {
+            transform: translateY(-30px) translateX(10px) scale(0.75);
+        }
+
+        .input:not(:placeholder-shown) ~ .placeholder {
+            color: #808097;
+        }
+
+        .input:focus ~ .placeholder {
+            color: #dc2f55;
+        }
+
+        .submit {
+            background-color: #08d;
+            border-radius: 12px;
+            border: 0;
+            box-sizing: border-box;
+            color: #eee;
+            cursor: pointer;
+            font-size: 18px;
+            height: 50px;
+            margin-top: 38px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .submit:active {
+            background-color: #06b;
+        }
+
+    </style>
+    <style>
+        :root {
+            --text-grey: #9e9e9e;
+            --text-main: rgba(0, 0, 0, 0.87);
+            --spacing: 4px;
+            --size: 64px;
+            --radius: 1.5rem;
+            --accent: #5380f7;
+            --text-sm: 0.875rem;
+            --main-bg: #fff;
+            --card-bg: #fff;
+            --hover-color: #eee;
+            --border-color: rgba(0, 0, 0, 0.05);
+            --grey-400: rgba(0, 0, 0, 0.04);
+            --grey-600: rgba(0, 0, 0, 0.06);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --main-bg: rgb(0, 0, 0);
+                --card-bg: rgb(31, 34, 38);
+                --text-main: #d9d9d9;
+                --text-grey: #6e767d;
+                --accent: #1d9bf0;
+                --hover-color: rgba(255, 255, 255, 0.07);
+                --border-color: #4b4648;
+            }
+        }
+
+        body {
+            font-size: 1rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+            font-kerning: normal;
+            font-family: 'Gotham SSm A', 'Gotham SSm B', 'Arial Unicode MS', Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            background-color: var(--main-bg);
+        }
+
+        * ul, * ol {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        *[role='button'], button {
+            cursor: pointer;
+        }
+
+        .color-primary {
+            color: var(--text-main);
+        }
+
+
+        .mt-0 {
+            margin-top: 0;
+        }
+
+
+        .radius-1 {
+            border-radius: var(--radius);
+        }
+
+        .px-6 {
+            padding-left: calc(var(--spacing) * 6);
+            padding-right: calc(var(--spacing) * 6);
+        }
+
+        .py-10 {
+            padding-top: calc(var(--spacing) * 10);
+            padding-bottom: calc(var(--spacing) * 10);
+        }
+
+        .pd-6 {
+            padding: calc(var(--spacing) * 6);
+        }
+
+
+        .pt-1 {
+            padding-top: var(--spacing);
+        }
+
+        .pb-0 {
+            padding-bottom: 0;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+
+        .items-center {
+            align-items: center;
+        }
+
+        .shrink-0 {
+            flex-shrink: 0;
+        }
+
+        .text-grey {
+            color: var(--text-grey);
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .bg-card {
+            background-color: var(--card-bg);
+        }
+
+        .truncate {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: var(--line, 3);
+            overflow: hidden;
+        }
+
+        .truncate-1 {
+            --line: 1;
+        }
+
+        .overflow-ellipsis {
+            text-overflow: ellipsis;
+        }
+
+        .z-grid {
+            display: grid;
+            grid-gap: var(--gutter, 1rem);
+            grid-template-columns: repeat(auto-fill, minmax(min(var(--space, 10rem), 100%), 1fr));
+        }
+
+
+        .card {
+            box-shadow: rgb(0 0 0 / 30%) 0 8px 40px -12px;
+            border-radius: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+            width: 90%;
+            position: relative;
+            overflow: visible;
+            background-color: var(--card-bg);
+            margin: 0 auto;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card:hover .mask {
+            bottom: -1.5rem;
+        }
+
+        .card:hover .mask-c-1 {
+            bottom: -2.5rem;
+        }
+
+        .container {
+            padding-top: calc(var(--spacing) * 10);
+        }
+
+        .container p {
+            position: relative;
+            cursor: pointer;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        }
+
+        .container p::after {
+            content: attr(data-content);
+            position: absolute;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+            color: transparent;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+        }
+
+        .container p:hover {
+            color: transparent;
+        }
+
+        .container p:hover::after {
+            color: var(--text-main);
+            background-color: var(--hover-color);
+        }
+
+        .toggle li {
+            z-index: 99;
+            position: relative;
+            background: transparent;
+            padding: 0 20px;
+            color: var(--text-main);
+            transition: background-color 250ms ease-out;
+        }
+
+        .toggle li:hover {
+            background-color: var(--hover-color);
+        }
+
+        .toggle li.active a {
+            color: var(--accent);
+        }
+
+        .toggle li:first-child {
+            border-top-left-radius: var(--text-sm);
+            border-top-right-radius: var(--text-sm);
+        }
+
+        .toggle li:last-child {
+            border-bottom-left-radius: var(--text-sm);
+            border-bottom-right-radius: var(--text-sm);
+        }
+
+        .toggle li:last-child a {
+            border-bottom: 0;
+        }
+
+        .toggle li a {
+            display: block;
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            color: inherit;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .icon {
+            background-size: 64px;
+        }
+
+        .icon-ii {
+            background-image: url("icons/IntelliJ_IDEA_icon.svg");
+        }
+
+        .icon-ps {
+            background-image: url("icons/PhpStorm_icon.svg");
+        }
+
+        .icon-ac {
+            background-image: url("icons/AppCode_icon.svg");
+        }
+
+        .icon-db {
+            background-image: url("icons/DataGrip_icon.svg");
+        }
+
+        .icon-rm {
+            background-image: url("icons/RubyMine_icon.svg");
+        }
+
+        .icon-ws {
+            background-image: url("icons/WebStorm_icon.svg");
+        }
+
+        .icon-rd {
+            background-image: url("icons/Rider_icon.svg");
+        }
+
+        .icon-cl {
+            background-image: url("icons/CLion_icon.svg");
+        }
+
+        .icon-pc {
+            background-image: url("icons/PyCharm_icon.svg");
+        }
+
+        .icon-go {
+            background-image: url("icons/GoLand_icon.svg");
+        }
+
+        .icon-ds {
+            background-image: url("icons/DataSpell_icon.svg");
+        }
+
+        .icon-dc {
+            background-image: url("icons/dotCover_icon.svg");
+        }
+
+        .icon-dpn {
+            background-image: url("icons/dotTrace_icon.svg");
+        }
+
+        .icon-dm {
+            background-image: url("icons/dotMemory_icon.svg");
+        }
+
+        .icon-rr {
+            background-image: url("icons/RustRover_icon.svg");
+        }
+
+        .mask {
+            transition: 0.2s;
+            position: absolute;
+            z-index: -1;
+            width: 88%;
+            height: 100%;
+            bottom: 0;
+            border-radius: 1.5rem;
+            background-color: var(--grey-600);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mask-c-1 {
+            bottom: 0;
+            width: 72%;
+            background-color: var(--grey-400);
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: var(--size);
+            height: var(--size);
+            font-size: 1.25rem;
+            user-select: none;
+            transform: translateY(50%);
+        }
+
+        .avatar-wrapper img, .avatar-wrapper .icon {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            background-color: var(--card-bg);
+            color: transparent;
+            object-fit: cover;
+            text-align: center;
+            text-indent: 10000px;
+        }
+
+
+        header.tip a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        header.tip p {
+            word-break: break-word;
+            word-wrap: break-word;
+        }
+
+
+        main hr {
+            margin: 0;
+            padding: 0;
+            background: var(--border-color);
+            height: 1px;
+            border: none;
+        }
+
+        footer {
+            --_size: 40px;
+            padding-top: var(--_size);
+            width: 96%;
+            margin: calc(var(--spacing) * 10) auto 0;
+            padding-bottom: var(--_size);
+            border-top: 1px solid var(--border-color);
+            -moz-box-align: center;
+            -webkit-box-pack: justify;
+        }
+
+        footer .lt-panel p:nth-of-type(1) {
+            color: inherit;
+        }
+    </style>
+</head>
+<body style="width:100%;height:100%;">
+<main class="px-6 z-grid py-10" style="--space: 20rem; --gutter: 3.5rem">
+    <article class="card" data-product="IntelliJ IDEA" data-product-codes="II,PCWMP,PSI">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-ii" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='IntelliJ IDEA'>IntelliJ
+                IDEA</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="PhpStorm" data-product-codes="PS,PCWMP,PSI">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-ps" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='PhpStorm'>PhpStorm</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="AppCode" data-product-codes="AC,PCWMP,PSI">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-ac" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='AppCode'>AppCode</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="DataGrip" data-product-codes="DB,PSI,PDB">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-db" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='DataGrip'>DataGrip</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="RubyMine" data-product-codes="RM,PCWMP,PSI">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-rm" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='RubyMine'>RubyMine</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="WebStorm" data-product-codes="WS,PCWMP,PSI">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-ws" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='WebStorm'>WebStorm</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="Rider" data-product-codes="RD,PDB,PSI,PCWMP">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-rd" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='Rider'>Rider</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="CLion" data-product-codes="CL,PSI,PCWMP">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-cl" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='CLion'>CLion</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="PyCharm" data-product-codes="PC,PSI,PCWMP">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-pc" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='PyCharm'>PyCharm</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="GoLand" data-product-codes="GO,PSI,PCWMP">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-go" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='GoLand'>GoLand</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="DataSpell" data-product-codes="DS,PSI,PDB,PCWMP">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-ds" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='DataSpell'>DataSpell</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="dotCover" data-product-codes="DC">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-dc" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='dotCover'>dotCover</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="dotTrace" data-product-codes="DPN,DP">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-dpn" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='dotTrace'>dotTrace</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="dotMemory" data-product-codes="DM">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-dm" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='dotMemory'>dotMemory</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+    <article class="card" data-product="dotMemory" data-product-codes="RR,PRR,PSI">
+        <header>
+            <div class="flex items-center justify-between px-6 pt-1 pb-0 bg-card radius-1">
+                <div class="avatar-wrapper flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="icon icon-rr" role="img"></div>
+                </div>
+            </div>
+            <hr/>
+        </header>
+        <div class="pd-6 overflow-hidden bg-card container radius-1">
+            <h1 class="truncate truncate-1 color-primary mt-0 overflow-ellipsis" title='RustRover'>RustRover</h1>
+            <p title="Click to copy full license text" class="truncate text-sm text-grey" onclick="copyLicense(this)"
+               data-content="Copy to clipboard">
+                *********************************************************************************************************************************************************
+            </p>
+        </div>
+        <div class="mask"></div>
+        <div class="mask mask-c-1"></div>
+    </article>
+</main>
+<footer class="flex items-center justify-between">
+    <div class="text-sm text-grey">Theme by QieTuZai</div>
+    <div class="text-sm text-grey">
+        <button class="jetbra-button" onclick="showLicenseForm()">Refill licensee information</button>
+    </div>
+    <div class="text-sm text-grey">Copy from ja-netfilter</div>
+</footer>
+<div id="mask"
+     style="position:fixed;top:0;left:0;z-index:998;width:100%;height:100%;display:none;background-color:#000;opacity:0.5;overflow:hidden;"></div>
+<div id="form" style="position:fixed;top:20%;left:40%;width:40%;height:500px;z-index:999;display:none;">
+    <div class="form">
+        <div class="title">Welcome</div>
+        <div class="subtitle">Please enter licensee information</div>
+        <div class="input-container ic1">
+            <input id="licenseeName" class="input" type="text" placeholder=" " value="Test only"/>
+            <div class="cut"></div>
+            <label for="licenseeName" class="placeholder">licenseeName</label>
+        </div>
+        <div class="input-container ic2">
+            <input id="assigneeName" class="input" type="text" placeholder=" " value="Test only"/>
+            <div class="cut"></div>
+            <label for="assigneeName" class="placeholder">assigneeName</label>
+        </div>
+        <div class="input-container ic2">
+            <input id="expiryDate" class="input" type="text" placeholder="" value="2026-12-31"/>
+            <div class="cut cut-short"></div>
+            <label for="expiryDate" class="placeholder">expiryDate</label>
+        </div>
+        <button class="submit" onclick="submitLicenseInfo(this)">submit</button>
+    </div>
+</div>
+
+<script>
+    if (localStorage.getItem('licenseInfo') === null) {
+        document.getElementById('mask').style.display = 'block'
+        document.getElementById('form').style.display = 'block'
+    }
+    window.submitLicenseInfo = function () {
+        let licenseeName = document.getElementById('licenseeName').value
+        let assigneeName = document.getElementById('assigneeName').value
+        let expiryDate = document.getElementById('expiryDate').value
+        let licenseInfo = {
+            licenseeName: licenseeName,
+            assigneeName: assigneeName,
+            expiryDate: expiryDate
+        }
+        localStorage.setItem('licenseInfo', JSON.stringify(licenseInfo))
+        document.getElementById('mask').style.display = 'none'
+        document.getElementById('form').style.display = 'none'
+    }
+    window.showLicenseForm = function () {
+        let licenseInfo = localStorage.getItem('licenseInfo');
+        if (licenseInfo !== null) {
+            licenseInfo = JSON.parse(licenseInfo)
+            document.getElementById('licenseeName').value = licenseInfo.licenseeName
+            document.getElementById('assigneeName').value = licenseInfo.assigneeName
+            document.getElementById('expiryDate').value = licenseInfo.expiryDate
+        } else {
+            document.getElementById('licenseeName').value = 'Test only'
+            document.getElementById('assigneeName').value = 'Test only'
+            document.getElementById('expiryDate').value = '2026-12-31'
+        }
+        document.getElementById('mask').style.display = 'block'
+        document.getElementById('form').style.display = 'block'
+    }
+</script>
+
+<script>
+    const pemEncodedKey = `-----BEGIN PRIVATE KEY-----
+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
+17M9lCizO9o9dONdHsHfNQi6y9Jcnw==
+-----END PRIVATE KEY-----`;
+
+
+    const pemEncodedCrt = `-----BEGIN CERTIFICATE-----
+MIIEtTCCAp2gAwIBAgIUDyuccmylba71lZQAQic5TJiAhwwwDQYJKoZIhvcNAQEL
+BQAwGDEWMBQGA1UEAwwNSmV0UHJvZmlsZSBDQTAeFw0yMzA5MjkxNDA2MTJaFw0z
+MzA5MjcxNDA2MTJaMBExDzANBgNVBAMMBk5vdmljZTCCAiIwDQYJKoZIhvcNAQEB
+BQADggIPADCCAgoCggIBALenqcGP2ZxGkYqmKA9c4Hzf8+YD1smvmOxKjd+bmTLr
+utM/hXv1cj1rW3/lqyDtdDk7K6W8/TDq1CRrEt+Do6l30DxhAiC34aH8DmGwgq77
+xEoLimvH5LpePxflF+tbB1RZtFgFDOIYLdSQaKFH2JDgVKxhLiV3S6jniPhkCtWW
+rTs+E6vq4N15Bm3NnM5AJILqjtUbOjNfaxVq6RrOoTc0R3Fqqo6yvxo/+JYa2UnH
+IC+r2dbKuDLMUrtgnydEUdJNX0zH9FtcdELvr48uc9mY038TWUsZUK1pnQbxA2bP
+yA4qnYJ9IvUgO6LtLXvGFm137YQMS1N41AHDBOrwoNI8UoDX+qI3rM96biFOFvn7
+Edky7rByzybt3H+zxdojfjvpL1E0NO98BT9zfufHAaAxZtlmDOu5LDJe3CGurnyR
+MRExbtc+Qjl1mUh6tG4lakAwdsoxry0GdG72yaYyb9it53kaFks/T/s7Z7bRJzVF
+zQDV1Y4bzUtk43vKm2vztBVlQkBkZY5f2Jbe5Ig3b8swQzBnOT0mrL5SPUhwmQ6I
+xkEWztj55OEujBMmRr92oESuq9ZYMaeLidKWVR3/++HA8BRZaRGEKtSHZCbFEFdi
+hDxxJv9Xh6NuT/ewJ6HYp+0NQpFnUnJ72n8wV+tudpam7aKcdzVmz7cNwOhG2Ls7
+AgMBAAEwDQYJKoZIhvcNAQELBQADggIBAIdeaQfKni7tXtcywC3zJvGzaaj242pS
+WB1y40HW8jub0uHjTLsBPX27iA/5rb+rNXtUWX/f2K+DU4IgaIiiHhkDrMsw7piv
+azqwA9h7/uA0A5nepmTYf/HY4W6P2stbeqInNsFRZXS7Jg4Q5LgEtHKo/H8USjtV
+w9apmE3BCElkXRuelXMsSllpR/JEVv/8NPLmnHSY02q4KMVW2ozXtaAxSYQmZswy
+P1YnBcnRukoI4igobpcKQXwGoQCIUlec8LbFXYM9V2eNCwgABqd4r67m7QJq31Y/
+1TJysQdMH+hoPFy9rqNCxSq3ptpuzcYAk6qVf58PrrYH/6bHwiYPAayvvdzNPOhM
+9OCwomfcazhK3y7HyS8aBLntTQYFf7vYzZxPMDybYTvJM+ClCNnVD7Q9fttIJ6eM
+XFsXb8YK1uGNjQW8Y4WHk1MCHuD9ZumWu/CtAhBn6tllTQWwNMaPOQvKf1kr1Kt5
+etrONY+B6O+Oi75SZbDuGz7PIF9nMPy4WB/8XgKdVFtKJ7/zLIPHgY8IKgbx/VTz
+6uBhYo8wOf3xzzweMnn06UcfV3JGNvtMuV4vlkZNNxXeifsgzHugCvJX0nybhfBh
+fIqVyfK6t0eKJqrvp54XFEtJGR+lf3pBfTdcOI6QFEPKGZKoQz8Ck+BC/WBDtbjc
+/uYKczZ8DKZu
+-----END CERTIFICATE-----`;
+
+    function pem2base64(pem) {
+        return pem.split('\n').reduce((base64, line) => line.includes("--") ? base64 : base64 + line, '');
+    }
+
+    function arrayBufferToBase64(buffer) {
+        return btoa([...new Uint8Array(buffer)].map(b => String.fromCharCode(b)).join(''));
+    }
+
+    function base64ToArrayBuffer(base64) {
+        return Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
+    }
+
+    function genLicenseId() {
+        const CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return Array.from({length: 10}, () => {
+            let idx = Math.floor(Math.random() * CHARSET.length);
+            return CHARSET[idx];
+        }).join('');
+    }
+
+    function buildLicensePartJson(products, licenseId,licenseInfo) {
+        return JSON.stringify({
+            "licenseId": licenseId,
+            "licenseeName": licenseInfo.licenseeName,
+            "assigneeName": licenseInfo.assigneeName,
+            "assigneeEmail": "",
+            "licenseRestriction": "",
+            "checkConcurrentUse": false,
+            "products": products,
+            "metadata": "0120230102PPAA013009",
+            "hash": "41472961/0:1563609451",
+            "gracePeriodDays": 7,
+            "autoProlongated": true,
+            "isAutoProlongated": true
+        })
+    }
+
+    window.copyLicense = async function (e) {
+        while (localStorage.getItem('licenseInfo') === null) {
+            document.getElementById('mask').style.display = 'block'
+            document.getElementById('form').style.display = 'block'
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        let licenseInfo = JSON.parse(localStorage.getItem('licenseInfo'))
+        let codes = e.closest('.card').dataset.productCodes.split(',')
+        let products = Array.from(codes).map((code) => {
+            return {
+                code: code,
+                fallbackDate: licenseInfo.expiryDate,
+                paidUpTo: licenseInfo.expiryDate
+            }
+        })
+        let licenseId = genLicenseId()
+        let licensePartJson = buildLicensePartJson(products, licenseId,licenseInfo)
+
+        let privateKey = await window.crypto.subtle.importKey("pkcs8", base64ToArrayBuffer(pem2base64(pemEncodedKey)), {
+            name: "RSASSA-PKCS1-v1_5", hash: "SHA-1",
+        }, true, ["sign"]);
+
+        let licensePartBase64 = btoa(unescape(encodeURIComponent(licensePartJson)));
+        let sigResultsBase64 = arrayBufferToBase64(await window.crypto.subtle.sign("RSASSA-PKCS1-v1_5", privateKey, new TextEncoder().encode(licensePartJson)));
+        let cert_base64 = pem2base64(pemEncodedCrt);
+
+        navigator.clipboard.writeText(`${licenseId}-${licensePartBase64}-${sigResultsBase64}-${cert_base64}`)
+            .then(() => {
+                alert("The activation code has been copied to your clipboard");
+            })
+    }
+
+</script>
+</body>
+</html>

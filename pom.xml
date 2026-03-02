@@ -13,6 +13,7 @@
         <module>snail-dependency</module>
         <module>snail-source-code</module>
         <module>snail-module</module>
+        <module>snail-jetbra</module>
     </modules>
 
     <properties>
