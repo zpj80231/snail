@@ -9,13 +9,14 @@
 		<relativePath/>
 	</parent>
 	<groupId>win.novice</groupId>
-	<artifactId>jetbra</artifactId>
+	<artifactId>snail-jetbra</artifactId>
 	<version>0.0.1</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>jetbra-agent</module>
 		<module>jetbra-server</module>
 		<module>jetbra-dist</module>
+        <module>plugin-privacy</module>
 	</modules>
 	<properties>
 		<java.version>1.8</java.version>

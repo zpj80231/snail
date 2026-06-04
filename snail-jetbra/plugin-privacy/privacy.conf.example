@@ -1,0 +1,55 @@
+[Hide_Plugin]
+EQUAL,io.zhile.research.ide-eval-resetter
+EQUAL,Nasller.License
+EQUAL,nasller
+EQUAL,manifold.ij
+
+[Hide_Package]
+PREFIX,com.janetfilter
+PREFIX,jdk.internal.org.objectweb.asm
+
+[Hide_Resource]
+# EQUAL,/6c81ec87e55d331c267262e892427a3d93d76683.txt
+PREFIX,/com/janetfilter
+PREFIX,/com/novitechie
+
+[Hide_Env]
+EQUAL,IDEA_VM_OPTIONS
+EQUAL,CLION_VM_OPTIONS
+EQUAL,PHPSTORM_VM_OPTIONS
+EQUAL,GOLAND_VM_OPTIONS
+EQUAL,PYCHARM_VM_OPTIONS
+EQUAL,WEBSTORM_VM_OPTIONS
+EQUAL,WEBIDE_VM_OPTIONS
+EQUAL,RIDER_VM_OPTIONS
+EQUAL,DATAGRIP_VM_OPTIONS
+EQUAL,RUBYMINE_VM_OPTIONS
+EQUAL,APPCODE_VM_OPTIONS
+EQUAL,DATASPELL_VM_OPTIONS
+EQUAL,GATEWAY_VM_OPTIONS
+EQUAL,JETBRAINS_CLIENT_VM_OPTIONS
+EQUAL,JETBRAINSCLIENT_VM_OPTIONS
+EQUAL,JANF_DEBUG
+EQUAL,JANF_OUTPUT
+
+[Hide_Property]
+EQUAL,janf.debug
+EQUAL,janf.output
+
+[Ignore_Class]
+EQUAL,com.janetfilter.core.utils.StringUtils
+# EQUAL,com.janetfilter.core.utils.DateUtils
+
+[Ignore_Resource]
+EQUAL,/com/janetfilter/core/utils/StringUtils.class
+# EQUAL,/com/janetfilter/core/utils/DateUtils.class
+
+[Auto_Scan_Plugin]
+# Auto scan matches plugin ids first, then hides matched canary classes from those plugins.
+# Leave this section empty to disable default auto scan plugin rules.
+
+[Auto_Scan_Package]
+# Leave this section empty to disable default auto scan package rules.
+
+[Auto_Scan_Exclude]
+# PREFIX,com.example.safe.

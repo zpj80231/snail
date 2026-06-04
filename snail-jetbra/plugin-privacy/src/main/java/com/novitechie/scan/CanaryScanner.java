@@ -1,0 +1,220 @@
+package com.novitechie.scan;
+
+import com.janetfilter.core.models.FilterRule;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class CanaryScanner {
+
+    private static final String JAR_SUFFIX = ".jar";
+    private static final String CLASS_SUFFIX = ".class";
+    private static final String PLUGIN_XML = "META-INF/plugin.xml";
+    private static final String LIB_DIR = "lib";
+    private static final String ID_TAG = "id";
+    private static final Pattern COMMENT_PATTERN = Pattern.compile("<!--.*?-->", Pattern.DOTALL);
+    public static final Pattern TAG_PATTERN = Pattern.compile(
+            "<" + Pattern.quote(ID_TAG) + "(?:\\s[^>]*)?>(.*?)</" + Pattern.quote(ID_TAG) + ">",
+            Pattern.DOTALL);
+
+    private CanaryScanner() {
+    }
+
+    public static class ScanResult {
+        private final Set<String> classNames = new LinkedHashSet<>();
+
+        public List<String> getClassNames() {
+            return new ArrayList<>(classNames);
+        }
+
+        private void addClassName(String className) {
+            classNames.add(className);
+        }
+    }
+
+    public static ScanResult scan(List<File> scanTargets, List<FilterRule> scanPluginRules,
+                                  List<FilterRule> scanPackageRules, List<FilterRule> excludePackageRules) {
+        ScanResult result = new ScanResult();
+        if (scanTargets == null || scanTargets.isEmpty()) {
+            return result;
+        }
+        for (File target : scanTargets) {
+            if (target != null) {
+                scanTarget(target, scanPluginRules, scanPackageRules, excludePackageRules, result);
+            }
+        }
+        return result;
+    }
+
+    private static void scanTarget(File target, List<FilterRule> scanPluginRules,
+                                   List<FilterRule> scanPackageRules, List<FilterRule> excludePackageRules,
+                                   ScanResult result) {
+        if (isJar(target)) {
+            processJarIfMatches(target, scanPluginRules, scanPackageRules, excludePackageRules, result);
+            return;
+        }
+
+        if (target == null || !target.isDirectory()) {
+            return;
+        }
+
+        File xmlFile = new File(target, PLUGIN_XML);
+        if (xmlFile.isFile()) {
+            String pluginId = parsePluginIdFromXml(xmlFile);
+            if (matchRules(pluginId, scanPluginRules)) {
+                scanPluginDirectoryContent(target, scanPackageRules, excludePackageRules, result);
+            }
+            return;
+        }
+
+        File libDir = new File(target, LIB_DIR);
+        if (libDir.isDirectory()) {
+            File[] jars = listJars(libDir);
+            if (jars != null && jars.length > 0) {
+                String pluginId = resolvePluginIdFromJars(jars);
+                if (matchRules(pluginId, scanPluginRules)) {
+                    scanJars(jars, scanPackageRules, excludePackageRules, result);
+                }
+                return;
+            }
+        }
+
+        File[] subFiles = target.listFiles();
+        if (subFiles == null) {
+            return;
+        }
+        for (File subFile : subFiles) {
+            scanTarget(subFile, scanPluginRules, scanPackageRules, excludePackageRules, result);
+        }
+    }
+
+    private static void scanPluginDirectoryContent(File pluginDir, List<FilterRule> scanPackageRules,
+                                                   List<FilterRule> excludePackageRules, ScanResult result) {
+        File libDir = new File(pluginDir, LIB_DIR);
+        if (!libDir.isDirectory()) {
+            return;
+        }
+        scanJars(listJars(libDir), scanPackageRules, excludePackageRules, result);
+    }
+
+    private static File[] listJars(File dir) {
+        return dir.listFiles((d, name) -> name.endsWith(JAR_SUFFIX));
+    }
+
+    private static void scanJars(File[] jars, List<FilterRule> scanPackageRules,
+                                 List<FilterRule> excludePackageRules, ScanResult result) {
+        if (jars == null) {
+            return;
+        }
+        for (File jar : jars) {
+            scanJarClasses(jar, scanPackageRules, excludePackageRules, result);
+        }
+    }
+
+    private static void processJarIfMatches(File jarFile, List<FilterRule> scanPluginRules,
+                                            List<FilterRule> scanPackageRules, List<FilterRule> excludePackageRules,
+                                            ScanResult result) {
+        try (JarFile jar = new JarFile(jarFile)) {
+            String pluginId = parsePluginId(jar);
+            if (matchRules(pluginId, scanPluginRules)) {
+                extractClasses(jar, scanPackageRules, excludePackageRules, result);
+            }
+        } catch (IOException ignored) {
+            // 静默失效，确保健壮性
+        }
+    }
+
+    private static void scanJarClasses(File jarFile, List<FilterRule> scanPackageRules,
+                                       List<FilterRule> excludePackageRules, ScanResult result) {
+        try (JarFile jar = new JarFile(jarFile)) {
+            extractClasses(jar, scanPackageRules, excludePackageRules, result);
+        } catch (IOException ignored) {
+            // 忽略损坏的包
+        }
+    }
+
+    private static String resolvePluginIdFromJars(File[] jars) {
+        for (File jarFile : jars) {
+            try (JarFile jar = new JarFile(jarFile)) {
+                String id = parsePluginId(jar);
+                if (id != null) {
+                    return id;
+                }
+            } catch (IOException ignored) {
+                // 轮询下一个包
+            }
+        }
+        return null;
+    }
+
+    private static String parsePluginIdFromXml(File xmlFile) {
+        try (FileInputStream fis = new FileInputStream(xmlFile)) {
+            return extractXmlTag(readUtf8(fis));
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private static String parsePluginId(JarFile jar) throws IOException {
+        JarEntry entry = jar.getJarEntry(PLUGIN_XML);
+        if (entry == null) {
+            return null;
+        }
+        try (InputStream is = jar.getInputStream(entry)) {
+            return extractXmlTag(readUtf8(is));
+        }
+    }
+
+    private static String readUtf8(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
+        byte[] chunk = new byte[1024];
+        int read;
+        while ((read = input.read(chunk)) != -1) {
+            output.write(chunk, 0, read);
+        }
+        return new String(output.toByteArray(), StandardCharsets.UTF_8);
+    }
+
+    private static String extractXmlTag(String content) {
+        String withoutComments = COMMENT_PATTERN.matcher(content).replaceAll("");
+        Matcher matcher = TAG_PATTERN.matcher(withoutComments);
+        return matcher.find() ? matcher.group(1).trim() : null;
+    }
+
+    private static void extractClasses(JarFile jar, List<FilterRule> scanPackageRules,
+                                       List<FilterRule> excludePackageRules, ScanResult result) {
+        Enumeration<JarEntry> entries = jar.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            String name = entry.getName();
+            if (!name.endsWith(CLASS_SUFFIX)) {
+                continue;
+            }
+            String className = name.substring(0, name.length() - CLASS_SUFFIX.length()).replace('/', '.');
+            if (matchRules(className, scanPackageRules) && !matchRules(className, excludePackageRules)) {
+                result.addClassName(className);
+            }
+        }
+    }
+
+    private static boolean isJar(File file) {
+        return file != null && file.isFile() && file.getName().endsWith(JAR_SUFFIX);
+    }
+
+    private static boolean matchRules(String value, List<FilterRule> rules) {
+        if (value == null || rules == null || rules.isEmpty()) {
+            return false;
+        }
+        for (FilterRule rule : rules) {
+            if (rule != null && rule.test(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
