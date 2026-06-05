@@ -9,6 +9,8 @@ import java.util.*;
 
 public class JbDirectoryScanner {
 
+    private static final String ZIP_SUFFIX = ".zip";
+
     private JbDirectoryScanner() {
     }
 
@@ -19,12 +21,65 @@ public class JbDirectoryScanner {
             return Collections.emptyList();
         }
 
-        Set<File> pluginRoots = new LinkedHashSet<>();
-        addDir(pluginRoots, invokePathManagerDir(pathManagerClass, "getPluginsDir"));
-        addDir(pluginRoots, invokePathManagerDir(pathManagerClass, "getPluginsPath"));
+        Set<File> pluginDirs = new LinkedHashSet<>();
+        addDir(pluginDirs, invokePathManagerDir(pathManagerClass, "getPluginsDir"));
+        addDir(pluginDirs, invokePathManagerDir(pathManagerClass, "getPluginsPath"));
 
-        DebugInfo.output("[PRIVACY-SCAN] PathManager plugin roots: " + pluginRoots);
-        return new ArrayList<>(pluginRoots);
+        List<File> targets = new ArrayList<>(pluginDirs);
+        // 升级后首次启动时，IDE 已把新版下载到缓存目录，但要等 action.script 在更晚的时机
+        // 才覆盖到 plugins 目录；Java Agent 早于 action.script 执行，只看 plugins 目录会拿到旧插件。
+        // 缓存目录可能有数十个、累计上 GB 的 zip，逐个解压会显著拖慢启动，因此只挑出
+        // 「有同名已安装目录、且 zip 比该目录新」的待应用更新包（仅比较 mtime，不解压）。
+        List<File> pendingZips = selectPendingUpdateZips(resolveStagingDir(pathManagerClass), pluginDirs);
+        targets.addAll(pendingZips);
+
+        DebugInfo.output("[PRIVACY-SCAN] Plugin dirs: " + pluginDirs);
+        DebugInfo.output("[PRIVACY-SCAN] Pending update zips: " + pendingZips);
+        return targets;
+    }
+
+    private static File resolveStagingDir(Class<?> pathManagerClass) {
+        File tempPath = invokePathManagerDir(pathManagerClass, "getPluginTempPath");
+        if (tempPath != null) {
+            return tempPath;
+        }
+        File systemPath = invokePathManagerDir(pathManagerClass, "getSystemPath");
+        if (systemPath != null) {
+            return new File(systemPath, "plugins");
+        }
+        return null;
+    }
+
+    private static List<File> selectPendingUpdateZips(File cacheDir, Set<File> pluginDirs) {
+        List<File> pending = new ArrayList<>();
+        if (cacheDir == null || !cacheDir.isDirectory()) {
+            return pending;
+        }
+        File[] zips = cacheDir.listFiles((d, name) -> name.endsWith(ZIP_SUFFIX));
+        if (zips == null) {
+            return pending;
+        }
+        for (File zip : zips) {
+            String name = zip.getName();
+            String baseName = name.substring(0, name.length() - ZIP_SUFFIX.length());
+            File installed = findInstalledDir(pluginDirs, baseName);
+            // installed == null：插件未安装（卸载残留或全新待装），不在此扫描，避免拖慢启动；
+            // zip 不比目录新：升级已应用，跳过。两种情况都无需解压。
+            if (installed != null && zip.lastModified() > installed.lastModified()) {
+                pending.add(zip);
+            }
+        }
+        return pending;
+    }
+
+    private static File findInstalledDir(Set<File> pluginDirs, String baseName) {
+        for (File dir : pluginDirs) {
+            File candidate = new File(dir, baseName);
+            if (candidate.isDirectory()) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     private static Class<?> loadClass(String className) {
@@ -54,8 +109,13 @@ public class JbDirectoryScanner {
     }
 
     private static File invokePathManagerDir(Class<?> pathManagerClass, String methodName) {
+        Method method;
         try {
-            Method method = pathManagerClass.getMethod(methodName);
+            method = pathManagerClass.getMethod(methodName);
+        } catch (NoSuchMethodException ignored) {
+            return null;
+        }
+        try {
             return asFile(method.invoke(null));
         } catch (Exception e) {
             DebugInfo.error("[PRIVACY-SCAN] invokePathManagerDir failed (" + methodName + ")", e);

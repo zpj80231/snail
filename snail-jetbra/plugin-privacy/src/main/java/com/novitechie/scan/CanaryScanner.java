@@ -9,10 +9,14 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 public class CanaryScanner {
 
     private static final String JAR_SUFFIX = ".jar";
+    private static final String ZIP_SUFFIX = ".zip";
     private static final String CLASS_SUFFIX = ".class";
     private static final String PLUGIN_XML = "META-INF/plugin.xml";
     private static final String LIB_DIR = "lib";
@@ -56,6 +60,11 @@ public class CanaryScanner {
                                    ScanResult result) {
         if (isJar(target)) {
             processJarIfMatches(target, scanPluginRules, scanPackageRules, excludePackageRules, result);
+            return;
+        }
+
+        if (isZip(target)) {
+            processZipIfMatches(target, scanPluginRules, scanPackageRules, excludePackageRules, result);
             return;
         }
 
@@ -204,6 +213,88 @@ public class CanaryScanner {
 
     private static boolean isJar(File file) {
         return file != null && file.isFile() && file.getName().endsWith(JAR_SUFFIX);
+    }
+
+    private static boolean isZip(File file) {
+        return file != null && file.isFile() && file.getName().endsWith(ZIP_SUFFIX);
+    }
+
+    /**
+     * 处理 Marketplace 下载缓存中的插件 zip：典型结构为 {@code <top>/lib/*.jar}。
+     * <p>
+     * 该缓存目录可能有数十个、体量上百 MB 的插件 zip，每次启动都会扫描。为避免把不匹配
+     * 规则的插件全部读入内存，这里用 {@link ZipFile} 随机访问外层 zip，并分两遍：
+     * 先只读内层 jar 的 plugin.xml 判定插件 id；命中规则后再流式提取 class。
+     */
+    private static void processZipIfMatches(File zipFile, List<FilterRule> scanPluginRules,
+                                            List<FilterRule> scanPackageRules, List<FilterRule> excludePackageRules,
+                                            ScanResult result) {
+        try (ZipFile zip = new ZipFile(zipFile)) {
+            String pluginId = resolvePluginIdFromZip(zip);
+            if (!matchRules(pluginId, scanPluginRules)) {
+                return;
+            }
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (entry.isDirectory() || !entry.getName().endsWith(JAR_SUFFIX)) {
+                    continue;
+                }
+                try (InputStream is = zip.getInputStream(entry)) {
+                    extractClassesFromJarStream(is, scanPackageRules, excludePackageRules, result);
+                }
+            }
+        } catch (IOException ignored) {
+            // 损坏或非标准 zip，忽略
+        }
+    }
+
+    private static String resolvePluginIdFromZip(ZipFile zip) {
+        Enumeration<? extends ZipEntry> entries = zip.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            if (entry.isDirectory() || !entry.getName().endsWith(JAR_SUFFIX)) {
+                continue;
+            }
+            try (InputStream is = zip.getInputStream(entry)) {
+                String id = parsePluginIdFromJarStream(is);
+                if (id != null) {
+                    return id;
+                }
+            } catch (IOException ignored) {
+                // 跳过损坏的内层 jar
+            }
+        }
+        return null;
+    }
+
+    private static String parsePluginIdFromJarStream(InputStream jarStream) throws IOException {
+        // ZipInputStream 关闭时只会结束自身的 Inflater，外层 jarStream 由调用方 try-with 关闭
+        ZipInputStream zis = new ZipInputStream(jarStream);
+        ZipEntry entry;
+        while ((entry = zis.getNextEntry()) != null) {
+            if (PLUGIN_XML.equals(entry.getName())) {
+                return extractXmlTag(readUtf8(zis));
+            }
+        }
+        return null;
+    }
+
+    private static void extractClassesFromJarStream(InputStream jarStream, List<FilterRule> scanPackageRules,
+                                                    List<FilterRule> excludePackageRules, ScanResult result)
+            throws IOException {
+        ZipInputStream zis = new ZipInputStream(jarStream);
+        ZipEntry entry;
+        while ((entry = zis.getNextEntry()) != null) {
+            String name = entry.getName();
+            if (!name.endsWith(CLASS_SUFFIX)) {
+                continue;
+            }
+            String className = name.substring(0, name.length() - CLASS_SUFFIX.length()).replace('/', '.');
+            if (matchRules(className, scanPackageRules) && !matchRules(className, excludePackageRules)) {
+                result.addClassName(className);
+            }
+        }
     }
 
     private static boolean matchRules(String value, List<FilterRule> rules) {

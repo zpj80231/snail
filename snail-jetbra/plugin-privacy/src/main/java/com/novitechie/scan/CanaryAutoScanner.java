@@ -23,6 +23,18 @@ public class CanaryAutoScanner {
     }
 
     public static List<FilterRule> scan(PluginConfig config) {
+        try {
+            return doScan(config);
+        } catch (Exception e) {
+            DebugInfo.warn("[PRIVACY-SCAN] Auto scan failed; continue without generated rules", e);
+            return Collections.emptyList();
+        } catch (LinkageError e) {
+            DebugInfo.warn("[PRIVACY-SCAN] Auto scan unavailable; continue without generated rules", e);
+            return Collections.emptyList();
+        }
+    }
+
+    private static List<FilterRule> doScan(PluginConfig config) {
         List<FilterRule> pluginRules = rules(config, "Auto_Scan_Plugin", DEFAULT_SCAN_PLUGINS);
         List<FilterRule> packageRules = rules(config, "Auto_Scan_Package", DEFAULT_SCAN_PACKAGES);
         List<FilterRule> excludeRules = emptyIfNull(config.getBySection("Auto_Scan_Exclude"));
