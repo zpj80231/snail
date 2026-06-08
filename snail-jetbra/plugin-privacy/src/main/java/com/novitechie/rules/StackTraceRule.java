@@ -13,7 +13,11 @@ public class StackTraceRule {
     public static boolean check() {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         for (StackTraceElement stackTraceElement : stackTrace) {
-            if (!PACKAGE_NAME_PATTERN.matcher(stackTraceElement.getMethodName()).matches()) {
+            String methodName = stackTraceElement.getMethodName();
+            if (!PACKAGE_NAME_PATTERN.matcher(methodName).matches()) {
+                return true;
+            }
+            if (methodName.length() <= 2) {
                 return true;
             }
         }
