@@ -45,6 +45,8 @@ public class PrivacyPlugin implements PluginEntry {
         return Arrays.asList(
                 // new CollectionsTransformer(),
                 new VMOptionsTransformer(),
+                new FilesTransformer(),
+                new FileInputStreamTransformer(),
                 new PluginClassLoaderTransformer(),
                 new LicensingFacadeTransformer(),
                 new PluginManagerCoreTransformer(),

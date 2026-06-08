@@ -4,6 +4,7 @@ import com.janetfilter.core.commons.DebugInfo;
 import com.janetfilter.core.models.FilterRule;
 import com.novitechie.LogUtil;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +12,8 @@ import java.util.List;
  * @author YeloChick
  */
 public class SystemRule {
+
+    private static final String JB_VM_OPTIONS_FILE = "jb.vmOptionsFile";
 
     private static List<FilterRule> hideEnvRules = Collections.emptyList();
 
@@ -31,12 +34,20 @@ public class SystemRule {
     }
 
     public static boolean checkProperty(String name) {
-        if (checkHideProperty(name) && StackTraceRule.check()) {
+        if ((checkVMOptionsProperty(name) || checkHideProperty(name)) && StackTraceRule.check()) {
             DebugInfo.output("======================Hide Property: " + name);
             LogUtil.printStackTrace();
             return true;
         }
         return false;
+    }
+
+    public static String hookProperty(String name) {
+        if (checkVMOptionsProperty(name)) {
+            Path path = VMOptionsRule.hook();
+            return path == null ? null : path.toString();
+        }
+        return null;
     }
 
     private static boolean checkHideEnv(String name) {
@@ -45,5 +56,9 @@ public class SystemRule {
 
     private static boolean checkHideProperty(String name) {
         return hidePropertyRules.stream().anyMatch(rule -> rule.test(name));
+    }
+
+    private static boolean checkVMOptionsProperty(String name) {
+        return JB_VM_OPTIONS_FILE.equals(name);
     }
 }

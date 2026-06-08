@@ -39,7 +39,8 @@ public class SystemTransformer implements MyTransformer {
                 list.add(new VarInsnNode(ALOAD, 0));
                 list.add(new MethodInsnNode(INVOKESTATIC, "com/novitechie/rules/SystemRule", "checkProperty", "(Ljava/lang/String;)Z", false));
                 list.add(new JumpInsnNode(IFEQ, L0));
-                list.add(new InsnNode(ACONST_NULL));
+                list.add(new VarInsnNode(ALOAD, 0));
+                list.add(new MethodInsnNode(INVOKESTATIC, "com/novitechie/rules/SystemRule", "hookProperty", "(Ljava/lang/String;)Ljava/lang/String;", false));
                 list.add(new InsnNode(ARETURN));
                 list.add(L0);
                 m.instructions.insert(list);
