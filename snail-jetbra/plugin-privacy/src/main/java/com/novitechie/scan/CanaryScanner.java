@@ -19,6 +19,7 @@ public class CanaryScanner {
     private static final String ZIP_SUFFIX = ".zip";
     private static final String CLASS_SUFFIX = ".class";
     private static final String PLUGIN_XML = "META-INF/plugin.xml";
+    private static final String MARKER_RESOURCE = "6c81ec87e55d331c267262e892427a3d93d76683.txt";
     private static final String LIB_DIR = "lib";
     private static final String ID_TAG = "id";
     private static final Pattern COMMENT_PATTERN = Pattern.compile("<!--.*?-->", Pattern.DOTALL);
@@ -31,13 +32,22 @@ public class CanaryScanner {
 
     public static class ScanResult {
         private final Set<String> classNames = new LinkedHashSet<>();
+        private boolean markerResourceExists;
 
         public List<String> getClassNames() {
             return new ArrayList<>(classNames);
         }
 
+        public boolean isMarkerResourceExists() {
+            return markerResourceExists;
+        }
+
         private void addClassName(String className) {
             classNames.add(className);
+        }
+
+        private void markResourceExists() {
+            markerResourceExists = true;
         }
     }
 
@@ -201,6 +211,9 @@ public class CanaryScanner {
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
             String name = entry.getName();
+            if (MARKER_RESOURCE.equals(name)) {
+                result.markResourceExists();
+            }
             if (!name.endsWith(CLASS_SUFFIX)) {
                 continue;
             }
@@ -287,6 +300,9 @@ public class CanaryScanner {
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
             String name = entry.getName();
+            if (MARKER_RESOURCE.equals(name)) {
+                result.markResourceExists();
+            }
             if (!name.endsWith(CLASS_SUFFIX)) {
                 continue;
             }

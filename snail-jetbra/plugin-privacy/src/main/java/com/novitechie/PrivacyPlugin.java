@@ -20,14 +20,17 @@ public class PrivacyPlugin implements PluginEntry {
 
     @Override
     public void init(Environment environment, PluginConfig config) {
-        List<FilterRule> autoScanClassRules = CanaryAutoScanner.scan(config);
+        CanaryAutoScanner.AutoScanResult autoScanResult = CanaryAutoScanner.scanWithResult(config);
+        List<FilterRule> autoScanClassRules = autoScanResult.getClassRules();
         List<FilterRule> autoScanResourceRules = RuleMerger.toResourceRules(autoScanClassRules);
+        List<FilterRule> hideResourceRules = RuleMerger.adjustMarkerResourceRule(
+                config.getBySection("Hide_Resource"), autoScanResult.isMarkerResourceExists());
         List<FilterRule> ignoreClassRules = RuleMerger.merge(config.getBySection("Ignore_Class"), autoScanClassRules);
         List<FilterRule> ignoreResourceRules = RuleMerger.merge(config.getBySection("Ignore_Resource"), autoScanResourceRules);
 
         IdeaPluginRule.initRules(config.getBySection("Hide_Plugin"));
         LoadClassRule.initRules(config.getBySection("Hide_Package"), ignoreClassRules);
-        ResourceRule.initRules(config.getBySection("Hide_Resource"), ignoreResourceRules);
+        ResourceRule.initRules(hideResourceRules, ignoreResourceRules);
         SystemRule.initRules(config.getBySection("Hide_Env"), config.getBySection("Hide_Property"));
         StackTraceRule.initRules(config.getBySection("Trace_Check_Package"));
     }

@@ -23,31 +23,35 @@ public class CanaryAutoScanner {
     }
 
     public static List<FilterRule> scan(PluginConfig config) {
+        return scanWithResult(config).getClassRules();
+    }
+
+    public static AutoScanResult scanWithResult(PluginConfig config) {
         try {
             return doScan(config);
         } catch (Exception e) {
             DebugInfo.warn("[PRIVACY-SCAN] Auto scan failed; continue without generated rules", e);
-            return Collections.emptyList();
+            return AutoScanResult.empty();
         } catch (LinkageError e) {
             DebugInfo.warn("[PRIVACY-SCAN] Auto scan unavailable; continue without generated rules", e);
-            return Collections.emptyList();
+            return AutoScanResult.empty();
         }
     }
 
-    private static List<FilterRule> doScan(PluginConfig config) {
+    private static AutoScanResult doScan(PluginConfig config) {
         List<FilterRule> pluginRules = rules(config, "Auto_Scan_Plugin", DEFAULT_SCAN_PLUGINS);
         List<FilterRule> packageRules = rules(config, "Auto_Scan_Package", DEFAULT_SCAN_PACKAGES);
         List<FilterRule> excludeRules = emptyIfNull(config.getBySection("Auto_Scan_Exclude"));
 
         if (pluginRules.isEmpty() || packageRules.isEmpty()) {
             DebugInfo.warn("[PRIVACY-SCAN] Auto scan disabled: plugin or package rules are empty");
-            return Collections.emptyList();
+            return AutoScanResult.empty();
         }
 
-        List<File> scanTargets = JbDirectoryScanner.getPluginDir();
+        List<File> scanTargets = JbDirectoryScanner.getPluginDir(config);
         if (scanTargets.isEmpty()) {
             DebugInfo.warn("[PRIVACY-SCAN] No plugin scan targets found");
-            return Collections.emptyList();
+            return AutoScanResult.empty();
         }
 
         DebugInfo.output("[PRIVACY-SCAN] Plugin targets: " + fileSummary(scanTargets));
@@ -63,7 +67,8 @@ public class CanaryAutoScanner {
             classRules.add(FilterRule.of("EQUAL", className));
             DebugInfo.output("[PRIVACY-SCAN]   - " + className);
         }
-        return classRules;
+        DebugInfo.output("[PRIVACY-SCAN] Marker resource exists: " + result.isMarkerResourceExists());
+        return new AutoScanResult(classRules, result.isMarkerResourceExists());
     }
 
     private static List<FilterRule> rules(PluginConfig config, String section, List<FilterRule> defaultValue) {
@@ -108,5 +113,27 @@ public class CanaryAutoScanner {
             sb.append(rule);
         }
         return sb.toString();
+    }
+
+    public static class AutoScanResult {
+        private final List<FilterRule> classRules;
+        private final boolean markerResourceExists;
+
+        private AutoScanResult(List<FilterRule> classRules, boolean markerResourceExists) {
+            this.classRules = classRules == null ? Collections.emptyList() : classRules;
+            this.markerResourceExists = markerResourceExists;
+        }
+
+        public static AutoScanResult empty() {
+            return new AutoScanResult(Collections.emptyList(), false);
+        }
+
+        public List<FilterRule> getClassRules() {
+            return new ArrayList<>(classRules);
+        }
+
+        public boolean isMarkerResourceExists() {
+            return markerResourceExists;
+        }
     }
 }

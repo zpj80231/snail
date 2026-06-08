@@ -57,3 +57,7 @@ EQUAL,/com/janetfilter/core/utils/StringUtils.class
 
 [Auto_Scan_Exclude]
 # PREFIX,com.example.safe.
+
+[Auto_Scan_Ide_Plugin_Path]
+# Match current idea.paths.selector on the left side, then scan the configured plugin root.
+# EQUAL,IdeaIC2026.1=/Users/example/Library/Application Support/JetBrains/IdeaIC2026.1/plugins

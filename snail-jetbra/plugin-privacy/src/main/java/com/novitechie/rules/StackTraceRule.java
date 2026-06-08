@@ -38,7 +38,7 @@ public class StackTraceRule {
         if (methodName.length() <= 1) {
             String className = stackTraceElement.getClassName();
             if (checkTracePackage(className)) {
-                DebugInfo.info("short method frame, className: " + className + ", methodName: " + methodName);
+                // DebugInfo.info("short method frame, className: " + className + ", methodName: " + methodName);
                 return true;
             }
         }
