@@ -44,6 +44,10 @@ EQUAL,com.janetfilter.core.utils.StringUtils
 EQUAL,/com/janetfilter/core/utils/StringUtils.class
 # EQUAL,/com/janetfilter/core/utils/DateUtils.class
 
+[Trace_Check_Package]
+# Short method names are only treated as suspicious when the stack class name matches these rules.
+# PREFIX,com.example.plugin.
+
 [Auto_Scan_Plugin]
 # Auto scan matches plugin ids first, then hides matched canary classes from those plugins.
 # Leave this section empty to disable default auto scan plugin rules.

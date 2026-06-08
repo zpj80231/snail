@@ -1,9 +1,10 @@
 package com.novitechie.rules;
 
 import com.janetfilter.core.commons.DebugInfo;
+import com.janetfilter.core.models.FilterRule;
 
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -11,16 +12,13 @@ import java.util.regex.Pattern;
 public class StackTraceRule {
 
     private static final Pattern PACKAGE_NAME_PATTERN = Pattern.compile("\\A\\p{ASCII}*\\z");
-    private static final List<String> OFFICIAL_CLASS_PREFIXES = Arrays.asList(
-            "java.",
-            "javax.",
-            "sun.",
-            "com.sun.",
-            "jdk.",
-            "com.intellij.",
-            "com.jetbrains.",
-            "org.jetbrains.",
-            "kotlin.");
+    private static List<FilterRule> traceCheckPackageRules = Collections.emptyList();
+
+    public static void initRules(List<FilterRule> traceCheckPackageRules) {
+        StackTraceRule.traceCheckPackageRules = traceCheckPackageRules == null
+                ? Collections.emptyList()
+                : traceCheckPackageRules;
+    }
 
     public static boolean check() {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
@@ -39,21 +37,20 @@ public class StackTraceRule {
         }
         if (methodName.length() <= 1) {
             String className = stackTraceElement.getClassName();
-            if (isOfficialClass(className)) {
-                return false;
+            if (checkTracePackage(className)) {
+                DebugInfo.info("short method frame, className: " + className + ", methodName: " + methodName);
+                return true;
             }
-            DebugInfo.info("short method frame, className: " + className + ", methodName: " + methodName);
-            return true;
         }
         return false;
     }
 
-    private static boolean isOfficialClass(String className) {
+    private static boolean checkTracePackage(String className) {
         if (className == null) {
             return false;
         }
-        for (String prefix : OFFICIAL_CLASS_PREFIXES) {
-            if (className.startsWith(prefix)) {
+        for (FilterRule rule : traceCheckPackageRules) {
+            if (rule != null && rule.test(className)) {
                 return true;
             }
         }

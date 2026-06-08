@@ -8,6 +8,7 @@ import com.janetfilter.core.plugin.PluginEntry;
 import com.novitechie.rules.IdeaPluginRule;
 import com.novitechie.rules.LoadClassRule;
 import com.novitechie.rules.ResourceRule;
+import com.novitechie.rules.StackTraceRule;
 import com.novitechie.rules.SystemRule;
 import com.novitechie.scan.CanaryAutoScanner;
 import com.novitechie.scan.RuleMerger;
@@ -28,6 +29,7 @@ public class PrivacyPlugin implements PluginEntry {
         LoadClassRule.initRules(config.getBySection("Hide_Package"), ignoreClassRules);
         ResourceRule.initRules(config.getBySection("Hide_Resource"), ignoreResourceRules);
         SystemRule.initRules(config.getBySection("Hide_Env"), config.getBySection("Hide_Property"));
+        StackTraceRule.initRules(config.getBySection("Trace_Check_Package"));
     }
 
     @Override
